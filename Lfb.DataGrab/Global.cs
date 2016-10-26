@@ -146,7 +146,7 @@ namespace Lfb.DataGrab
 
         public static string GetToutiaoAuthorId(string url)
         {
-            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","");
+            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","").Replace("/","");
             //"http://toutiao.com/m3470331046/"
         }
     }

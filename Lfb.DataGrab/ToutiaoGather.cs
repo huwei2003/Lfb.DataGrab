@@ -16,7 +16,7 @@ namespace Lfb.DataGrab
     /// </summary>
     public class ToutiaoGather
     {
-        
+        private static int PageIndex;
 
         public List<DtoNewsUrlList> NewsUrlGathering(string newsListUrl, int newsType)
         {
@@ -32,7 +32,7 @@ namespace Lfb.DataGrab
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoJsData>(strContent);
                 if (data != null)
                 {
-                    //处理data中的数据，有作者的地址则存储
+                    #region === 处理data中的数据，有作者的地址则存储 ===
                     if (data.data != null && data.data.Count > 0)
                     {
                         foreach (var item in data.data)
@@ -61,20 +61,23 @@ namespace Lfb.DataGrab
                                 continue;
                         }
                     }
+                    #endregion
                 }
+                Log.Info(newsListUrl + " 抓取结束");
                 var isHaveMore = data.has_more;
                 //有更多数据，则继续抓取数据
-                if(isHaveMore)
+                if (isHaveMore && PageIndex < 20)
                 {
-                    var max_behot_time = data.next.max_behot_time;
+                    PageIndex++;
+                    var max_behot_time = data.next.max_behot_time.ToString();
                     //替换url中的max_behot_time
-
+                    newsListUrl = ModifyUrlMax_behot_time(newsListUrl, max_behot_time);
+                    NewsUrlGathering(newsListUrl, newsType);
                 }
-                
-
-
-                //判断是否还可以翻页，有则再取数据
-                
+                else
+                {
+                    Log.Info("本频道抓取结束");
+                }
 
             }
             catch (Exception ex)
