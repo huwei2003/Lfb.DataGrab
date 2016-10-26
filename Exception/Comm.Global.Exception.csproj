@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D2D7DF86-C9B7-4E25-8BDC-135A13CA1484}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Comm.Global.Exception</RootNamespace>
+    <AssemblyName>Comm.Global.Exception</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseException.cs" />
+    <Compile Include="NoResourceException.cs" />
+    <Compile Include="DialogInfoException.cs" />
+    <Compile Include="UnExpectedBusinessException.cs" />
+    <Compile Include="MissConfigException.cs" />
+    <Compile Include="ParseObjectErrorException.cs" />
+    <Compile Include="DriverFailException.cs" />
+    <Compile Include="MicroServiceException.cs" />
+    <Compile Include="IExceptionType.cs" />
+    <Compile Include="AuthFailException.cs" />
+    <Compile Include="UtilCrashException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\DTO\Comm.Global.DTO.csproj">
+      <Project>{5c8bd179-a7f6-4b31-95d7-d96e830ded94}</Project>
+      <Name>Comm.Global.DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Enum\Comm.Global.Enum.csproj">
+      <Project>{3f29c61f-d939-4ae4-9bdc-629c3ea11909}</Project>
+      <Name>Comm.Global.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Resource\Comm.Global.Resource.csproj">
+      <Project>{4d55101b-3385-4ddc-936c-63b8e28736e8}</Project>
+      <Name>Comm.Global.Resource</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

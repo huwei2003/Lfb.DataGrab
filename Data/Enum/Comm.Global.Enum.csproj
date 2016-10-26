@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3F29C61F-D939-4AE4-9BDC-629C3EA11909}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Comm.Global.Enum</RootNamespace>
+    <AssemblyName>Comm.Global.Enum</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\FriendStage.cs" />
+    <Compile Include="Business\Logistics.cs" />
+    <Compile Include="Business\NewsTypeEnum.cs" />
+    <Compile Include="Business\PayChannel.cs" />
+    <Compile Include="Business\PayChannelHelper.cs" />
+    <Compile Include="Business\ProductBigCategory.cs" />
+    <Compile Include="Business\ProductCategory.cs" />
+    <Compile Include="Business\ProductCategoryHelper.cs" />
+    <Compile Include="FieldLength\PropertyLength.cs" />
+    <Compile Include="FieldLength\TypeLength.cs" />
+    <Compile Include="Nature\Bool.cs" />
+    <Compile Include="Nature\BoolHelper.cs" />
+    <Compile Include="Nature\Ethnic.cs" />
+    <Compile Include="Nature\Industry.cs" />
+    <Compile Include="Nature\IndustryHelper.cs" />
+    <Compile Include="Nature\IndustryPost.cs" />
+    <Compile Include="Nature\IndustryPostHelper.cs" />
+    <Compile Include="Nature\Major.cs" />
+    <Compile Include="Nature\MajorHelper.cs" />
+    <Compile Include="Nature\MaritalStatus.cs" />
+    <Compile Include="Nature\Region.cs" />
+    <Compile Include="Nature\RegionHelper.cs" />
+    <Compile Include="Nature\Sex.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sys\ChatPlatform.cs" />
+    <Compile Include="Sys\ChatRole.cs" />
+    <Compile Include="Sys\DbType.cs" />
+    <Compile Include="Sys\LoginType.cs" />
+    <Compile Include="Sys\ServiceName.cs" />
+    <Compile Include="Sys\ServiceNameHelper.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

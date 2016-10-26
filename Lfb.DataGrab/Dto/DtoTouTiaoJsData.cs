@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Lfb.DataGrab.Dto
+{
+    /// <summary>
+    /// 头条频道或首页列表js返回的数据实例
+    /// </summary>
+    public class DtoTouTiaoJsData
+    {
+        public bool has_more;
+        public string message;
+        public List<DtoTouTiaoNews> data;
+        public DtoToutiaoNext next;
+    }
+
+    public class DtoToutiaoNext
+    {
+        public long max_behot_time;
+    }
+    
+}

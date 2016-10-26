@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{66C9FBD2-258B-4CD4-9411-41CCFC3F0994}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Comm.Cloud.RDS</RootNamespace>
+    <AssemblyName>Comm.Cloud.RDS</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <RestorePackages>true</RestorePackages>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\..\Libs\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CheckInput.cs" />
+    <Compile Include="CommandInfo.cs" />
+    <Compile Include="DbBase_back20160805.cs" />
+    <Compile Include="DbBase.cs" />
+    <Compile Include="DbDataReaderHelper.cs" />
+    <Compile Include="DbHelperSqlLite.cs" />
+    <Compile Include="DbHelperOleDb.cs" />
+    <Compile Include="DbHelperOra.cs" />
+    <Compile Include="DbHelperSql.cs" />
+    <Compile Include="DbSqlServer.cs" />
+    <Compile Include="DbMySql.cs" />
+    <Compile Include="DTO\PublicCloudRdsConfig.cs" />
+    <Compile Include="DbHelperMySql.cs" />
+    <Compile Include="RdsNew.cs" />
+    <Compile Include="Rds.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RdsFactory.cs" />
+    <Compile Include="TransactionHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Comm.Global.Db\Comm.Global.Db.csproj">
+      <Project>{6dc3c420-0da3-4f81-9885-00cef59903cf}</Project>
+      <Name>Comm.Global.Db</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Config\Comm.Global.Config.csproj">
+      <Project>{ec122738-a2a3-4128-b0b7-7bf87da905be}</Project>
+      <Name>Comm.Global.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Data\DTO\Comm.Global.DTO.csproj">
+      <Project>{5c8bd179-a7f6-4b31-95d7-d96e830ded94}</Project>
+      <Name>Comm.Global.DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Data\Enum\Comm.Global.Enum.csproj">
+      <Project>{3f29c61f-d939-4ae4-9bdc-629c3ea11909}</Project>
+      <Name>Comm.Global.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Exception\Comm.Global.Exception.csproj">
+      <Project>{d2d7df86-c9b7-4e25-8bdc-135a13ca1484}</Project>
+      <Name>Comm.Global.Exception</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utility\Comm.Tools.Utility.csproj">
+      <Project>{96dd7591-64f4-44ba-b899-4b6b542a85be}</Project>
+      <Name>Comm.Tools.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interface\Comm.Cloud.IRDS\Comm.Cloud.IRDS.csproj">
+      <Project>{b1151530-d6d9-4901-a33e-ed0ef51c1de0}</Project>
+      <Name>Comm.Cloud.IRDS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

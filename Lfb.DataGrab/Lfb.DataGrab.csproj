@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2545E22B-64D5-47CA-8517-DD77762DF2C7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lfb.DataGrab</RootNamespace>
+    <AssemblyName>Lfb.DataGrab</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DtoIfengImg.cs" />
+    <Compile Include="Dto\DtoTouTiaoJsData.cs" />
+    <Compile Include="Dto\DtoTouTiaoNews.cs" />
+    <Compile Include="Model\T_Author.cs" />
+    <Compile Include="ToutiaoGather.cs" />
+    <Compile Include="Model\T_News.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="HttpHelper.cs" />
+    <Compile Include="IBaseGather.cs" />
+    <Compile Include="ImgDeal.cs" />
+    <Compile Include="IFengGather.cs" />
+    <Compile Include="Img.cs" />
+    <Compile Include="Installer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Installer.designer.cs">
+      <DependentUpon>Installer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dal\DalNews.cs" />
+    <Compile Include="QqGather.cs" />
+    <Compile Include="Service.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Service.Designer.cs">
+      <DependentUpon>Service.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SinaGather.cs" />
+    <Compile Include="SiteData.cs" />
+    <Compile Include="Tasks\News.cs" />
+    <Compile Include="XmlDeal.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="卸载.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="安装.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Installer.resx">
+      <DependentUpon>Installer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Site.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Comm.Global.Db\Comm.Global.Db.csproj">
+      <Project>{6dc3c420-0da3-4f81-9885-00cef59903cf}</Project>
+      <Name>Comm.Global.Db</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Config\Comm.Global.Config.csproj">
+      <Project>{ec122738-a2a3-4128-b0b7-7bf87da905be}</Project>
+      <Name>Comm.Global.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\DTO\Comm.Global.DTO.csproj">
+      <Project>{5c8bd179-a7f6-4b31-95d7-d96e830ded94}</Project>
+      <Name>Comm.Global.DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Enum\Comm.Global.Enum.csproj">
+      <Project>{3f29c61f-d939-4ae4-9bdc-629c3ea11909}</Project>
+      <Name>Comm.Global.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Data\Resource\Comm.Global.Resource.csproj">
+      <Project>{4d55101b-3385-4ddc-936c-63b8e28736e8}</Project>
+      <Name>Comm.Global.Resource</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Exception\Comm.Global.Exception.csproj">
+      <Project>{d2d7df86-c9b7-4e25-8bdc-135a13ca1484}</Project>
+      <Name>Comm.Global.Exception</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib.Csharp.Tools\Lib.Csharp.Tools.csproj">
+      <Project>{01df3bf6-793f-40d6-90aa-132892ba8e16}</Project>
+      <Name>Lib.Csharp.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RDS\Implement\Comm.Cloud.RDS.csproj">
+      <Project>{66c9fbd2-258b-4cd4-9411-41ccfc3f0994}</Project>
+      <Name>Comm.Cloud.RDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RDS\Interface\Comm.Cloud.IRDS\Comm.Cloud.IRDS.csproj">
+      <Project>{b1151530-d6d9-4901-a33e-ed0ef51c1de0}</Project>
+      <Name>Comm.Cloud.IRDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utility\Comm.Tools.Utility.csproj">
+      <Project>{96dd7591-64f4-44ba-b899-4b6b542a85be}</Project>
+      <Name>Comm.Tools.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。启用“NuGet 程序包还原”可下载这些程序包。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

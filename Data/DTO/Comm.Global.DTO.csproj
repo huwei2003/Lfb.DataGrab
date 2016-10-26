@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5C8BD179-A7F6-4B31-95D7-D96E830DED94}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Comm.Global.DTO</RootNamespace>
+    <AssemblyName>Comm.Global.DTO</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Chat\ChatManLoginInfo.cs" />
+    <Compile Include="Chat\ChatPile.cs" />
+    <Compile Include="Chat\ClerkMan.cs" />
+    <Compile Include="Chat\ClerkPrivateRoom.cs" />
+    <Compile Include="Chat\ClerkRoom.cs" />
+    <Compile Include="Chat\PrivateRoom.cs" />
+    <Compile Include="Chat\PublicRoom.cs" />
+    <Compile Include="Chat\PushData.cs" />
+    <Compile Include="Chat\RoomBase.cs" />
+    <Compile Include="Chat\UserMan.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="Factory\BaseFactory.cs" />
+    <Compile Include="Friend\FriendInfo.cs" />
+    <Compile Include="Interface\IAccount.cs" />
+    <Compile Include="Interface\ICreateTime.cs" />
+    <Compile Include="Interface\IEntity.cs" />
+    <Compile Include="Interface\IExpiredTime.cs" />
+    <Compile Include="Interface\IId.cs" />
+    <Compile Include="Interface\ILogoUrl.cs" />
+    <Compile Include="Interface\ILongId.cs" />
+    <Compile Include="Interface\IMobile.cs" />
+    <Compile Include="Interface\IOwnerId.cs" />
+    <Compile Include="Interface\IPassword.cs" />
+    <Compile Include="Interface\IRoomId.cs" />
+    <Compile Include="Interface\ISellerId.cs" />
+    <Compile Include="Interface\IStoreId.cs" />
+    <Compile Include="Interface\IStringId.cs" />
+    <Compile Include="Interface\IUpdateTime.cs" />
+    <Compile Include="Interface\IUrl.cs" />
+    <Compile Include="Interface\IUserId.cs" />
+    <Compile Include="Location\Location.cs" />
+    <Compile Include="Location\LocationHelper.cs" />
+    <Compile Include="Location\LocationMbr.cs" />
+    <Compile Include="Location\LocationPoint.cs" />
+    <Compile Include="Media\Audio\AudioBase.cs" />
+    <Compile Include="Media\Audio\AudioCreate.cs" />
+    <Compile Include="Media\Audio\AudioForPut.cs" />
+    <Compile Include="Media\Audio\AudioUpdate.cs" />
+    <Compile Include="Media\Audio\DtoAudio.cs" />
+    <Compile Include="Media\Audio\TbAudio.cs" />
+    <Compile Include="Media\Logo\DtoLogo.cs" />
+    <Compile Include="Media\Logo\LogoForPut.cs" />
+    <Compile Include="Media\Logo\LogoUpdate.cs" />
+    <Compile Include="Media\MediaBase.cs" />
+    <Compile Include="Media\Photo\DtoPhoto.cs" />
+    <Compile Include="Media\Photo\PhotoBase.cs" />
+    <Compile Include="Media\Photo\PhotoCreate.cs" />
+    <Compile Include="Media\Photo\PhotoForPut.cs" />
+    <Compile Include="Media\Photo\PhotoUpdate.cs" />
+    <Compile Include="Media\Photo\TbPrivatePhoto.cs" />
+    <Compile Include="Media\Photo\TbPublicPhoto.cs" />
+    <Compile Include="Media\Video\DtoVideo.cs" />
+    <Compile Include="Media\Video\TbVideo.cs" />
+    <Compile Include="Media\Video\VideoBase.cs" />
+    <Compile Include="Media\Video\VideoCreate.cs" />
+    <Compile Include="Media\Video\VideoForPut.cs" />
+    <Compile Include="Media\Video\VideoUpdate.cs" />
+    <Compile Include="News\DtoAuthor.cs" />
+    <Compile Include="News\DtoNews.cs" />
+    <Compile Include="News\DtoNewsAll.cs" />
+    <Compile Include="News\DtoNewsMedia.cs" />
+    <Compile Include="News\DtoNewsUrlList.cs" />
+    <Compile Include="Pay\PaymentCertificate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Secrect\UpdateMobile.cs" />
+    <Compile Include="Secrect\UpdateMobileConfirm.cs" />
+    <Compile Include="Secrect\UpdatePassword.cs" />
+    <Compile Include="Secrect\UpdatePasswordRetrive.cs" />
+    <Compile Include="Secrect\UpdatePasswordRetriveConfirm.cs" />
+    <Compile Include="Service\Config\AnyServiceConfig.cs" />
+    <Compile Include="Service\Config\BaseServiceConfig.cs" />
+    <Compile Include="Service\Config\RunEnvironment.cs" />
+    <Compile Include="Service\Gateway\KnowledgeDb.cs" />
+    <Compile Include="Service\Gateway\KnowledgeInfo.cs" />
+    <Compile Include="Service\Message\ServiceMessageSummary.cs" />
+    <Compile Include="Service\Monitor\ServiceMonitor.cs" />
+    <Compile Include="Service\Monitor\ServiceMonitorSummary.cs" />
+    <Compile Include="Service\Tester\AnyGather.cs" />
+    <Compile Include="Service\Tester\AnyGatherCreate.cs" />
+    <Compile Include="Service\WebApi\GError400.cs" />
+    <Compile Include="Service\WebApi\PageList.cs" />
+    <Compile Include="Service\WebApi\PageListWithAdvert.cs" />
+    <Compile Include="Service\WebApi\RangeList.cs" />
+    <Compile Include="Service\WebApi\RangeNextCondition.cs" />
+    <Compile Include="Service\WebApi\ServiceHealthSummery.cs" />
+    <Compile Include="Service\WebApi\ServiceRunningError.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Enum\Comm.Global.Enum.csproj">
+      <Project>{3f29c61f-d939-4ae4-9bdc-629c3ea11909}</Project>
+      <Name>Comm.Global.Enum</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
