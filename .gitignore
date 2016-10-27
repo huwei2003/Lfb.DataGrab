@@ -1,6 +1,11 @@
 # compiled files
 obj
 bin
+logs
+Logs
+Log
+log
+App_Log
 # user files
 .user
 .suo

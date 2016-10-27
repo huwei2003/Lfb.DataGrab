@@ -33,45 +33,70 @@ namespace Lfb.DataGrab
                 if (data != null)
                 {
                     #region === 处理data中的数据，有作者的地址则存储 ===
+
                     if (data.data != null && data.data.Count > 0)
                     {
                         foreach (var item in data.data)
                         {
-                            //item.media_url;
-                            //"media_url": "http://toutiao.com/m3470331046/
-                            var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.media_url);
-                            if (isAuthorUrl)
+                            try
                             {
-                                var authorId = Global.GetToutiaoAuthorId(item.media_url);
-                                var isExists = DalNews.IsExistsAuthor(authorId);
-                                if (!isExists)
+                                //item.media_url;
+                                //"media_url": "http://toutiao.com/m3470331046/
+                                if (!string.IsNullOrEmpty(item.media_url))
                                 {
-                                    var model = new DtoAuthor()
+                                    var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.media_url);
+                                    if (isAuthorUrl)
                                     {
-                                        Author = "",
-                                        AuthorId = authorId,
-                                        IsDeal = 0,
-                                        LastDealTime = DateTime.Now,
-                                        Url = item.media_url,
-                                    };
-                                    var id = DalNews.Insert(model);
+                                        var authorId = Global.GetToutiaoAuthorId(item.media_url);
+                                        var isExists = DalNews.IsExistsAuthor(authorId);
+                                        if (!isExists)
+                                        {
+                                            var model = new DtoAuthor()
+                                            {
+                                                Author = "",
+                                                AuthorId = authorId,
+                                                IsDeal = 0,
+                                                LastDealTime = DateTime.Now,
+                                                Url = item.media_url,
+                                            };
+                                            var id = DalNews.Insert(model);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
                                 }
                             }
-                            else
-                                continue;
+                            catch (Exception ex)
+                            {
+                            }
                         }
                     }
+
                     #endregion
+                }
+                else
+                {
+                    Log.Info(newsListUrl + " 未取到数据");
+                    return null;
                 }
                 Log.Info(newsListUrl + " 抓取结束");
                 var isHaveMore = data.has_more;
                 //有更多数据，则继续抓取数据
-                if (isHaveMore && PageIndex < 20)
+                if (isHaveMore && PageIndex < Global.PageDepth)
                 {
+                    //sleep
+                    Random rnd = new Random();
+                    Thread.Sleep(rnd.Next(1000, 2500));
                     PageIndex++;
-                    var max_behot_time = data.next.max_behot_time.ToString();
+                    var maxBehotTime = data.next.max_behot_time.ToString();
                     //替换url中的max_behot_time
-                    newsListUrl = ModifyUrlMax_behot_time(newsListUrl, max_behot_time);
+                    newsListUrl = ModifyUrlMax_behot_time(newsListUrl, maxBehotTime);
                     NewsUrlGathering(newsListUrl, newsType);
                 }
                 else

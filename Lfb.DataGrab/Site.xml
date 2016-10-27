@@ -6,7 +6,7 @@
     <NewsTypeName>新闻</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=__all__&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1D5B8000CC7350&amp;cp=580C772325900E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>

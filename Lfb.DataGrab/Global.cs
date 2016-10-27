@@ -26,7 +26,11 @@ namespace Lfb.DataGrab
         /// 是否开启图片转存 1：处理 0:No
         /// </summary>
         public static int IsEnableImgDeal = GetIsEnableImgDeal();
-        
+
+        /// <summary>
+        /// 页面抓取深度，即翻多少页
+        /// </summary>
+        public static int PageDepth = GetPageDepth();
 
         private static string GetImgSavePrex()
         {
@@ -79,7 +83,19 @@ namespace Lfb.DataGrab
                 return 0;
             }
         }
-
+        private static int GetPageDepth()
+        {
+            try
+            {
+                return StrHelper.ToInt32(ConfigurationManager.AppSettings["PageDepth"].ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return 10;
+            }
+        }
+        
         
 
         /// <summary>
@@ -140,12 +156,16 @@ namespace Lfb.DataGrab
         /// <returns></returns>
         public static bool IsToutiaoAuthorUrl(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
             //"http://toutiao.com/m3470331046/"
             return Regex.IsMatch(url, @"(https?|http)://toutiao.com/m\d{3,30}");
         }
 
         public static string GetToutiaoAuthorId(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                return "";
             return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","").Replace("/","");
             //"http://toutiao.com/m3470331046/"
         }
