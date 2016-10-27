@@ -47,20 +47,8 @@ namespace Lfb.DataGrab
                                     var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.media_url);
                                     if (isAuthorUrl)
                                     {
-                                        var authorId = Global.GetToutiaoAuthorId(item.media_url);
-                                        var isExists = DalNews.IsExistsAuthor(authorId);
-                                        if (!isExists)
-                                        {
-                                            var model = new DtoAuthor()
-                                            {
-                                                Author = "",
-                                                AuthorId = authorId,
-                                                IsDeal = 0,
-                                                LastDealTime = DateTime.Now,
-                                                Url = item.media_url,
-                                            };
-                                            var id = DalNews.Insert(model);
-                                        }
+                                        //检查是否已存在，不在则入库
+                                        DealAuthorUrl(item.media_url);
                                     }
                                     else
                                     {
@@ -148,6 +136,38 @@ namespace Lfb.DataGrab
             return reStr;
         }
 
-
+        /// <summary>
+        /// 处理作者首页url
+        /// </summary>
+        /// <param name="authorUrl"></param>
+        /// <returns></returns>
+        public int DealAuthorUrl(string authorUrl) 
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(authorUrl))
+                {
+                    return 0;
+                    }
+                var authorId = Global.GetToutiaoAuthorId(authorUrl);
+                var isExists = DalNews.IsExistsAuthor(authorId);
+                if (!isExists)
+                {
+                    var model = new DtoAuthor()
+                    {
+                        Author = "",
+                        AuthorId = authorId,
+                        IsDeal = 0,
+                        LastDealTime = DateTime.Now,
+                        Url = authorUrl,
+                    };
+                    var id = DalNews.Insert(model);
+                    return id;
+                }
+            }
+            catch (Exception ex)
+            { }
+            return 0;
+        }
     }
 }

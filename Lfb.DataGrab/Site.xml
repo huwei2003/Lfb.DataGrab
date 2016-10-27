@@ -14,7 +14,7 @@
     <NewsTypeName>科技</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_tech/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_tech&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1A5E89191FFB6B&amp;cp=5811FF9B161B1E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -22,7 +22,7 @@
     <NewsTypeName>热点</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_hot/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_hot&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A15598B1B2300EA&amp;cp=5812F0B0EECA9E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -30,7 +30,7 @@
     <NewsTypeName>视频</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/video/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=video&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A135D8719220448&amp;cp=58128094A468EE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -46,7 +46,7 @@
     <NewsTypeName>社会</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_society/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_society&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A12508C112705F3&amp;cp=581280E5AFD3DE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -54,7 +54,7 @@
     <NewsTypeName>娱乐</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_entertainment/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_entertainment&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1D598F172B063F&amp;cp=58128066C3DF5E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -62,7 +62,7 @@
     <NewsTypeName>体育</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_sports/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_sports&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1F59821C2E06B1&amp;cp=58128046DBC1FE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -70,7 +70,7 @@
     <NewsTypeName>汽车</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_car/</Url>
+    <Url>http://www.toutiao.com/api/article/recent/?source=2&amp;category=news_car&amp;as=A18538618270765&amp;cp=581280A796A56E1&amp;_=1477576549309</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>

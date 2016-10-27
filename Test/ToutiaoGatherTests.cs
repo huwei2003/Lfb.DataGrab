@@ -32,8 +32,11 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void NewsUrlGatheringTest()
         {
-            
-            var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1";
+            //http://www.toutiao.com/api/article/recent/?source=2&amp;category=news_car&amp;as=A18538618270765&amp;cp=581280A796A56E1&amp;_=1477576549309
+
+
+            //var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1";
+            var url = "http://www.toutiao.com/api/article/feed/?category=news_tech&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1A5E89191FFB6B&amp;cp=5811FF9B161B1E1";
             bll.NewsUrlGathering(url, 100);
         }
 
