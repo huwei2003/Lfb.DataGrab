@@ -38,7 +38,7 @@
     <NewsTypeName>图片</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_image/</Url>
+    <Url>http://www.toutiao.com/api/article/recent/?source=2&count=20&category=gallery_detail&max_behot_time=1477662512.18&utm_source=toutiao&device_platform=web&offset=0&as=A1C5D881B375733&cp=581315F773638E1&_=1477662514919</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -78,7 +78,7 @@
     <NewsTypeName>财经</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_finance/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_finance&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1E5A83163F582E&amp;cp=581315A8128E9E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -86,7 +86,7 @@
     <NewsTypeName>军事</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_military/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_finance&amp;amp;utm_source=toutiao&amp;amp;widen=0&amp;amp;max_behot_time=0&amp;amp;max_behot_time_tmp=0&amp;amp;as=A1E5A83163F582E&amp;amp;cp=581315A8128E9E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -94,7 +94,7 @@
     <NewsTypeName>搞笑</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/funny/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=funny&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1D538617325A48&amp;cp=5813B51A94081E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -102,7 +102,7 @@
     <NewsTypeName>国际</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_world/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_world&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1C5D8E133F5AA0&amp;cp=5813857A6A70DE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -110,7 +110,7 @@
     <NewsTypeName>时尚</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_fashion/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_fashion&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A185F8D133F5AF3&amp;cp=5813550A0F93AE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -118,7 +118,7 @@
     <NewsTypeName>旅游</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_travel/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_travel&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1F5A8A1C325B46&amp;cp=5813D50B9496EE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -126,7 +126,7 @@
     <NewsTypeName>探索</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_discovery/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_discovery&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1A578E10335BA9&amp;cp=581395DBDA49AE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -134,7 +134,7 @@
     <NewsTypeName>育儿</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_baby/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_baby&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1E5F8C11355C06&amp;cp=5813C53C1076FE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -142,7 +142,7 @@
     <NewsTypeName>养生</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_regimen/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_regimen&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A11598F173E5C46&amp;cp=5813C52CD436AE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -150,7 +150,7 @@
     <NewsTypeName>故事</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_story/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_story&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1051891E3F5C81&amp;cp=5813E57C28A1DE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -158,7 +158,7 @@
     <NewsTypeName>美文</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_essay/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_essay&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1E508A19355CCB&amp;cp=581345BC3C5BDE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -166,7 +166,7 @@
     <NewsTypeName>游戏</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_game/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_game&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A165F851F355D0E&amp;cp=5813B54D908E1E1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -174,7 +174,7 @@
     <NewsTypeName>历史</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_history/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_history&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A10528414315D4C&amp;cp=5813852DD40CBE1</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>
@@ -182,6 +182,6 @@
     <NewsTypeName>美食</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/news_food/</Url>
+    <Url>http://www.toutiao.com/api/article/feed/?category=news_food&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A135F821A375D7E&amp;cp=5813058D877E5E1</Url>
   </Site>
 </Sites>
