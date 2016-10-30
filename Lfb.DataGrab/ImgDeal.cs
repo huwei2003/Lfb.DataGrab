@@ -46,7 +46,7 @@ namespace Lfb.DataGrab
                                 var model = new T_News()
                                 {
                                     LogoUrl = dbSavePath,
-                                    ImgFlag =1,
+                                    //ImgFlag =1,
                                     Id = newsId
                                 };
                                 //model.Update();

@@ -61,7 +61,7 @@ namespace Lfb.DataGrab
                                     news.LogoOriginalUrl = logoUrl;
                                     news.LogoUrl = logoUrl;
 
-                                    news.PubTime = StrHelper.FormatPubTime(news.PubTime);
+                                    news.PubTime = StrHelper.ToDateTime( StrHelper.FormatPubTime(news.PubTime.ToString()));
                                     //入库
                                     var newsId = DalNews.Insert(news);
                                     if (newsId < 1)
@@ -172,12 +172,12 @@ namespace Lfb.DataGrab
                 {
                     Contents = content,
                     Title = title,
-                    PubTime = pubTime,
+                    PubTime = StrHelper.ToDateTime( pubTime),
                     FromUrl = newsUrl,
                     FromSiteName = from,
                     Author = author,
                     CreateTime = DateTime.Now,
-                    IsShow = false,
+                    IsShow = 0,
                 };
                 return news;
             }

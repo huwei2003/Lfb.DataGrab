@@ -11,34 +11,37 @@ namespace Comm.Global.DTO.News
         /// <summary>
         /// id
         /// </summary>
-        public int Id { get; set; }
+        public int Id;
 
         /// <summary>
         /// 作者id
         /// </summary>
-        public string AuthorId { get; set; }
+        public string AuthorId;
 
         /// <summary>
         /// 是否处理
         /// </summary>
-        public int IsDeal { get; set; }
+        public int IsDeal;
         
         /// <summary>
         /// 作者首页地址
         /// </summary>
-        public string Url { get; set; }
+        public string Url;
 
         /// <summary>
         /// 最后处理时间
         /// </summary>
-        public DateTime LastDealTime { get; set; }
+        public DateTime LastDealTime;
 
 
         /// <summary>
         /// 作者名
         /// </summary>
-        public string Author { get; set; }
+        public string Author;
 
-        
+        /// <summary>
+        /// 刷新时间间隔
+        /// </summary>
+        public int IntervalMinutes;
     }
 }

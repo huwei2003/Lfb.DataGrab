@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lfb.DataGrab", "Lfb.DataGrab\Lfb.DataGrab.csproj", "{2545E22B-64D5-47CA-8517-DD77762DF2C7}"
 EndProject
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comm.Global.Enum", "Data\Enum\Comm.Global.Enum.csproj", "{3F29C61F-D939-4AE4-9BDC-629C3EA11909}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comm.Global.Resource", "Data\Resource\Comm.Global.Resource.csproj", "{4D55101B-3385-4DDC-936C-63B8E28736E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lfb.DataGrabTests", "Lfb.DataGrabTests\Lfb.DataGrabTests.csproj", "{1421C87C-BC6E-48A4-8CB6-2A4F9F332D93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +90,10 @@ Global
 		{4D55101B-3385-4DDC-936C-63B8E28736E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D55101B-3385-4DDC-936C-63B8E28736E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D55101B-3385-4DDC-936C-63B8E28736E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1421C87C-BC6E-48A4-8CB6-2A4F9F332D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1421C87C-BC6E-48A4-8CB6-2A4F9F332D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1421C87C-BC6E-48A4-8CB6-2A4F9F332D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1421C87C-BC6E-48A4-8CB6-2A4F9F332D93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

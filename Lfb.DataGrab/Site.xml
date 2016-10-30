@@ -38,7 +38,7 @@
     <NewsTypeName>图片</NewsTypeName>
     <WaitSeconds>3600</WaitSeconds>
     <Nums>20</Nums>
-    <Url>http://www.toutiao.com/api/article/recent/?source=2&count=20&category=gallery_detail&max_behot_time=1477662512.18&utm_source=toutiao&device_platform=web&offset=0&as=A1C5D881B375733&cp=581315F773638E1&_=1477662514919</Url>
+    <Url>http://www.toutiao.com/api/article/recent/?source=2&amp;count=20&amp;category=gallery_detail&amp;max_behot_time=1477662512.18&amp;utm_source=toutiao&amp;device_platform=web&amp;offset=0&amp;as=A1C5D881B375733&amp;cp=581315F773638E1&amp;_=1477662514919</Url>
   </Site>
   <Site>
     <SiteName>toutiao</SiteName>

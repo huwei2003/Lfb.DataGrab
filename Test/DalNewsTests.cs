@@ -40,14 +40,25 @@ namespace Lfb.DataGrab.Tests
                 CreateTime = DateTime.Now,
                 FromSiteName = "testsite",
                 FromUrl = "http://localhost",
-                ImgFlag = 0,
+                //ImgFlag = 0,
                 Title = "test1" + DateTime.Now,
                 LogoUrl = "http://n.sinaimg.cn/fo/transform/20160705/pBto-fxtspsa6682768.jpg",
                 NewsTypeId = NewsTypeEnum.新闻,
-                PubTime = DateTime.Now.ToString(),
-                IsShow =true,
+                PubTime = DateTime.Now,
+                IsShow =1,
                 LogoOriginalUrl="",
-               
+                AuthorId="",
+
+
+                TotalComments = 0,
+                Tags = "",
+                NewsHotClass = 7,
+                LastReadTimes = 0,
+                LastDealTime = DateTime.Now,
+                IsHot = 0,
+                IsDeal = 0,
+                IntervalMinutes = 60,
+                CurReadTimes = 0,
             };
 
         }
@@ -66,7 +77,7 @@ namespace Lfb.DataGrab.Tests
 
             DalNews.UpdateImgFlag(id, 1);
             result = DalNews.GetNews(id);
-            Assert.IsTrue(result.ImgFlag == 1);
+            //Assert.IsTrue(result.ImgFlag == 1);
 
             var result2 = DalNews.DelNews(id);
             Assert.IsTrue(result2);

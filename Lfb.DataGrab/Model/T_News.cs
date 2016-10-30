@@ -7,26 +7,32 @@ using Comm.Global.Db;
 
 namespace Lfb.DataGrab.Model
 {
-    public  class T_News : Table<T_News>
+    public class T_News : Table<T_News>
     {
-        internal string _author;
+        
         internal string _contents;
-        internal DateTime? _createTime;
+        internal DateTime _createTime;
         internal string _fromSiteName;
         internal string _fromUrl;
-        internal int? _id;
-        internal int? _imgFlag;
-        internal int? _isIndexPic;
-        internal int? _isRecommand;
-        internal int? _isShow;
+        internal int _id;
         internal string _logoOriginalUrl;
         internal string _logoUrl;
-        internal int? _newsTypeId;
-        internal string _pubTime;
+        internal DateTime _pubTime;
         internal string _title;
-        internal int? _totalClick;
-        internal int? _totalCollection;
-        internal int? _totalComment;
+
+        internal string _author;
+        internal int _isShow;
+        internal int _TotalComments;
+        internal int _newsTypeId;
+        internal int _isDeal;
+        internal int _IntervalMinutes;
+        internal DateTime _LastDealTime;
+        internal int _isHot;
+        internal int _NewsHotClass;
+        internal int _CurReadTimes;
+        internal int _LastReadTimes;
+        internal string _Tags;
+        internal string _AuthorId;
 
         static T_News()
         {
@@ -38,18 +44,22 @@ namespace Lfb.DataGrab.Model
 			{"FromSiteName", @"来源站点"},
 			{"FromUrl", @"来源url"},
 			{"Id", @"新闻资讯表id"},
-			{"ImgFlag", @"图片再处理标识 0=未处理,1处理过"},
-			{"IsIndexPic", @"是否首页轮播图 0 no 1 yes"},
-			{"IsRecommand", @"是否推荐 0 no 1 yes"},
+			{"IsDeal", @"刷新处理标识 0=未处理,1处理过"},
+			{"IsHot", @"是否爆文 0 no 1 yes"},
 			{"IsShow", @"是否显示 0=no,1=yes"},
 			{"LogoOriginalUrl", @"logo图原地址"},
 			{"LogoUrl", @"logo图地址"},
-			{"NewsTypeId", @"新闻分类id 100=新闻,200=素食,300=活动"},
+			{"NewsTypeId", @"新闻分类id 1"},
 			{"PubTime", @"发布时间"},
 			{"Title", @"标题"},
-			{"TotalClick", @"点击数"},
-			{"TotalCollection", @"收藏数"},
-			{"TotalComment", @"评论数"}
+			{"TotalComment", @"评论数"},
+            {"AuthorId","作者id"},
+            {"Tags","tags"},
+            {"CurReadTimes","CurReadTimes"},
+            {"NewsHotClass","NewsHotClass"},
+            {"LastDealTime","LastDealTime"},
+            {"IntervalMinutes","IntervalMinutes"},
+            {"TotalComments","TotalComments"},
 		};
         }
 
@@ -92,7 +102,7 @@ namespace Lfb.DataGrab.Model
         {
             get
             {
-                return _createTime ?? default(DateTime);
+                return _createTime;
             }
             set
             {
@@ -140,7 +150,7 @@ namespace Lfb.DataGrab.Model
         {
             get
             {
-                return _id ?? default(int);
+                return _id;
             }
             set
             {
@@ -149,52 +159,37 @@ namespace Lfb.DataGrab.Model
         }
 
         /// <summary>
-        /// 图片再处理标识 0=未处理,1处理过
+        /// 刷新处理标识 0=未处理,1处理过
         /// </summary>
-        public int ImgFlag
+        public int IsDeal
         {
             get
             {
-                return _imgFlag ?? default(int);
+                return _isDeal;
             }
             set
             {
-                SetColumn("ImgFlag", _imgFlag, value);
-                _imgFlag = value;
+                SetColumn("IsDeal", _isDeal, value);
+                _isDeal = value;
             }
         }
 
         /// <summary>
         /// 是否首页轮播图 0 no 1 yes
         /// </summary>
-        public int IsIndexPic
+        public int IsHot
         {
             get
             {
-                return _isIndexPic ?? default(int);
+                return _isHot;
             }
             set
             {
-                SetColumn("IsIndexPic", _isIndexPic, value);
-                _isIndexPic = value;
+                SetColumn("IsHot", _isHot, value);
+                _isHot = value;
             }
         }
 
-        /// <summary>
-        /// 是否推荐 0 no 1 yes
-        /// </summary>
-        public int IsRecommand
-        {
-            get
-            {
-                return _isRecommand ?? default(int);
-            }
-            set
-            {
-                SetColumn("IsRecommand", _isRecommand, value);
-                _isRecommand = value;
-            }
-        }
 
         /// <summary>
         /// 是否显示 0=no,1=yes
@@ -203,7 +198,7 @@ namespace Lfb.DataGrab.Model
         {
             get
             {
-                return _isShow ?? default(int);
+                return _isShow;
             }
             set
             {
@@ -251,7 +246,7 @@ namespace Lfb.DataGrab.Model
         {
             get
             {
-                return _newsTypeId ?? default(int);
+                return _newsTypeId;
             }
             set
             {
@@ -263,7 +258,7 @@ namespace Lfb.DataGrab.Model
         /// <summary>
         /// 发布时间
         /// </summary>
-        public string PubTime
+        public DateTime PubTime
         {
             get
             {
@@ -293,52 +288,131 @@ namespace Lfb.DataGrab.Model
         }
 
         /// <summary>
-        /// 点击数
+        /// 作者id
         /// </summary>
-        public int TotalClick
+        public string AuthorId
         {
             get
             {
-                return _totalClick ?? default(int);
+                return _AuthorId;
             }
             set
             {
-                SetColumn("TotalClick", _totalClick, value);
-                _totalClick = value;
+                SetColumn("AuthorId", _AuthorId, value);
+                _AuthorId = value;
             }
         }
 
         /// <summary>
-        /// 收藏数
+        /// tags
         /// </summary>
-        public int TotalCollection
+        public string Tags
         {
             get
             {
-                return _totalCollection ?? default(int);
+                return _Tags;
             }
             set
             {
-                SetColumn("TotalCollection", _totalCollection, value);
-                _totalCollection = value;
+                SetColumn("Tags", _Tags, value);
+                _Tags = value;
+            }
+        }
+
+        /// <summary>
+        /// 最近一次阅读数
+        /// </summary>
+        public int LastReadTimes
+        {
+            get
+            {
+                return _LastReadTimes;
+            }
+            set
+            {
+                SetColumn("LastReadTimes", _LastReadTimes, value);
+                _LastReadTimes = value;
+            }
+        }
+
+        /// <summary>
+        /// 当前阅读数
+        /// </summary>
+        public int CurReadTimes
+        {
+            get
+            {
+                return _CurReadTimes;
+            }
+            set
+            {
+                SetColumn("CurReadTimes", _CurReadTimes, value);
+                _CurReadTimes = value;
+            }
+        }
+
+        /// <summary>
+        /// 新闻热度级别
+        /// </summary>
+        public int NewsHotClass
+        {
+            get
+            {
+                return _NewsHotClass;
+            }
+            set
+            {
+                SetColumn("NewsHotClass", _NewsHotClass, value);
+                _NewsHotClass = value;
+            }
+        }
+
+        /// <summary>
+        /// 最后刷新时间
+        /// </summary>
+        public DateTime LastDealTime
+        {
+            get
+            {
+                return _LastDealTime;
+            }
+            set
+            {
+                SetColumn("LastDealTime", _LastDealTime, value);
+                _LastDealTime = value;
+            }
+        }
+
+        /// <summary>
+        /// 刷新间隔时长
+        /// </summary>
+        public int IntervalMinutes
+        {
+            get
+            {
+                return _IntervalMinutes;
+            }
+            set
+            {
+                SetColumn("IntervalMinutes", _IntervalMinutes, value);
+                _IntervalMinutes = value;
             }
         }
 
         /// <summary>
         /// 评论数
         /// </summary>
-        public int TotalComment
+        public int TotalComments
         {
             get
             {
-                return _totalComment ?? default(int);
+                return _TotalComments;
             }
             set
             {
-                SetColumn("TotalComment", _totalComment, value);
-                _totalComment = value;
+                SetColumn("TotalComments", _TotalComments, value);
+                _TotalComments = value;
             }
         }
-
     }
 }

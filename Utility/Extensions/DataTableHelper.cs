@@ -187,8 +187,12 @@ namespace Comm.Tools.Utility
                         isAnonymousType = true;
 
                     }
-
                     fis = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+                    
+                    if (fis == null || fis.Length == 0)
+                    {
+                        fis = type.GetFields();
+                    }
 
                     if (isAnonymousType)
                     {

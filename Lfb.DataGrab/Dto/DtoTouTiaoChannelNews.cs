@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Lfb.DataGrab.Dto
 {
-    public class DtoTouTiaoNews
+    /// <summary>
+    /// 首页或频道页js数据里的新闻数据dto
+    /// </summary>
+    public class DtoTouTiaoChannelNews
     {
         public string media_avatar_url;
         public string article_genre;
@@ -33,5 +36,4 @@ namespace Lfb.DataGrab.Dto
     {
         public string url;
     }
-    
 }

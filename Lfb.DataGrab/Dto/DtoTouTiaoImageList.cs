@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DTO
+namespace Lfb.DataGrab.Dto
 {
-    public class Class1
+    public class DtoTouTiaoImageList
     {
+        public string url;
+        public string pc_url;
+        
     }
 }

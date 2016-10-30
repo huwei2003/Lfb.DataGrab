@@ -50,7 +50,6 @@
     <Compile Include="Chat\PushData.cs" />
     <Compile Include="Chat\RoomBase.cs" />
     <Compile Include="Chat\UserMan.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="Factory\BaseFactory.cs" />
     <Compile Include="Friend\FriendInfo.cs" />
     <Compile Include="Interface\IAccount.cs" />

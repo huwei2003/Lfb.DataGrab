@@ -32,6 +32,15 @@ namespace Lfb.DataGrab
         /// </summary>
         public static int PageDepth = GetPageDepth();
 
+        /// <summary>
+        /// 获取代理ip请求的url
+        /// </summary>
+        public static string GetProxyIpUrl = GetProxyUrl();
+
+        /// <summary>
+        /// Mysql1配置
+        /// </summary>
+        public static string MySql1 = GetMySql1();
         private static string GetImgSavePrex()
         {
             try
@@ -95,9 +104,34 @@ namespace Lfb.DataGrab
                 return 10;
             }
         }
-        
-        
+        private static string GetProxyUrl()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["GetProxyUrl"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
 
+        private static string GetMySql1()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["MySql1"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+
+        
+        
         /// <summary>
         /// 处理内容中的图片地址，如果是相对地址的则要加上地址前缀，构成完整的url
         /// </summary>

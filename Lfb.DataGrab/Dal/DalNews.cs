@@ -24,13 +24,50 @@ namespace Lfb.DataGrab
         {
             get
             {
+                var sqlInfo = Global.MySql1;
+                var server = "localhost";
+                var db = "News";
+                var uid = "root";
+                var pwd = "";
+                var port = 3306;
+                if (!string.IsNullOrWhiteSpace(sqlInfo))
+                {
+                    var arrStr = sqlInfo.Split(';');
+                    if (arrStr != null && arrStr.Length > 0)
+                    {
+                        foreach (var item in arrStr)
+                        { 
+                            //Server=localhost;Database=News;Uid=root;Pwd=;Port=3306
+                            if (item.Contains("Server="))
+                            {
+                                server = item.Replace("Server=", "");
+                            }
+                            if (item.Contains("Database="))
+                            {
+                                db = item.Replace("Database=", "");
+                            }
+                            if (item.Contains("Uid="))
+                            {
+                                uid = item.Replace("Uid=", "");
+                            }
+                            if (item.Contains("Pwd="))
+                            {
+                                pwd = item.Replace("Pwd=", "");
+                            }
+                            if (item.Contains("Port="))
+                            {
+                                port = StrHelper.ToInt32( item.Replace("Port=", ""));
+                            }
+                        }
+                    }
+                }
                 var rdsConfig = new PublicCloudRdsConfig
                 {
-                    Server = "localhost",
-                    Database = "News",
-                    Uid = "root",
-                    Pwd = "",
-                    Port = 3306,
+                    Server = server,
+                    Database = db,
+                    Uid = uid,
+                    Pwd = pwd,
+                    Port = port,
                 };
                 return rdsConfig;
             }
@@ -53,7 +90,7 @@ namespace Lfb.DataGrab
                 if (model.FromSiteName == null)
                     model.FromSiteName = "";
                 if (model.PubTime == null)
-                    model.PubTime = "";
+                    model.PubTime = DateTime.Now;
                 if (model.FromUrl == null)
                     model.FromUrl = "";
                 if (model.LogoOriginalUrl == null)
@@ -80,16 +117,26 @@ namespace Lfb.DataGrab
                     //CreateTime = model.CreateTime,
                     FromSiteName = model.FromSiteName,
                     FromUrl = model.FromUrl,
-                    ImgFlag = 0,
                     IsShow = 0,
                     LogoOriginalUrl = model.LogoOriginalUrl,
                     LogoUrl = model.LogoUrl,
-                    NewsTypeId = (int) model.NewsTypeId,
+                    NewsTypeId = (int)model.NewsTypeId,
                     PubTime = model.PubTime,
                     Title = model.Title,
+                    AuthorId = model.AuthorId,
+                    TotalComments = model.TotalComments,
+                    Tags = model.Tags,
+                    NewsHotClass = model.NewsHotClass,
+                    LastReadTimes = model.LastReadTimes,
+                    LastDealTime = DateTime.Now,
+                    IsHot = model.IsHot,
+                    IsDeal = model.IsDeal,
+                    IntervalMinutes = model.IntervalMinutes,
+                    CurReadTimes = model.CurReadTimes,
+                    CreateTime = DateTime.Now,
                 };
 
-                
+
                 var id = Sql.InsertId<T_News>(item);
 
                 return id;
@@ -101,18 +148,42 @@ namespace Lfb.DataGrab
             }
         }
 
+        public static int UpdateNews(DtoNews model)
+        {
+            try
+            {
+                var news = new T_News()
+                {
+                    Id = model.Id,
+                    CurReadTimes = model.CurReadTimes,
+                    LastDealTime = DateTime.Now,
+                    LastReadTimes = model.LastReadTimes,
+                    IsHot = model.IsHot,
+                    IsDeal = 1,
+                    TotalComments = model.TotalComments,
+                    NewsHotClass = model.NewsHotClass,
+                    IntervalMinutes = model.IntervalMinutes,
+                };
+                return Sql.Update(news);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 1;
+        }
         /// <summary>
         /// 判断某条新闻是否已存在
         /// </summary>
         /// <param name="authorId">新闻标题</param>
         /// <returns></returns>
-        public static bool IsExistsNews(string authorId)
+        public static bool IsExistsNews(string title)
         {
             try
             {
-                var sql = "select Id from T_News where title=?";
+                var sql = "select Id from T_News where Title=?";
 
-                var id = Sql.ExecuteScalar(0, sql, authorId);
+                var id = Sql.ExecuteScalar(0, sql, title);
 
                 return id > 0;
             }
@@ -123,12 +194,34 @@ namespace Lfb.DataGrab
 
             return false;
         }
+        /// <summary>
+        /// 判断某条新闻是否已存在
+        /// </summary>
+        /// <param name="authorId">新闻标题</param>
+        /// <returns></returns>
+        public static int IsExistsNews(string authorId, string title)
+        {
+            try
+            {
+                var sql = "select Id from T_News where AuthorId=? and Title=?";
+
+                var id = Sql.ExecuteScalar(0, sql, authorId);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return 0;
+        }
 
         public static bool DelNews(int id)
         {
             try
             {
-                var sql = string.Format("delete from T_News where Id={0}",id);
+                var sql = string.Format("delete from T_News where Id={0}", id);
 
                 var result = Sql.ExecuteSql(sql);
 
@@ -157,7 +250,7 @@ namespace Lfb.DataGrab
                     model.PicOriginalUrl = "";
                 if (model.PicUrl == null)
                     return -1;
-                if (model.NewsId<1)
+                if (model.NewsId < 1)
                     return -1;
 
                 //var item = new T_NewsMedia()
@@ -169,7 +262,7 @@ namespace Lfb.DataGrab
                 //    PicOriginalUrl = model.PicOriginalUrl,
                 //    PicUrl = model.PicUrl,
                 //    //ThumbnailUrl = model.ThumbnailUrl,
-                    
+
                 //};
 
                 //var id = item.InsertIdNoTrans();
@@ -193,7 +286,7 @@ namespace Lfb.DataGrab
             {
                 var sql = "select top 30 * from T_News where ImgFlag=0 order By Id DESC";
                 var list = Sql.Select<DtoNewsAll>(sql);
-                
+
                 if (list != null && list.Count > 0)
                 {
                     var ids = list.Select(p => p.Id).Join(",");
@@ -216,7 +309,7 @@ namespace Lfb.DataGrab
 
                     #endregion
                 }
-                
+
                 return list;
             }
             catch (Exception ex)
@@ -237,7 +330,7 @@ namespace Lfb.DataGrab
             try
             {
                 var sql = @"SELECT * FROM dbo.T_NewsMedia WHERE NewsId in({0})".Formats(ids);
-                
+
                 var list = Sql.Select<DtoNewsMedia>(sql);
                 return list;
             }
@@ -279,7 +372,7 @@ namespace Lfb.DataGrab
         /// <param name="id">新闻id</param>
         /// <param name="imgFlag">图片处理标识 0=no,1=yes</param>
         /// <returns></returns>
-        public static bool UpdateImgFlag(int id,int imgFlag)
+        public static bool UpdateImgFlag(int id, int imgFlag)
         {
             try
             {
@@ -288,8 +381,8 @@ namespace Lfb.DataGrab
                 if (imgFlag < 0)
                     imgFlag = 0;
 
-                var sql = string.Format("update T_News set ImgFlag={0} where id={1}",imgFlag,id);
-                
+                var sql = string.Format("update T_News set ImgFlag={0} where id={1}", imgFlag, id);
+
                 var result = Sql.ExecuteSql(sql);
                 return result;
             }
@@ -318,7 +411,7 @@ namespace Lfb.DataGrab
                     return -1;
                 if (model.Url == null)
                     return -1;
-                
+
                 var item = new T_Author()
                 {
                     Author = model.Author,
@@ -390,7 +483,69 @@ namespace Lfb.DataGrab
                 return false;
             }
         }
+        public static bool UpdateAuthorInterval(string authorId, int intervalMinutes)
+        {
+            try
+            {
+                var sql = string.Format("update T_Author set IntervalMinutes={0} where AuthorId='{1}'", intervalMinutes, authorId);
 
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        public static bool UpdateAuthorIsDeal(string authorId, int isDeal)
+        {
+            try
+            {
+                var sql = string.Format("update T_Author set IsDeal={0} where AuthorId='{1}'", isDeal, authorId);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        /// <summary>
+        /// 获取100条未处理的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetNoDealAuthorList()
+        {
+            try
+            {
+                var sql = "select * from T_Author where IsDeal=0 order By Id DESC limit 0,100";
+                var list = Sql.Select<DtoAuthor>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
         #endregion
     }
 }

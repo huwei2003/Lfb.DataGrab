@@ -16,6 +16,8 @@ namespace Lfb.DataGrab.Model
         internal int _isDeal;
         internal DateTime _lastDealTime;
         internal string _url;
+        internal int _IntervalMinutes;
+
 
         static T_Author()
         {
@@ -28,6 +30,7 @@ namespace Lfb.DataGrab.Model
 			{"IsDeal", @"处理标识 0=未处理,1处理过"},
 			{"LastDealTime", @"最后处理时间"},
             {"Url", @"作者的url"},
+            {"IntervalMinutes",@"刷新时间间隔"},
 			
 		};
         }
@@ -145,6 +148,20 @@ namespace Lfb.DataGrab.Model
             }
         }
 
-
+        /// <summary>
+        /// 刷新时间间隔
+        /// </summary>
+        public int IntervalMinutes
+        {
+            get
+            {
+                return _IntervalMinutes;
+            }
+            set
+            {
+                SetColumn("IntervalMinutes", _IntervalMinutes, value);
+                _IntervalMinutes = value;
+            }
+        }
     }
 }

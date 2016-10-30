@@ -13,13 +13,9 @@ namespace Lfb.DataGrab.Dto
     {
         public bool has_more;
         public string message;
-        public List<DtoTouTiaoNews> data;
+        public List<DtoTouTiaoChannelNews> data;
         public DtoToutiaoNext next;
     }
 
-    public class DtoToutiaoNext
-    {
-        public long max_behot_time;
-    }
     
 }

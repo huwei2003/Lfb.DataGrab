@@ -37,25 +37,32 @@ namespace Lfb.DataGrab.Tests
 
             //var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1";
             var url = "http://www.toutiao.com/api/article/feed/?category=news_tech&amp;utm_source=toutiao&amp;widen=0&amp;max_behot_time=0&amp;max_behot_time_tmp=0&amp;as=A1A5E89191FFB6B&amp;cp=5811FF9B161B1E1";
-            bll.NewsUrlGathering(url, 100);
+            bll.AuthorUrlGathering(url, 100);
         }
 
         [Test()]
-        public void NewsGatheringTest()
+        public void AuthorNewsGatheringTest()
         {
-            Assert.Fail();
+            bll.AuthorNewsGathering();
         }
 
         [Test()]
-        public void NewsPicGatheringTest()
+        public void ModifyUrlTest()
         {
-            Assert.Fail();
+            //bll.ModifyUrl("");
         }
-
         [Test()]
-        public void NewsPicGatheringOneTest()
+        public void GetCpandAsTest()
         {
-            Assert.Fail();
+            string strCp;
+            string strAs;
+            bll.GetCpandAs(out strCp,out strAs);
+        }
+        [Test()]
+        public void GetProxyListTest()
+        {
+            var list = HttpHelper.GetProxyList();
+            list = HttpHelper.GetProxyList();
         }
 
         [Test()]

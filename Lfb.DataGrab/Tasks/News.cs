@@ -44,7 +44,7 @@ namespace Lfb.DataGrab.Tasks
                         if (site.SiteName.ToLower() == "toutiao")
                         {
                             var bll = new ToutiaoGather();
-                            bll.NewsUrlGathering(site.Url, site.NewsType);
+                            bll.AuthorUrlGathering(site.Url, site.NewsType);
                         }
                         
                         Thread.Sleep(60*1000);

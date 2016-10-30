@@ -4,11 +4,53 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Lfb.DataGrab
 {
     public class HttpHelper
     {
+        public static List<string> GetProxyList()
+        {
+            //var ProxyList = (List<string>)Lib.Csharp.Tools.AppCache.Get("ProxyIpListForHttp");
+            try
+            {
+                var ProxyList = Comm.Tools.Utility.Cache.GetCache<List<string>>("ProxyIpListForHttp");
+
+                if (ProxyList == null || ProxyList.Count == 0)
+                {
+                    ProxyList = new List<string>();
+                    string strContent = GetContent(Global.GetProxyIpUrl, Encoding.UTF8);
+                    if (!string.IsNullOrWhiteSpace(strContent))
+                    {
+                        var strArr = strContent.Replace("\r\n", ";").Split(';');
+                        if (strArr != null && strArr.Length > 0)
+                        {
+                            foreach (var item in strArr)
+                            {
+                                if (!string.IsNullOrWhiteSpace(item))
+                                {
+                                    if (!ProxyList.Contains(item))
+                                    {
+                                        ProxyList.Add(item);
+                                    }      
+                                }
+                            }
+                        }
+                        Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);
+                        //Lib.Csharp.Tools.AppCache.AddCache("ProxyIpListForHttp", ProxyList,1);
+                    }
+                }
+                return ProxyList;
+            }
+            catch
+            {
+            }
+            return null;
+        }
+        
+         
+
         /// <summary>
         /// 获取指定网页的内容
         /// </summary>
@@ -262,6 +304,7 @@ namespace Lfb.DataGrab
                     //WebRequest request = WebRequest.Create(strUrl);
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
 
+
                     //set request args
                     request.Method = "Get";
                     request.CookieContainer = cc;
@@ -290,6 +333,20 @@ namespace Lfb.DataGrab
                     {
                         request.ContentType = "application/x-www-form-urlencoded";
                     }
+
+                    //set proxy
+                    var ipList = GetProxyList();
+                    if (ipList != null && ipList.Count > 0)
+                    {
+                        Random rnd = new Random();
+                        var i = rnd.Next(0, ipList.Count);
+                        var ipItem = ipList[i];
+                        var ip = ipItem.Split(':')[0];
+                        var port = Lib.Csharp.Tools.StrHelper.ToInt32( ipItem.Split(':')[1]);
+                        System.Net.WebProxy proxy = new WebProxy(ip, port);
+                        request.Proxy = proxy;
+                    }
+                    //set end
 
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 

@@ -51,8 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DtoIfengImg.cs" />
+    <Compile Include="Dto\DtoTouTiaoAuthorJsData.cs" />
+    <Compile Include="Dto\DtoTouTiaoAuthorNews.cs" />
+    <Compile Include="Dto\DtoTouTiaoImageList.cs" />
     <Compile Include="Dto\DtoTouTiaoJsData.cs" />
-    <Compile Include="Dto\DtoTouTiaoNews.cs" />
+    <Compile Include="Dto\DtoTouTiaoChannelNews.cs" />
+    <Compile Include="Dto\DtoToutiaoNext.cs" />
     <Compile Include="Model\T_Author.cs" />
     <Compile Include="ToutiaoGather.cs" />
     <Compile Include="Model\T_News.cs" />
