@@ -17,11 +17,7 @@ namespace Lfb.DataGrab
         public static string ImgSavePrex = GetImgSavePrex();
 
         public static string ImgSaveSuffix = GetImgSaveSuffix();
-        /// <summary>
-        /// 是否开启抓取 1:抓取 0:no
-        /// </summary>
-        public static int IsEnableGather = GetIsEnableGather();
-
+        
         /// <summary>
         /// 是否开启图片转存 1：处理 0:No
         /// </summary>
@@ -41,6 +37,17 @@ namespace Lfb.DataGrab
         /// Mysql1配置
         /// </summary>
         public static string MySql1 = GetMySql1();
+
+        /// <summary>
+        /// 是否开启抓取频道页新闻 1=抓取 0=no
+        /// </summary>
+        public static string IsEnableGatherChannel = GetIsEnableGatherChannel();
+
+        /// <summary>
+        /// 是否开启抓取作者列表页新闻 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherAuthor = GetIsEnableGatherAuthor();
+    
         private static string GetImgSavePrex()
         {
             try
@@ -67,18 +74,6 @@ namespace Lfb.DataGrab
             }
         }
 
-        private static int GetIsEnableGather()
-        {
-            try
-            {
-                return StrHelper.ToInt32(ConfigurationManager.AppSettings["IsEnableGather"].ToString());
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.Message + e.StackTrace);
-                return 0;
-            }
-        }
 
         private static int GetIsEnableImgDeal()
         {
@@ -129,8 +124,31 @@ namespace Lfb.DataGrab
                 return "";
             }
         }
+        private static string GetIsEnableGatherChannel()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherChannel"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
 
-        
+        private static string GetIsEnableGatherAuthor()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherAuthor"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
         
         /// <summary>
         /// 处理内容中的图片地址，如果是相对地址的则要加上地址前缀，构成完整的url

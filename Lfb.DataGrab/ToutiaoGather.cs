@@ -19,12 +19,12 @@ namespace Lfb.DataGrab
         /// <summary>
         /// 频道的翻页计数
         /// </summary>
-        private static int ChannelPageIndex;
+        public static int ChannelPageIndex;
 
         /// <summary>
         /// 作者的翻页计数
         /// </summary>
-        private static int AuthorPageIndex;
+        public static int AuthorPageIndex;
 
         /// <summary>
         /// 从频道页抓取作者的主页地址
@@ -240,7 +240,13 @@ namespace Lfb.DataGrab
                 var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
-                    Log.Info(url + " 未抓取到任何内容");
+                    ////重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        Log.Info(url + " 未抓取到任何内容");
+                        return 0;
+                    }
                 }
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoAuthorJsData>(strContent);
                 if (data != null)
@@ -437,13 +443,13 @@ namespace Lfb.DataGrab
         /// <summary>
         /// 格式化抓取数据的url的cp,as参数
         /// </summary>
-        /// <param name="authorId"></param>
+        /// <param name="url"></param>
         /// <returns></returns>
         public string FormatUrlPcAs(string url)
         {
-            var reStr = FormatUrlPcAsDefault(url);
-            return reStr;
-            /*
+            //var reStr = FormatUrlPcAsDefault(url);
+            //return reStr;
+            
             var reStr = url;
             //先处理cp=***,as=****
             var arrStr = url.Split('&');
@@ -469,13 +475,13 @@ namespace Lfb.DataGrab
             reStr = reStr.Replace("cp=", "cp=" + strCp);
       
             return reStr;
-             */
+             
         }
 
         /// <summary>
         /// 格式化抓取数据的url的cp,as参数,用于格式化后还不行的情况，用默认参数
         /// </summary>
-        /// <param name="authorId"></param>
+        /// <param name="url"></param>
         /// <returns></returns>
         public string FormatUrlPcAsDefault(string url)
         {
@@ -512,7 +518,7 @@ namespace Lfb.DataGrab
             var t1 = GetIntFromTime(DateTime.Now);
 
             string t = t1.ToString("x8").ToUpper();
-            var e = Lib.Csharp.Tools.Security.StringSecurityHelper.Md5(t.ToString(), true);
+            var e = Lib.Csharp.Tools.Security.StringSecurityHelper.Md5(t1.ToString(), true);
             if(t.Length!=8)
             {
                 strAs="479BB4B7254C150";
@@ -546,8 +552,8 @@ namespace Lfb.DataGrab
         {
             
             DateTime dt1 = dt.ToUniversalTime();
-            long Sticks = (long)Math.Floor((dt1.Ticks - lLeft) / 10000000.0);
-            return Sticks;
+            long sticks = (long)Math.Floor((dt1.Ticks - lLeft) / 10000000.0);
+            return sticks;
 
         } 
     }

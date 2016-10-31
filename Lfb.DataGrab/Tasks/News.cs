@@ -13,44 +13,87 @@ namespace Lfb.DataGrab.Tasks
 
         static News()
         {
-            AddTask(NewsDeal, 60*60);
+            AddTask(NewsDeal, 60 * 60);
 
-            AddTask(ImgDeal, 65 * 60);
+            AddTask(AuthorNewsDeal, 65 * 60);
         }
 
         /// <summary>
-        /// 新闻抓取处理
+        /// 头条频道新闻抓取处理
         /// </summary>
         public static void NewsDeal()
         {
             try
             {
-                if (Global.IsEnableGather<1)
+                if (Global.IsEnableGatherChannel != "1")
                 {
                     return;
                 }
-                //时段控制 0-8点不抓取
-                if (DateTime.Now.Hour < 8)
-                {
-                    return;
-                }
-                Log.Info("新闻抓取开始:"+DateTime.Now.ToString());
-                var siteList = XmlDeal.GetSitesInfo();
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
                 
-                if (siteList != null && siteList.Count > 0)
+                while (true)
                 {
-                    foreach (var site in siteList)
+                    Log.Info("频道新闻抓取开始:" + DateTime.Now);
+                    var siteList = XmlDeal.GetSitesInfo();
+
+                    if (siteList != null && siteList.Count > 0)
                     {
-                        if (site.SiteName.ToLower() == "toutiao")
+                        foreach (var site in siteList)
                         {
-                            var bll = new ToutiaoGather();
-                            bll.AuthorUrlGathering(site.Url, site.NewsType);
+                            if (site.SiteName.ToLower() == "toutiao")
+                            {
+                                var bll = new ToutiaoGather();
+                                bll.AuthorUrlGathering(site.Url, site.NewsType);
+                            }
+
+                            Thread.Sleep(60*1000);
                         }
-                        
-                        Thread.Sleep(60*1000);
                     }
+                    else
+                    {
+                        Log.Error("抓取错误-检查site.xml" + DateTime.Now);
+                    }
+                    Log.Info("频道新闻抓取结束:" + DateTime.Now);
+                    Thread.Sleep(60*1000);
                 }
-                Log.Info("新闻抓取结束:" + DateTime.Now.ToString());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// 头条作者新闻处理
+        /// </summary>
+        public static void AuthorNewsDeal()
+        {
+            try
+            {
+                if (Global.IsEnableGatherAuthor != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true)
+                {
+                    Log.Info("作者列表页新闻抓取开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    bll.AuthorNewsGathering();
+
+
+                    Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
+                    Thread.Sleep(60*1000);
+                }
             }
             catch (Exception ex)
             {
@@ -65,7 +108,7 @@ namespace Lfb.DataGrab.Tasks
         {
             try
             {
-                if (Global.IsEnableImgDeal<1)
+                if (Global.IsEnableImgDeal < 1)
                 {
                     return;
                 }
@@ -75,12 +118,12 @@ namespace Lfb.DataGrab.Tasks
                     return;
                 }
 
-                Log.Info("图片处理开始:" + DateTime.Now.ToString());
+                Log.Info("图片处理开始:" + DateTime.Now);
 
                 var bll = new ImgDeal();
                 bll.ImgDealing();
 
-                Log.Info("图片处理结束:" + DateTime.Now.ToString());
+                Log.Info("图片处理结束:" + DateTime.Now);
             }
             catch (Exception ex)
             {

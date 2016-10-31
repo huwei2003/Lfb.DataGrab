@@ -56,7 +56,7 @@ namespace Lfb.DataGrab.Tests
         {
             string strCp;
             string strAs;
-            bll.GetCpandAs(out strCp,out strAs);
+            bll.GetCpandAs(out strAs,out strCp);
         }
         [Test()]
         public void GetProxyListTest()
