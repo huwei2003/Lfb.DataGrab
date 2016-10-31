@@ -10,6 +10,10 @@ namespace Lfb.DataGrab
 {
     public class HttpHelper
     {
+        /// <summary>
+        /// 是否用代理
+        /// </summary>
+        public static bool IsUseProxy = true;
         public static List<string> GetProxyList()
         {
             //var ProxyList = (List<string>)Lib.Csharp.Tools.AppCache.Get("ProxyIpListForHttp");
@@ -334,19 +338,22 @@ namespace Lfb.DataGrab
                         request.ContentType = "application/x-www-form-urlencoded";
                     }
 
-                    //set proxy
-                    var ipList = GetProxyList();
-                    if (ipList != null && ipList.Count > 0)
+                    if (IsUseProxy)
                     {
-                        Random rnd = new Random();
-                        var i = rnd.Next(0, ipList.Count);
-                        var ipItem = ipList[i];
-                        var ip = ipItem.Split(':')[0];
-                        var port = Lib.Csharp.Tools.StrHelper.ToInt32( ipItem.Split(':')[1]);
-                        System.Net.WebProxy proxy = new WebProxy(ip, port);
-                        request.Proxy = proxy;
+                        //set proxy
+                        var ipList = GetProxyList();
+                        if (ipList != null && ipList.Count > 0)
+                        {
+                            Random rnd = new Random();
+                            var i = rnd.Next(0, ipList.Count);
+                            var ipItem = ipList[i];
+                            var ip = ipItem.Split(':')[0];
+                            var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
+                            System.Net.WebProxy proxy = new WebProxy(ip, port);
+                            request.Proxy = proxy;
+                        }
+                        //set end
                     }
-                    //set end
 
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 

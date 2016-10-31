@@ -45,8 +45,15 @@ namespace Lfb.DataGrab
                     strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
-                        Log.Info(newsListUrl + " 未抓取到任何内容");
-                        return null;
+                        HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
+                        HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(newsListUrl + " 未抓取到任何内容");
+                            return null;
+                        }
                     }
                 }
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoJsData>(strContent);
@@ -240,12 +247,19 @@ namespace Lfb.DataGrab
                 var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
-                    ////重新请求一次，因为用了代理后，经常会失败
+                    //重新请求一次，因为用了代理后，经常会失败
                     strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
-                        Log.Info(url + " 未抓取到任何内容");
-                        return 0;
+                        HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                        HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + " 未抓取到任何内容");
+                            return 0;
+                        }
                     }
                 }
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoAuthorJsData>(strContent);

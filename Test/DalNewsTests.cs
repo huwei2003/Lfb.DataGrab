@@ -75,8 +75,8 @@ namespace Lfb.DataGrab.Tests
             var isHave = DalNews.IsExistsNews(result.Title);
             Assert.IsTrue(isHave);
 
-            DalNews.UpdateImgFlag(id, 1);
-            result = DalNews.GetNews(id);
+            //DalNews.UpdateImgFlag(id, 1);
+            //result = DalNews.GetNews(id);
             //Assert.IsTrue(result.ImgFlag == 1);
 
             var result2 = DalNews.DelNews(id);

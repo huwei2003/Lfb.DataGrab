@@ -205,7 +205,7 @@ namespace Lfb.DataGrab
             {
                 var sql = "select Id from T_News where AuthorId=? and Title=?";
 
-                var id = Sql.ExecuteScalar(0, sql, authorId);
+                var id = Sql.ExecuteScalar(0, sql, authorId, title);
 
                 return id;
             }
