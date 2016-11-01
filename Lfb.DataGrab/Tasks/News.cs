@@ -6,7 +6,7 @@ using Lib.Csharp.Tools.Base;
 namespace Lfb.DataGrab.Tasks
 {
     /// <summary>
-    /// 佛相关新闻，活动等抓取程序
+    /// 相关新闻抓取程序
     /// </summary>
     public class News : MultiThread<News>
     {

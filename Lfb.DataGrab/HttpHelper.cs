@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 using Lib.Csharp.Tools;
 
 namespace Lfb.DataGrab
@@ -43,7 +44,7 @@ namespace Lfb.DataGrab
                                         if (!proxyList.Contains(item))
                                         {
                                             //访问百度，可以访问的才加入list
-                                            strContent = GetContentByMobileAgentForTestProxy("https://www.baidu.com/",
+                                            strContent = GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
                                                 Encoding.UTF8, item);
                                             if (!string.IsNullOrWhiteSpace(strContent))
                                             {
@@ -54,6 +55,7 @@ namespace Lfb.DataGrab
                                             {
                                                 Log.Info("代理:" + item + "不可用");
                                             }
+                                            Thread.Sleep(1000);
                                         }
                                     }
                                 }
@@ -86,7 +88,7 @@ namespace Lfb.DataGrab
                                             {
                                                 //访问百度，可以访问的才加入list
                                                 strContent =
-                                                    GetContentByMobileAgentForTestProxy("https://www.baidu.com/",
+                                                    GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
                                                         Encoding.UTF8, item);
                                                 if (!string.IsNullOrWhiteSpace(strContent))
                                                 {
@@ -97,6 +99,7 @@ namespace Lfb.DataGrab
                                                 {
                                                     Log.Info("代理:" + item + "不可用");
                                                 }
+                                                Thread.Sleep(1000);
                                             }
                                         }
                                     }
