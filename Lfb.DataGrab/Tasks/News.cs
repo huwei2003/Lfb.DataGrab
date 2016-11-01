@@ -13,13 +13,13 @@ namespace Lfb.DataGrab.Tasks
 
         static News()
         {
-            AddTask(NewsDeal, 60 * 60);
+            AddTask(NewsDeal, 10 * 60);
 
-            AddTask(AuthorNewsDeal, 65 * 60);
+            AddTask(AuthorNewsDeal, 15 * 60);
 
-            AddTask(AuthorNewsByRefreshGathering, 65 * 60);
+            AddTask(AuthorNewsByRefreshGathering, 15 * 60);
 
-            AddTask(GatherAuthorFromNews, 65 * 60);
+            AddTask(GatherAuthorFromNews, 15 * 60);
         }
 
         /// <summary>
