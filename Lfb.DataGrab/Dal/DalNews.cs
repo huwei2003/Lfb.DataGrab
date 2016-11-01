@@ -521,7 +521,7 @@ namespace Lfb.DataGrab
         {
             try
             {
-                var sql = "select * from T_Author where IsDeal=0 order By Id DESC limit 0,100";
+                var sql = "select * from T_Author where (IsDeal=0 or IsDeal=1) order By Id DESC limit 0,100";
                 var list = Sql.Select<DtoAuthor>(sql);
 
                 if (list != null && list.Count > 0)
@@ -533,6 +533,75 @@ namespace Lfb.DataGrab
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
                     sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取需要刷新的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetWaitRefreshAuthorList()
+        {
+            try
+            {
+                //取一个月内抓取且已到刷新时间的新闻的作者列表
+                var sql = "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}') order By Id DESC limit 0,100".Formats(DateTime.Now);
+                var list = Sql.Select<DtoAuthor>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取100条未处理的新闻记录 未处理是指没有抓取该新闻详细页，从中取出作者url
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoNews> GetNoGatherAuthorUrlNewsList()
+        {
+            try
+            {
+                var sql = "select * from T_News where IsShow=0 order By Id DESC limit 0,100";
+                var list = Sql.Select<DtoNews>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位IsShow 正在处理状态　IsShow=2
+                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
 
                 }

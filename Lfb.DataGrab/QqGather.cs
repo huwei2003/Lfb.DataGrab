@@ -56,7 +56,7 @@ namespace Lfb.DataGrab
                                 var news = NewsGathering(url);
                                 if (news != null)
                                 {
-                                    news.NewsTypeId = (NewsTypeEnum) newsType;
+                                    news.NewsTypeId = newsType;
                                     news.Title = title;
 
                                     news.PubTime = StrHelper.ToDateTime( StrHelper.FormatPubTime(news.PubTime.ToString()));
@@ -98,7 +98,7 @@ namespace Lfb.DataGrab
                                 {
                                     Title = title,
                                     FromUrl = url,
-                                    NewsTypeId = (NewsTypeEnum) newsType,
+                                    NewsTypeId = newsType,
 
                                 };
                                 if (mediaList != null && mediaList.Count > 0)

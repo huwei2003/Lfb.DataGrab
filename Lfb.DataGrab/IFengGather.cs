@@ -56,7 +56,7 @@ namespace Lfb.DataGrab
                                 var news = NewsGathering(url);
                                 if (news != null)
                                 {
-                                    news.NewsTypeId = (NewsTypeEnum) newsType;
+                                    news.NewsTypeId = newsType;
                                     news.Title = title;
                                     news.LogoOriginalUrl = logoUrl;
                                     news.LogoUrl = logoUrl;
@@ -99,7 +99,7 @@ namespace Lfb.DataGrab
                                 {
                                     Title = title,
                                     FromUrl = url,
-                                    NewsTypeId = (NewsTypeEnum) newsType,
+                                    NewsTypeId = newsType,
                                     LogoUrl = logoUrl,
                                     LogoOriginalUrl = logoUrl
                                 };

@@ -33,6 +33,7 @@ namespace Lib.Csharp.Tools.NetHttp
             using (var client = new HttpClient())
             {
                 SetHeader(client, headers);
+                
                 return await client.GetStringAsync(requestUri);
             }
         }

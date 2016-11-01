@@ -43,7 +43,7 @@ namespace Lfb.DataGrab.Tests
                 //ImgFlag = 0,
                 Title = "test1" + DateTime.Now,
                 LogoUrl = "http://n.sinaimg.cn/fo/transform/20160705/pBto-fxtspsa6682768.jpg",
-                NewsTypeId = NewsTypeEnum.新闻,
+                NewsTypeId = (int)NewsTypeEnum.新闻,
                 PubTime = DateTime.Now,
                 IsShow =1,
                 LogoOriginalUrl="",
@@ -83,5 +83,16 @@ namespace Lfb.DataGrab.Tests
             Assert.IsTrue(result2);
         }
 
+        [Test()]
+        public void GetWaitRefreshAuthorListTest()
+        {
+            DalNews.GetWaitRefreshAuthorList();
+        }
+
+        [Test()]
+        public void GetNoGatherAuthorUrlNewsListTest()
+        {
+            DalNews.GetNoGatherAuthorUrlNewsList();
+        }
     }
 }

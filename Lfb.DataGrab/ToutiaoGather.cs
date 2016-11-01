@@ -130,76 +130,7 @@ namespace Lfb.DataGrab
             return null;
         }
 
-        /// <summary>
-        /// 处理url,替换其中的时间参数，用以读取下一页数据
-        /// </summary>
-        /// <param name="url">原url</param>
-        /// <param name="newMaxBehotTime">时间</param>
-        /// <returns></returns>
-        public string ModifyUrlMax_behot_time(string url,string newMaxBehotTime)
-        {
-            var reStr = url;
-            try
-            {
-                //http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=1477194899&max_behot_time_tmp=1477194899&as=A135F8A09C7897E&cp=580C08C9477EAE1
-
-                var arrStr = url.Split('&');
-                if (arrStr.Length > 0)
-                {
-                    foreach (var item in arrStr)
-                    {
-                        if (item.ToLower().Contains("max_behot_time") && !item.ToLower().Contains("max_behot_time_tmp"))
-                        {
-                            reStr = reStr.Replace(item, "max_behot_time=" + newMaxBehotTime);
-                        }
-                        if (item.ToLower().Contains("max_behot_time_tmp"))
-                        {
-                            reStr = reStr.Replace(item, "max_behot_time_tmp=" + newMaxBehotTime);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex);
-            }
-            return reStr;
-        }
-
-        /// <summary>
-        /// 处理作者首页url
-        /// </summary>
-        /// <param name="authorUrl"></param>
-        /// <returns></returns>
-        public int DealAuthorUrl(string authorUrl) 
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(authorUrl))
-                {
-                    return 0;
-                    }
-                var authorId = Global.GetToutiaoAuthorId(authorUrl);
-                var isExists = DalNews.IsExistsAuthor(authorId);
-                if (!isExists)
-                {
-                    var model = new DtoAuthor()
-                    {
-                        Author = "",
-                        AuthorId = authorId,
-                        IsDeal = 0,
-                        LastDealTime = DateTime.Now,
-                        Url = authorUrl,
-                        IntervalMinutes = 60,
-                    };
-                    var id = DalNews.Insert(model);
-                    return id;
-                }
-            }
-            catch (Exception ex)
-            { }
-            return 0;
-        }
+        
 
         /// <summary>
         /// 抓取作者主页的list,抓取文章阅读量等数据,
@@ -211,6 +142,104 @@ namespace Lfb.DataGrab
             {
                 //取出待处理作者的数据，并置位isdeal=2 处理中
                 var list = DalNews.GetNoDealAuthorList();
+                #region === 取出待刷新的作者url数据 ===
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item.AuthorId))
+                        {
+                            var url = GetAuthorDataUrl(item.AuthorId);
+                            DealAuthorData(url, item.AuthorId);
+                        }
+                    }
+                    Thread.Sleep(5 * 1000);
+                }
+                else
+                {
+                    Log.Info("暂时没有要处理的作者url");
+                    Thread.Sleep(60 * 1000);
+                    AuthorNewsGathering();
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
+        public int GatherAuthorFromNews()
+        {
+            try
+            {
+                //取出待处理作者的数据，并置位isdeal=2 处理中
+                var list = DalNews.GetNoGatherAuthorUrlNewsList();
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var news in list)
+                    {
+                        var url = news.FromUrl;
+                        Log.Info(url + " 抓取开始");
+                        var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            //重新请求一次，因为用了代理后，经常会失败
+                            strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                            if (string.IsNullOrWhiteSpace(strContent))
+                            {
+                                HttpHelper.IsUseProxy = false;
+                                //重新请求一次，因为用了代理后，经常会失败
+                                strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                                HttpHelper.IsUseProxy = true;
+                                if (string.IsNullOrWhiteSpace(strContent))
+                                {
+                                    Log.Info(url + " 未抓取到任何内容");
+                                    continue;
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(strContent))
+                        {
+                            var hrefList = XpathHelper.GetAttrValueListByXPath(strContent, "//a", "href");
+                            if (hrefList != null && hrefList.Count > 0)
+                            {
+                                foreach (var href in hrefList)
+                                {
+                                    var isAuthorUrl = Global.IsToutiaoAuthorUrl(href);
+                                    if (isAuthorUrl)
+                                    {
+                                        //检查是否已存在，不在则入库
+                                        DealAuthorUrl(href);
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 根据文章的刷新间隔取得该作者的主页来 抓取该作者文章阅读量等数据,
+        /// </summary>
+        /// <returns></returns>
+        public int AuthorNewsByRefreshGathering()
+        {
+            try
+            {
+                //取出待处理作者的数据，并置位isdeal=2 处理中
+                var list = DalNews.GetWaitRefreshAuthorList();
                 #region === 取出待刷新的作者url数据 ===
                 if (list != null && list.Count > 0)
                 {
@@ -273,7 +302,7 @@ namespace Lfb.DataGrab
                         {
                             try
                             {
-                                var newsId = DalNews.IsExistsNews(subItem.title, authorId);
+                                var newsId = DalNews.IsExistsNews(authorId,subItem.title);
                                 if (newsId < 1)
                                 { 
                                     #region === 不存在的插入===
@@ -294,7 +323,7 @@ namespace Lfb.DataGrab
                                         LogoOriginalUrl=subItem.pc_image_url,
                                         LogoUrl = subItem.pc_image_url,
                                         NewsHotClass=7,
-                                        NewsTypeId=NewsTypeEnum.新闻,
+                                        NewsTypeId=(int)NewsTypeEnum.新闻,
                                         PubTime = subItem.datetime,
                                         Tags="",
                                         Title=subItem.title,
@@ -391,6 +420,7 @@ namespace Lfb.DataGrab
                                             TotalComments = subItem.comments_count,
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
+                                            LastDealTime = DateTime.Now,
                                         };
 
                                         DalNews.UpdateNews(model);
@@ -440,6 +470,77 @@ namespace Lfb.DataGrab
                 Log.Error(ex.Message + ex.StackTrace);
             }
             return 1;
+        }
+
+        /// <summary>
+        /// 处理url,替换其中的时间参数，用以读取下一页数据
+        /// </summary>
+        /// <param name="url">原url</param>
+        /// <param name="newMaxBehotTime">时间</param>
+        /// <returns></returns>
+        public string ModifyUrlMax_behot_time(string url, string newMaxBehotTime)
+        {
+            var reStr = url;
+            try
+            {
+                //http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=1477194899&max_behot_time_tmp=1477194899&as=A135F8A09C7897E&cp=580C08C9477EAE1
+
+                var arrStr = url.Split('&');
+                if (arrStr.Length > 0)
+                {
+                    foreach (var item in arrStr)
+                    {
+                        if (item.ToLower().Contains("max_behot_time") && !item.ToLower().Contains("max_behot_time_tmp"))
+                        {
+                            reStr = reStr.Replace(item, "max_behot_time=" + newMaxBehotTime);
+                        }
+                        if (item.ToLower().Contains("max_behot_time_tmp"))
+                        {
+                            reStr = reStr.Replace(item, "max_behot_time_tmp=" + newMaxBehotTime);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return reStr;
+        }
+
+        /// <summary>
+        /// 处理作者首页url
+        /// </summary>
+        /// <param name="authorUrl"></param>
+        /// <returns></returns>
+        public int DealAuthorUrl(string authorUrl)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(authorUrl))
+                {
+                    return 0;
+                }
+                var authorId = Global.GetToutiaoAuthorId(authorUrl);
+                var isExists = DalNews.IsExistsAuthor(authorId);
+                if (!isExists)
+                {
+                    var model = new DtoAuthor()
+                    {
+                        Author = "",
+                        AuthorId = authorId,
+                        IsDeal = 0,
+                        LastDealTime = DateTime.Now,
+                        Url = authorUrl,
+                        IntervalMinutes = 60,
+                    };
+                    var id = DalNews.Insert(model);
+                    return id;
+                }
+            }
+            catch (Exception ex)
+            { }
+            return 0;
         }
 
         /// <summary>

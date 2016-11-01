@@ -16,6 +16,10 @@ namespace Lfb.DataGrab.Tasks
             AddTask(NewsDeal, 60 * 60);
 
             AddTask(AuthorNewsDeal, 65 * 60);
+
+            AddTask(AuthorNewsByRefreshGathering, 65 * 60);
+
+            AddTask(GatherAuthorFromNews, 65 * 60);
         }
 
         /// <summary>
@@ -101,6 +105,73 @@ namespace Lfb.DataGrab.Tasks
             }
         }
 
+        /// <summary>
+        /// 根据文章的刷新间隔取得该作者的主页来 抓取该作者文章阅读量等数据
+        /// </summary>
+        public static void AuthorNewsByRefreshGathering()
+        {
+            try
+            {
+                if (Global.IsEnableRefreshNews != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true)
+                {
+                    Log.Info("作者列表页刷新开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    bll.AuthorNewsByRefreshGathering();
+
+
+                    Log.Info("作者列表页刷新结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// 从新闻页抓取作者信息
+        /// </summary>
+        public static void GatherAuthorFromNews()
+        {
+            try
+            {
+                if (Global.IsEnableGatherAuthorFromNews != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true)
+                {
+                    Log.Info("从新闻页抓取作者开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    bll.GatherAuthorFromNews();
+
+
+                    Log.Info("从新闻页抓取作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
         /// <summary>
         /// 图片转存处理
         /// </summary>

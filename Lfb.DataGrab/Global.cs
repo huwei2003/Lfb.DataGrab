@@ -47,6 +47,17 @@ namespace Lfb.DataGrab
         /// 是否开启抓取作者列表页新闻 1=处理 0=no
         /// </summary>
         public static string IsEnableGatherAuthor = GetIsEnableGatherAuthor();
+
+        /// <summary>
+        /// 是否开启从新闻页抓取作者 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherAuthorFromNews = GetIsEnableGatherAuthorFromNews();
+
+        /// <summary>
+        /// 是否开启新闻定时刷新 1=处理 0=no
+        /// </summary>
+        public static string IsEnableRefreshNews = GetIsEnableRefreshNews();
+    
     
         private static string GetImgSavePrex()
         {
@@ -149,6 +160,32 @@ namespace Lfb.DataGrab
                 return "";
             }
         }
+
+        private static string GetIsEnableGatherAuthorFromNews()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherAuthorFromNews"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+        private static string GetIsEnableRefreshNews()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableRefreshNews"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+
         
         /// <summary>
         /// 处理内容中的图片地址，如果是相对地址的则要加上地址前缀，构成完整的url

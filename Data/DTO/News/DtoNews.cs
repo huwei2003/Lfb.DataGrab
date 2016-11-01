@@ -71,7 +71,7 @@ namespace Comm.Global.DTO.News
         /// <summary>
         /// 新闻分类
         /// </summary>
-        public NewsTypeEnum NewsTypeId;
+        public int NewsTypeId;
 
         /// <summary>
         /// 刷新处理标识 0未处理 1已处理

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Lib.Csharp.Tools;
 
 namespace Lfb.DataGrab
 {
@@ -14,46 +15,114 @@ namespace Lfb.DataGrab
         /// 是否用代理
         /// </summary>
         public static bool IsUseProxy = true;
+
         public static List<string> GetProxyList()
         {
             //var ProxyList = (List<string>)Lib.Csharp.Tools.AppCache.Get("ProxyIpListForHttp");
             try
             {
-                var ProxyList = Comm.Tools.Utility.Cache.GetCache<List<string>>("ProxyIpListForHttp");
+                var proxyList = Comm.Tools.Utility.Cache.GetCache<List<string>>("ProxyIpListForHttp");
 
-                if (ProxyList == null || ProxyList.Count == 0)
+                if (proxyList == null || proxyList.Count == 0)
                 {
-                    ProxyList = new List<string>();
+                    proxyList = new List<string>();
+
+                    #region === 第一次取代理ip list ===
                     string strContent = GetContent(Global.GetProxyIpUrl, Encoding.UTF8);
                     if (!string.IsNullOrWhiteSpace(strContent))
                     {
-                        var strArr = strContent.Replace("\r\n", ";").Split(';');
-                        if (strArr != null && strArr.Length > 0)
+                        try
                         {
-                            foreach (var item in strArr)
+                            var strArr = strContent.Replace("\r\n", ";").Split(';');
+                            if (strArr != null && strArr.Length > 0)
                             {
-                                if (!string.IsNullOrWhiteSpace(item))
+                                foreach (var item in strArr)
                                 {
-                                    if (!ProxyList.Contains(item))
+                                    if (!string.IsNullOrWhiteSpace(item))
                                     {
-                                        ProxyList.Add(item);
-                                    }      
+                                        if (!proxyList.Contains(item))
+                                        {
+                                            //访问百度，可以访问的才加入list
+                                            strContent = GetContentByMobileAgentForTestProxy("https://www.baidu.com/",
+                                                Encoding.UTF8, item);
+                                            if (!string.IsNullOrWhiteSpace(strContent))
+                                            {
+                                                proxyList.Add(item);
+                                                Log.Info("代理:" + item + "可用");
+                                            }
+                                            else
+                                            {
+                                                Log.Info("代理:" + item + "不可用");
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
-                        Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);
-                        //Lib.Csharp.Tools.AppCache.AddCache("ProxyIpListForHttp", ProxyList,1);
+                        catch
+                        {
+                        }
                     }
+                    #endregion
+
+                    #region === 如果可用条数少，则第二次取 ===
+                    //小于30条则继续取
+                    if (proxyList.Count < 30)
+                    {
+                        strContent = GetContent(Global.GetProxyIpUrl, Encoding.UTF8);
+                        
+                        if (!string.IsNullOrWhiteSpace(strContent))
+                        {
+                            try
+                            {
+                                var strArr = strContent.Replace("\r\n", ";").Split(';');
+                                if (strArr != null && strArr.Length > 0)
+                                {
+                                    foreach (var item in strArr)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(item))
+                                        {
+                                            if (!proxyList.Contains(item))
+                                            {
+                                                //访问百度，可以访问的才加入list
+                                                strContent =
+                                                    GetContentByMobileAgentForTestProxy("https://www.baidu.com/",
+                                                        Encoding.UTF8, item);
+                                                if (!string.IsNullOrWhiteSpace(strContent))
+                                                {
+                                                    proxyList.Add(item);
+                                                    Log.Info("代理:" + item + "可用");
+                                                }
+                                                else
+                                                {
+                                                    Log.Info("代理:" + item + "不可用");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                    #endregion
+
+                    Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", proxyList, 3600);
+                    Log.Info("可用代理个数:" + proxyList.Count);
+                    //Lib.Csharp.Tools.AppCache.AddCache("ProxyIpListForHttp", ProxyList,1);
                 }
-                return ProxyList;
+                
+                return proxyList;
             }
             catch
             {
             }
             return null;
         }
-        
-         
+
+
 
         /// <summary>
         /// 获取指定网页的内容
@@ -118,7 +187,7 @@ namespace Lfb.DataGrab
 
         public static Stream GetStream(string strUrl, Encoding encoder)
         {
-            
+
             try
             {
                 CookieContainer cc = new CookieContainer();
@@ -157,7 +226,7 @@ namespace Lfb.DataGrab
 
                 //StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("gb2312"));
                 var stream = response.GetResponseStream();
-;       
+                ;
                 //response.Close();
 
                 return stream;
@@ -297,83 +366,152 @@ namespace Lfb.DataGrab
             return strMsg;
         }
 
+        public static string GetContentByMobileAgentForTestProxy(string strUrl, Encoding encoder, string ipItem)
+        {
+
+            try
+            {
+                #region
+
+                CookieContainer cc = new CookieContainer();
+                //WebRequest request = WebRequest.Create(strUrl);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
+
+
+                //set request args
+                request.Method = "Get";
+                request.CookieContainer = cc;
+                //request.KeepAlive = true;
+                request.Timeout = 30*1000;
+                //request.ReadWriteTimeout = 30*1000;
+                //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                request.ContentType = "text/html";
+
+                //模拟goole浏览器访问
+                request.UserAgent =
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
+                //request.Referer = strUrl;
+                //request.Headers.Add("x-requested-with:XMLHttpRequest");
+                request.Headers.Add("x-requested-with:com.android.browser");
+
+                request.Headers.Add(HttpRequestHeader.AcceptLanguage, "zh-CN,zh;q=0.8,en;q=0.6,nl;q=0.4,zh-TW;q=0.2");
+                //request.ContentLength = postdataByte.Length;  text/html; charset=utf-8
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip |
+                                                 DecompressionMethods.None;
+                //支持跳转页面，查询结果将是跳转后的页面
+                //request.AllowAutoRedirect = true;
+
+                request.Headers.Add("Accept-Encoding", "gzip, deflate");
+                if (request.Method == "POST")
+                {
+                    request.ContentType = "application/x-www-form-urlencoded";
+                }
+
+
+                var ip = ipItem.Split(':')[0];
+                var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
+                System.Net.WebProxy proxy = new WebProxy(ip, port);
+                request.Proxy = proxy;
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                var stream = response.GetResponseStream();
+
+                //StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("gb2312"));
+                StreamReader reader = new StreamReader(stream, encoder);
+                
+                var strcontent = reader.ReadToEnd();
+                // .\0为null，空字符，也是字符串结束标志
+                strcontent = strcontent.Replace("\0", "");
+                reader.Close();
+                reader.Dispose();
+                response.Close();
+                return strcontent;
+
+                #endregion
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
         public static string GetContentByMobileAgent(string strUrl, Encoding encoder)
         {
-            
-                try
+
+            try
+            {
+                #region
+
+                CookieContainer cc = new CookieContainer();
+                //WebRequest request = WebRequest.Create(strUrl);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
+
+
+                //set request args
+                request.Method = "Get";
+                request.CookieContainer = cc;
+                request.KeepAlive = true;
+
+                //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                request.ContentType = "text/html";
+
+                //模拟goole浏览器访问
+                request.UserAgent =
+                    "CoolPad8750_CMCC_TD/1.0 Linux/3.4.5 Android/4.2.1 Release/06.31.2013 Browser/1.0 Profile/MIDP-1.0 Configuration/CLDC-1.0";
+                //request.Referer = strUrl;
+                //request.Headers.Add("x-requested-with:XMLHttpRequest");
+                request.Headers.Add("x-requested-with:com.android.browser");
+
+                request.Headers.Add(HttpRequestHeader.AcceptLanguage, "zh-CN,zh;q=0.8,en;q=0.6,nl;q=0.4,zh-TW;q=0.2");
+                //request.ContentLength = postdataByte.Length;  text/html; charset=utf-8
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip |
+                                                 DecompressionMethods.None;
+                //支持跳转页面，查询结果将是跳转后的页面
+                ////request.AllowAutoRedirect = true;
+
+                request.Headers.Add("Accept-Encoding", "gzip, deflate");
+                if (request.Method == "POST")
                 {
-                    #region
-
-                    CookieContainer cc = new CookieContainer();
-                    //WebRequest request = WebRequest.Create(strUrl);
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
-
-
-                    //set request args
-                    request.Method = "Get";
-                    request.CookieContainer = cc;
-                    request.KeepAlive = true;
-
-                    //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                    request.ContentType = "text/html";
-
-                    //模拟goole浏览器访问
-                    request.UserAgent =
-                        "CoolPad8750_CMCC_TD/1.0 Linux/3.4.5 Android/4.2.1 Release/06.31.2013 Browser/1.0 Profile/MIDP-1.0 Configuration/CLDC-1.0";
-                    //request.Referer = strUrl;
-                    //request.Headers.Add("x-requested-with:XMLHttpRequest");
-                    request.Headers.Add("x-requested-with:com.android.browser");
-
-                    request.Headers.Add(HttpRequestHeader.AcceptLanguage, "zh-CN,zh;q=0.8,en;q=0.6,nl;q=0.4,zh-TW;q=0.2");
-                    //request.ContentLength = postdataByte.Length;  text/html; charset=utf-8
-                    request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip |
-                                                     DecompressionMethods.None;
-                    //支持跳转页面，查询结果将是跳转后的页面
-                    ////request.AllowAutoRedirect = true;
-
-                    request.Headers.Add("Accept-Encoding", "gzip, deflate");
-                    if (request.Method == "POST")
-                    {
-                        request.ContentType = "application/x-www-form-urlencoded";
-                    }
-
-                    if (IsUseProxy)
-                    {
-                        //set proxy
-                        var ipList = GetProxyList();
-                        if (ipList != null && ipList.Count > 0)
-                        {
-                            Random rnd = new Random();
-                            var i = rnd.Next(0, ipList.Count);
-                            var ipItem = ipList[i];
-                            var ip = ipItem.Split(':')[0];
-                            var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
-                            System.Net.WebProxy proxy = new WebProxy(ip, port);
-                            request.Proxy = proxy;
-                        }
-                        //set end
-                    }
-
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                    //StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("gb2312"));
-                    StreamReader reader = new StreamReader(response.GetResponseStream(), encoder);
-
-                    var strcontent = reader.ReadToEnd();
-                    // .\0为null，空字符，也是字符串结束标志
-                    strcontent = strcontent.Replace("\0", "");
-                    reader.Close();
-                    reader.Dispose();
-                    response.Close();
-                    return strcontent;
-
-                    #endregion
+                    request.ContentType = "application/x-www-form-urlencoded";
                 }
-                catch (Exception)
+
+                if (IsUseProxy)
                 {
-                    return "";
+                    //set proxy
+                    var ipList = GetProxyList();
+                    if (ipList != null && ipList.Count > 0)
+                    {
+                        Random rnd = new Random();
+                        var i = rnd.Next(0, ipList.Count);
+                        var ipItem = ipList[i];
+                        var ip = ipItem.Split(':')[0];
+                        var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
+                        System.Net.WebProxy proxy = new WebProxy(ip, port);
+                        request.Proxy = proxy;
+                    }
+                    //set end
                 }
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                //StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("gb2312"));
+                StreamReader reader = new StreamReader(response.GetResponseStream(), encoder);
+
+                var strcontent = reader.ReadToEnd();
+                // .\0为null，空字符，也是字符串结束标志
+                strcontent = strcontent.Replace("\0", "");
+                reader.Close();
+                reader.Dispose();
+                response.Close();
+                return strcontent;
+
+                #endregion
+            }
+            catch (Exception)
+            {
+                return "";
+            }
         }
 
         public static string GetContent(string strUrl, Encoding encoder, CookieContainer cc)
