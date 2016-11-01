@@ -36,7 +36,7 @@ namespace Lfb.DataGrab
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "礼佛宝数据抓取服务";
+            this.serviceInstaller1.Description = "Lfb新闻数据抓取服务";
             this.serviceInstaller1.DisplayName = "Lfb.DataGrab";
             this.serviceInstaller1.ServiceName = "Lfb.DataGrab";
             // 
