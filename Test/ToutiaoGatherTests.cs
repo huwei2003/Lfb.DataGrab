@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lfb.DataGrab;
+using Lfb.DataGrabBll;
 using NUnit.Framework;
 namespace Lfb.DataGrab.Tests
 {
@@ -61,8 +62,11 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void GetProxyListTest()
         {
-            var list = HttpHelper.GetProxyList();
-            list = HttpHelper.GetProxyList();
+            var list = ProxyDeal.ProxyList;
+            ProxyDeal.GetProxyList();
+            list = ProxyDeal.ProxyList;
+
+            HttpHelper.GetContentByMobileAgent("www.163.com", Encoding.UTF8);
         }
 
         [Test()]

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Comm.Global.DTO.News;
 using Comm.Global.Enum.Business;
-using Lfb.DataGrab;
-using Lfb.DataGrab.Model;
+using Lfb.DataGrabBll;
 using NUnit.Framework;
 
 namespace Lfb.DataGrab.Tests
@@ -71,6 +66,13 @@ namespace Lfb.DataGrab.Tests
 
             var result = DalNews.GetNews(id);
             Assert.IsTrue(result.Id == id);
+
+            var news2 = new DtoNews()
+            {
+                Id = result.Id,
+                CurReadTimes = 10000,
+            };
+            DalNews.UpdateNews(news2);
 
             var isHave = DalNews.IsExistsNews(result.Title);
             Assert.IsTrue(isHave);

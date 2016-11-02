@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lfb.DataGrab;
+using Lfb.DataGrabBll;
 using NUnit.Framework;
 namespace Lfb.DataGrab.Tests
 {

@@ -1,19 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Lfb.DataGrabBll;
 using Lib.Csharp.Tools;
 using Lib.Csharp.Tools.Base;
-using Lfb.DataGrabBll;
 
-namespace Lfb.DataGrab.Tasks
+namespace Lfb.NewsGather
 {
-    /// <summary>
-    /// 相关新闻抓取程序
-    /// </summary>
-    public class News : MultiThread<News>
+    public class NewsService : MultiThread<NewsService>
     {
 
-        static News()
+        private bool _isStop = false;
+
+        public NewsService()
         {
+            
+        }
+
+        public  void Start()
+        {
+            //初始化
             AddTask(RefreshProxyDeal, 1 * 60);
 
             AddTask(NewsDeal, 10 * 60);
@@ -73,7 +82,7 @@ namespace Lfb.DataGrab.Tasks
                 //{
                 //    return;
                 //}
-                
+
                 while (true)
                 {
                     Log.Info("频道新闻抓取开始:" + DateTime.Now);
@@ -89,7 +98,7 @@ namespace Lfb.DataGrab.Tasks
                                 bll.AuthorUrlGathering(site.Url, site.NewsType);
                             }
 
-                            Thread.Sleep(60*1000);
+                            Thread.Sleep(60 * 1000);
                         }
                     }
                     else
@@ -97,7 +106,7 @@ namespace Lfb.DataGrab.Tasks
                         Log.Error("抓取错误-检查site.xml" + DateTime.Now);
                     }
                     Log.Info("频道新闻抓取结束:" + DateTime.Now);
-                    Thread.Sleep(60*1000);
+                    Thread.Sleep(60 * 1000);
                 }
             }
             catch (Exception ex)
@@ -131,7 +140,7 @@ namespace Lfb.DataGrab.Tasks
 
 
                     Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
-                    Thread.Sleep(60*1000);
+                    Thread.Sleep(60 * 1000);
                 }
             }
             catch (Exception ex)
@@ -207,7 +216,7 @@ namespace Lfb.DataGrab.Tasks
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
-        
+
         /// <summary>
         /// 图片转存处理
         /// </summary>
@@ -237,6 +246,18 @@ namespace Lfb.DataGrab.Tasks
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
+        public  void Stop()
+        {
+            try
+            {
+                //置位 stop
+                _isStop = true;
 
+                
+            }
+            catch
+            {
+            }
+        }
     }
 }
