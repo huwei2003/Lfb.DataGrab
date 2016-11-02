@@ -26,6 +26,8 @@ namespace Lfb.DataGrabBll
         /// </summary>
         public static int AuthorPageIndex;
 
+        #region === task 定时调用的方法 ===
+
         /// <summary>
         /// 从频道页抓取作者的主页地址
         /// </summary>
@@ -117,7 +119,7 @@ namespace Lfb.DataGrabBll
                 }
                 else
                 {
-                    Log.Info("本频道抓取结束总页数"+ChannelPageIndex.ToString());
+                    Log.Info("本频道抓取结束总页数" + ChannelPageIndex.ToString());
                     ChannelPageIndex = 0;
                     Thread.Sleep(rnd.Next(2000, 5000));
                 }
@@ -129,8 +131,6 @@ namespace Lfb.DataGrabBll
             }
             return null;
         }
-
-        
 
         /// <summary>
         /// 抓取作者主页的list,抓取文章阅读量等数据,
@@ -170,11 +170,15 @@ namespace Lfb.DataGrabBll
             return 0;
         }
 
+        /// <summary>
+        /// 从新闻详细页抓取作者信息的，每个新闻处理一次即可
+        /// </summary>
+        /// <returns></returns>
         public int GatherAuthorFromNews()
         {
             try
             {
-                //取出待处理作者的数据，并置位isdeal=2 处理中
+                //取出待处理作者的数据，并置位IsShow=2 处理中
                 var list = DalNews.GetNoGatherAuthorUrlNewsList();
                 if (list != null && list.Count > 0)
                 {
@@ -268,7 +272,13 @@ namespace Lfb.DataGrabBll
             return 0;
         }
 
-        public int DealAuthorData(string url,string authorId)
+        #endregion
+
+
+        #region === 辅助方法 ===
+
+
+        public int DealAuthorData(string url, string authorId)
         {
             try
             {
@@ -302,39 +312,40 @@ namespace Lfb.DataGrabBll
                         {
                             try
                             {
-                                var newsId = DalNews.IsExistsNews(authorId,subItem.title);
+                                var newsId = DalNews.IsExistsNews(authorId, subItem.title);
                                 if (newsId < 1)
-                                { 
+                                {
                                     #region === 不存在的插入===
-                                    var model = new DtoNews() {
-                                        Author="",
+                                    var model = new DtoNews()
+                                    {
+                                        Author = "",
                                         AuthorId = authorId,
-                                        Contents ="",
+                                        Contents = "",
                                         CreateTime = DateTime.Now,
                                         CurReadTimes = subItem.go_detail_count,
-                                        FromSiteName="toutiao",
+                                        FromSiteName = "toutiao",
                                         FromUrl = subItem.source_url,
-                                        IntervalMinutes=60,
-                                        IsDeal=0,
-                                        IsHot=0,
-                                        IsShow=1,
-                                        LastDealTime= DateTime.Now,
+                                        IntervalMinutes = 60,
+                                        IsDeal = 0,
+                                        IsHot = 0,
+                                        IsShow = 1,
+                                        LastDealTime = DateTime.Now,
                                         LastReadTimes = subItem.go_detail_count,
-                                        LogoOriginalUrl=subItem.pc_image_url,
+                                        LogoOriginalUrl = subItem.pc_image_url,
                                         LogoUrl = subItem.pc_image_url,
-                                        NewsHotClass=7,
-                                        NewsTypeId=(int)NewsTypeEnum.新闻,
+                                        NewsHotClass = 7,
+                                        NewsTypeId = (int)NewsTypeEnum.新闻,
                                         PubTime = subItem.datetime,
-                                        Tags="",
-                                        Title=subItem.title,
+                                        Tags = "",
+                                        Title = subItem.title,
                                         TotalComments = subItem.comments_count,
-                                    
+
                                     };
                                     DalNews.Insert(model);
                                     #endregion
                                 }
                                 else
-                                { 
+                                {
                                     #region === 存在的则更新数据 ===
                                     var oldNews = DalNews.GetNews(newsId);
                                     if (oldNews != null)
@@ -347,7 +358,7 @@ namespace Lfb.DataGrabBll
                                         var minutes = (DateTime.Now - oldNews.LastDealTime).TotalMinutes;
                                         var newsClassId = 7;
                                         var addReads = subItem.go_detail_count - oldNews.CurReadTimes;
-                                        var intervalMinutes = 24*60;
+                                        var intervalMinutes = 24 * 60;
                                         if (addReads > 0)
                                         {
                                             if (minutes > 60)
@@ -365,7 +376,7 @@ namespace Lfb.DataGrabBll
                                                     isHot = 1;
                                                 }
                                             }
-                                            #region === 15分钟阅读量分析　=== 
+                                            #region === 15分钟阅读量分析　===
                                             var per15MinutesReads = addReads / (minutes / 15.0);
                                             if (per15MinutesReads > 10000)
                                             {
@@ -407,16 +418,23 @@ namespace Lfb.DataGrabBll
                                             #endregion
                                         }
                                         if (oldNews.PubTime.AddHours(24) < DateTime.Now)
-                                        { 
+                                        {
                                             //不是今天发布的
                                             intervalMinutes = 24 * 60;
                                         }
-                                        var model = new DtoNews() { 
+
+                                        //如果原来是爆文的不修改ishot
+                                        if (oldNews.IsHot == 1)
+                                        {
+                                            isHot = 1;
+                                        }
+                                        var model = new DtoNews()
+                                        {
                                             Id = newsId,
                                             LastReadTimes = oldNews.CurReadTimes,
                                             CurReadTimes = subItem.go_detail_count,
                                             IsHot = isHot,
-                                            IsDeal =1,
+                                            IsDeal = 1,
                                             TotalComments = subItem.comments_count,
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
@@ -424,7 +442,9 @@ namespace Lfb.DataGrabBll
                                         };
 
                                         DalNews.UpdateNews(model);
-                                        DalNews.UpdateAuthorInterval(authorId, intervalMinutes);
+
+                                        //暂不更新作者表的刷新时间，没用上
+                                        //DalNews.UpdateAuthorInterval(authorId, intervalMinutes);
                                     }
                                     #endregion
                                 }
@@ -509,7 +529,7 @@ namespace Lfb.DataGrabBll
         }
 
         /// <summary>
-        /// 处理作者首页url
+        /// 处理作者首页url,不存在则入库
         /// </summary>
         /// <param name="authorUrl"></param>
         /// <returns></returns>
@@ -564,7 +584,7 @@ namespace Lfb.DataGrabBll
         {
             //var reStr = FormatUrlPcAsDefault(url);
             //return reStr;
-            
+
             var reStr = url;
             //先处理cp=***,as=****
             var arrStr = url.Split('&');
@@ -582,15 +602,15 @@ namespace Lfb.DataGrabBll
                     }
                 }
             }
-            
+
             string strCp;
             string strAs;
-            GetCpandAs(out strAs,out strCp);
+            GetCpandAs(out strAs, out strCp);
             reStr = reStr.Replace("as=", "as=" + strAs);
             reStr = reStr.Replace("cp=", "cp=" + strCp);
-      
+
             return reStr;
-             
+
         }
 
         /// <summary>
@@ -619,38 +639,39 @@ namespace Lfb.DataGrabBll
             }
 
             string strCp = "7E0AC8874BB0985";
-            string strAs="479BB4B7254C150";
+            string strAs = "479BB4B7254C150";
 
             reStr = reStr.Replace("as=", "as=" + strAs);
             reStr = reStr.Replace("cp=", "cp=" + strCp);
             return reStr;
         }
 
-        public void GetCpandAs(out string strAs,out string strCp)
-        { 
+        public void GetCpandAs(out string strAs, out string strCp)
+        {
 
-            var date1 = new DateTime(1970,1,1,0,0,0);
+            var date1 = new DateTime(1970, 1, 1, 0, 0, 0);
             var t1 = GetIntFromTime(DateTime.Now);
 
             string t = t1.ToString("x8").ToUpper();
             var e = StringSecurityHelper.Md5(t1.ToString(), true);
-            if(t.Length!=8)
+            if (t.Length != 8)
             {
-                strAs="479BB4B7254C150";
-                strCp="7E0AC8874BB0985";
+                strAs = "479BB4B7254C150";
+                strCp = "7E0AC8874BB0985";
                 return;
             }
             string[] s = new string[5];
             string[] a = new string[5];
-            
-            for(var j=0;j<5;j++)
+
+            for (var j = 0; j < 5; j++)
             {
                 s[j] = e.Substring(j, 1);
-                a[j] = e.Substring(e.Length - 5+j, 1);
+                a[j] = e.Substring(e.Length - 5 + j, 1);
             }
             var o = "";
             var ta = t.ToCharArray();
-            for (var j = 0; j < 5; j++) {
+            for (var j = 0; j < 5; j++)
+            {
                 o += s[j] + ta[j].ToString();
             }
             var c = "";
@@ -665,11 +686,14 @@ namespace Lfb.DataGrabBll
         private long lLeft = 621355968000000000;
         public long GetIntFromTime(DateTime dt)
         {
-            
+
             DateTime dt1 = dt.ToUniversalTime();
             long sticks = (long)Math.Floor((dt1.Ticks - lLeft) / 10000000.0);
             return sticks;
 
         } 
+
+        #endregion
+
     }
 }

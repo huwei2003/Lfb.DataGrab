@@ -16,9 +16,9 @@ namespace Lfb.NewsGather
             //初始化
             AddTask(RefreshProxyDeal, 1 * 60);
 
-            AddTask(NewsDeal, 10 * 60);
+            AddTask(AuthorUrlGathering, 10 * 60);
 
-            AddTask(AuthorNewsDeal, 15 * 60);
+            AddTask(AuthorNewsGathering, 15 * 60);
 
             AddTask(AuthorNewsByRefreshGathering, 15 * 60);
 
@@ -62,7 +62,7 @@ namespace Lfb.NewsGather
         /// <summary>
         /// 头条频道新闻抓取处理
         /// </summary>
-        public static void NewsDeal()
+        public static void AuthorUrlGathering()
         {
             try
             {
@@ -111,7 +111,7 @@ namespace Lfb.NewsGather
         /// <summary>
         /// 头条作者新闻处理
         /// </summary>
-        public static void AuthorNewsDeal()
+        public static void AuthorNewsGathering()
         {
             try
             {
