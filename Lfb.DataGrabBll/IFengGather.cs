@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Comm.Global.DTO.News;
-using Comm.Global.Enum.Business;
 using Lib.Csharp.Tools;
 using Newtonsoft.Json;
 

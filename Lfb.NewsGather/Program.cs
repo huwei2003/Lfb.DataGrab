@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using log4net.Config;
 using Topshelf;
 
@@ -14,7 +9,7 @@ namespace Lfb.NewsGather
     {
         static void Main(string[] args)
         {
-            string logConfig = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "log4net.config";
+            string logConfig = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "log4net.config";
             XmlConfigurator.ConfigureAndWatch(
                 new FileInfo(logConfig));
             Console.WriteLine(logConfig);

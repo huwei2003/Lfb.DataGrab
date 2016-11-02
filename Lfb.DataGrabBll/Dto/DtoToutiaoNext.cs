@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lfb.DataGrabBll.Dto
+﻿namespace Lfb.DataGrabBll.Dto
 {
     /// <summary>
     /// 数据翻页里的下一个的时间值

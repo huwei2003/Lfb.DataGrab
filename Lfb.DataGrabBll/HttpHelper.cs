@@ -4,8 +4,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Threading;
 using Lib.Csharp.Tools;
 
 namespace Lfb.DataGrabBll
@@ -303,8 +301,8 @@ namespace Lfb.DataGrabBll
 
 
                 var ip = ipItem.Split(':')[0];
-                var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
-                System.Net.WebProxy proxy = new WebProxy(ip, port);
+                var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
+                WebProxy proxy = new WebProxy(ip, port);
                 request.Proxy = proxy;
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -379,8 +377,8 @@ namespace Lfb.DataGrabBll
                         var i = rnd.Next(0, ipList.Count);
                         var ipItem = ipList[i];
                         var ip = ipItem.Split(':')[0];
-                        var port = Lib.Csharp.Tools.StrHelper.ToInt32(ipItem.Split(':')[1]);
-                        System.Net.WebProxy proxy = new WebProxy(ip, port);
+                        var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
+                        WebProxy proxy = new WebProxy(ip, port);
                         request.Proxy = proxy;
                     }
                     //set end

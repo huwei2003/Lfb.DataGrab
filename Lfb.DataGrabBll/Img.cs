@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Text;
-using Log = Lib.Csharp.Tools.Log;
+using Lib.Csharp.Tools;
 
 namespace Lfb.DataGrabBll
 {

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using Lib.Csharp.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Formatting = System.Xml.Formatting;
-using Log = Lib.Csharp.Tools.Log;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Lfb.DataGrabBll
 {
@@ -47,7 +44,7 @@ namespace Lfb.DataGrabBll
                     //XmlNodeList nodeList = root.SelectNodes("ServiceName");
                     if (root != null)
                     {
-                        strJson = JsonConvert.SerializeXmlNode(root, Newtonsoft.Json.Formatting.None, true);
+                        strJson = JsonConvert.SerializeXmlNode(root, Formatting.None, true);
                     }
 
                     return strJson;
@@ -63,7 +60,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var str = XmlDeal.GetAllSites();
+                var str = GetAllSites();
 
                 var objs = JObject.Parse(str);
                 var strArray = objs["Site"].ToString();

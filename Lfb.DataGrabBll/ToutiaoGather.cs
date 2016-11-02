@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using Comm.Global.DTO.News;
 using Comm.Global.Enum.Business;
 using Lfb.DataGrabBll.Dto;
 using Lib.Csharp.Tools;
+using Lib.Csharp.Tools.Security;
 using Newtonsoft.Json;
 
 namespace Lfb.DataGrabBll
@@ -633,7 +633,7 @@ namespace Lfb.DataGrabBll
             var t1 = GetIntFromTime(DateTime.Now);
 
             string t = t1.ToString("x8").ToUpper();
-            var e = Lib.Csharp.Tools.Security.StringSecurityHelper.Md5(t1.ToString(), true);
+            var e = StringSecurityHelper.Md5(t1.ToString(), true);
             if(t.Length!=8)
             {
                 strAs="479BB4B7254C150";

@@ -4,9 +4,10 @@ using System.Linq;
 using Comm.Cloud.RDS;
 using Comm.Cloud.RDS.DTO;
 using Comm.Global.DTO.News;
+using Comm.Global.Enum.Sys;
+using Comm.Tools.Utility;
 using Lfb.DataGrabBll.Model;
 using Lib.Csharp.Tools;
-using Comm.Tools.Utility;
 using Log = Lib.Csharp.Tools.Log;
 
 namespace Lfb.DataGrabBll
@@ -17,7 +18,7 @@ namespace Lfb.DataGrabBll
 
         static DalNews()
         {
-            Sql = new RdsNew(RdsConfig, Comm.Global.Enum.Sys.DbType.MySql);
+            Sql = new RdsNew(RdsConfig, DbType.MySql);
         }
 
         public static PublicCloudRdsConfig RdsConfig
@@ -316,7 +317,7 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+                Log.Error(ex.Message + ex.StackTrace);
             }
 
             return null;
@@ -543,7 +544,7 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+                Log.Error(ex.Message + ex.StackTrace);
             }
 
             return null;
@@ -578,7 +579,7 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+                Log.Error(ex.Message + ex.StackTrace);
             }
 
             return null;
@@ -612,7 +613,7 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Lib.Csharp.Tools.Log.Error(ex.Message + ex.StackTrace);
+                Log.Error(ex.Message + ex.StackTrace);
             }
 
             return null;
