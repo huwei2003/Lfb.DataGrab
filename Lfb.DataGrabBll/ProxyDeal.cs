@@ -45,7 +45,7 @@ namespace Lfb.DataGrabBll
                                             Encoding.UTF8, item);
                                         if (!string.IsNullOrWhiteSpace(strContent))
                                         {
-                                            if (ProxyList.Count >= 30)
+                                            if (ProxyList.Count >= 300)
                                             {
                                                 ProxyList.RemoveAt(0);
                                             }
@@ -69,7 +69,7 @@ namespace Lfb.DataGrabBll
                 #endregion
 
                 //数量太少则重复取
-                if (ProxyList.Count < 10)
+                if (ProxyList.Count < 300)
                 {
                     Thread.Sleep(2*1000);
                     GetProxyList();
