@@ -36,11 +36,12 @@ namespace Lfb.DataGrabBll
         /// <returns></returns>
         public List<DtoNewsUrlList> AuthorUrlGathering(string newsListUrl, int newsType)
         {
+            var strContent = "";
             try
             {
                 newsListUrl = FormatUrlPcAs(newsListUrl);
                 Log.Info(newsListUrl + " 抓取开始");
-                var strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
+                strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
                     //重新请求一次，因为用了代理后，经常会失败
@@ -58,6 +59,7 @@ namespace Lfb.DataGrabBll
                         }
                     }
                 }
+                strContent = FormatJsonData(strContent);
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoJsData>(strContent);
                 if (data != null)
                 {
@@ -128,6 +130,9 @@ namespace Lfb.DataGrabBll
             catch (Exception ex)
             {
                 Log.Error(ex.Message + ex.StackTrace);
+                Log.Debug("======strContent begin =========");
+                Log.Debug(strContent);
+                Log.Debug("======strContent end =========");
             }
             return null;
         }
@@ -272,6 +277,73 @@ namespace Lfb.DataGrabBll
             return 0;
         }
 
+        /// <summary>
+        /// 从作者抓取相关新闻取出作者信息
+        /// </summary>
+        /// <returns></returns>
+        public int GatherRelationNewsFromAuthor()
+        {
+            try
+            {
+                //取出待处理作者的数据，并置位IsShow=2 处理中
+                var list = DalNews.GetNoRefreshAuthorList();
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var author in list)
+                    {
+                        var url = "http://www.toutiao.com/related_media/?media_id="+author.AuthorId;
+                        Log.Info(url + " 抓取开始");
+                        var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            //重新请求一次，因为用了代理后，经常会失败
+                            strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                            if (string.IsNullOrWhiteSpace(strContent))
+                            {
+                                HttpHelper.IsUseProxy = false;
+                                //重新请求一次，因为用了代理后，经常会失败
+                                strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                                HttpHelper.IsUseProxy = true;
+                                if (string.IsNullOrWhiteSpace(strContent))
+                                {
+                                    Log.Info(url + " 未抓取到任何内容");
+                                    continue;
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(strContent))
+                        {
+                            strContent = FormatJsonData(strContent);
+                            var result = JsonConvert.DeserializeObject<DtoTouTiaoRelationNewsJsData>(strContent);
+                            if (result != null && result.data.related_media!=null)
+                            {
+                                foreach (var item in result.data.related_media)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(item.open_url))
+                                    {
+                                        var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.open_url);
+                                        if (isAuthorUrl)
+                                        {
+                                            //检查是否已存在，不在则入库
+                                            DealAuthorUrl(item.open_url);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
         #endregion
 
 
@@ -280,10 +352,11 @@ namespace Lfb.DataGrabBll
 
         public int DealAuthorData(string url, string authorId)
         {
+            var strContent = "";
             try
             {
                 Log.Info(url + " 抓取开始");
-                var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
                     //重新请求一次，因为用了代理后，经常会失败
@@ -301,6 +374,7 @@ namespace Lfb.DataGrabBll
                         }
                     }
                 }
+                strContent = FormatJsonData(strContent);
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoAuthorJsData>(strContent);
                 if (data != null)
                 {
@@ -488,6 +562,9 @@ namespace Lfb.DataGrabBll
             catch (Exception ex)
             {
                 Log.Error(ex.Message + ex.StackTrace);
+                Log.Debug("======strContent begin =========");
+                Log.Debug(strContent);
+                Log.Debug("======strContent end =========");
             }
             return 1;
         }
@@ -691,8 +768,21 @@ namespace Lfb.DataGrabBll
             long sticks = (long)Math.Floor((dt1.Ticks - lLeft) / 10000000.0);
             return sticks;
 
-        } 
+        }
 
+        public string FormatJsonData(string contents)
+        {
+            var str = contents;
+            try
+            {
+                str = str.Replace("\"show_play_effective_count\": true,", "\"show_play_effective_count\": 0,").Replace("\"show_play_effective_count\": false,", "\"show_play_effective_count\": 0,");
+            }
+            catch (Exception ex)
+            { 
+
+            }
+            return str;
+        }
         #endregion
 
     }

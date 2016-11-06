@@ -45,7 +45,7 @@ namespace Lfb.DataGrabBll
                                             Encoding.UTF8, item);
                                         if (!string.IsNullOrWhiteSpace(strContent))
                                         {
-                                            if (ProxyList.Count >= 300)
+                                            if (ProxyList.Count >= Global.ProxyPoolSize)
                                             {
                                                 ProxyList.RemoveAt(0);
                                             }

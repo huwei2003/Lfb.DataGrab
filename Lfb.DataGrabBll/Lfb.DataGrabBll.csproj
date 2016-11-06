@@ -50,12 +50,16 @@
   <ItemGroup>
     <Compile Include="Dal\DalNews.cs" />
     <Compile Include="DtoIfengImg.cs" />
+    <Compile Include="Dto\DtoLatest_article.cs" />
+    <Compile Include="Dto\Related_media.cs" />
+    <Compile Include="Dto\DtoRelated_media.cs" />
     <Compile Include="Dto\DtoTouTiaoAuthorJsData.cs" />
     <Compile Include="Dto\DtoTouTiaoAuthorNews.cs" />
     <Compile Include="Dto\DtoTouTiaoChannelNews.cs" />
     <Compile Include="Dto\DtoTouTiaoImageList.cs" />
     <Compile Include="Dto\DtoTouTiaoJsData.cs" />
     <Compile Include="Dto\DtoToutiaoNext.cs" />
+    <Compile Include="Dto\DtoTouTiaoRelationNewsJsData.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="HttpHelper.cs" />
     <Compile Include="IBaseGather.cs" />

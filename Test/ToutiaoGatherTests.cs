@@ -48,6 +48,11 @@ namespace Lfb.DataGrab.Tests
         }
 
         [Test()]
+        public void GatherRelationNewsFromAuthorTest()
+        {
+            bll.GatherRelationNewsFromAuthor();
+        }
+        [Test()]
         public void ModifyUrlTest()
         {
             //bll.ModifyUrl("");

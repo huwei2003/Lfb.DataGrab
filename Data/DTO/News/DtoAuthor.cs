@@ -43,5 +43,10 @@ namespace Comm.Global.DTO.News
         /// 刷新时间间隔
         /// </summary>
         public int IntervalMinutes;
+
+        /// <summary>
+        /// 是否刷新，用于标识是否抓取过作者相关新闻
+        /// </summary>
+        public int IsShow;
     }
 }

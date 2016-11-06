@@ -10,6 +10,8 @@ namespace Lfb.NewsGather
     {
 
         private bool _isStop = false;
+        private static bool IsGetProxy = false;
+        private static object lockObj = new object();
 
         static NewsDealing()
         {
@@ -24,7 +26,7 @@ namespace Lfb.NewsGather
 
             AddTask(GatherAuthorFromNews, 15 * 60);
 
-            
+            AddTask(GatherRelationFromAuthor, 15 * 60);
         }
 
         /// <summary>
@@ -45,11 +47,19 @@ namespace Lfb.NewsGather
                 //}
                 while (true)
                 {
-                    Log.Info("定时刷新代理列表开始:" + DateTime.Now);
+                    lock (lockObj)
+                    {
+                        if (!IsGetProxy)
+                        {
+                            IsGetProxy = true;
 
-                    ProxyDeal.GetProxyList();
+                            Log.Info("定时刷新代理列表开始:" + DateTime.Now);
 
-                    Log.Info("定时刷新代理列表结束:" + DateTime.Now);
+                            ProxyDeal.GetProxyList();
+
+                            Log.Info("定时刷新代理列表结束:" + DateTime.Now);
+                        }
+                    }
                     Thread.Sleep(10 * 60 * 1000);
                 }
             }
@@ -201,6 +211,41 @@ namespace Lfb.NewsGather
 
 
                     Log.Info("从新闻页抓取作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+
+        /// <summary>
+        /// 从新闻页抓取作者信息
+        /// </summary>
+        public static void GatherRelationFromAuthor()
+        {
+            try
+            {
+                if (Global.IsEnableGatherRelationFromAuthor != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true)
+                {
+                    Log.Info("从作者抓相关新闻的作者开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    bll.GatherRelationNewsFromAuthor();
+
+
+                    Log.Info("从作者抓相关新闻的作者结束:" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
             }

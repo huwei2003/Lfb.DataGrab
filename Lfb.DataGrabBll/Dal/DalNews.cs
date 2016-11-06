@@ -422,7 +422,8 @@ namespace Lfb.DataGrabBll
                     AuthorId = model.AuthorId,
                     IsDeal = model.IsDeal,
                     LastDealTime = DateTime.Now,
-                    Url = model.Url
+                    Url = model.Url,
+                    IsShow =0
                 };
 
 
@@ -464,7 +465,7 @@ namespace Lfb.DataGrabBll
         /// 更新作者的处理状态
         /// </summary>
         /// <param name="id">作者表id</param>
-        /// <param name="isDeal">处理标识 0=no,1=yes</param>
+        /// <param name="isShow">处理标识 0=no,1=yes</param>
         /// <returns></returns>
         public static bool UpdateAuthorIsDeal(int id, int isDeal)
         {
@@ -476,6 +477,32 @@ namespace Lfb.DataGrabBll
                     isDeal = 0;
 
                 var sql = string.Format("update T_Author set IsDeal={0} where Id={1}", isDeal, id);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        /// <summary>
+        /// 更新作者的处理状态
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateAuthorIsShow(int id, int isShow)
+        {
+            try
+            {
+                if (isShow > 1)
+                    isShow = 1;
+                if (isShow < 0)
+                    isShow = 0;
+
+                var sql = string.Format("update T_Author set IsShow={0} where Id={1}", isShow, id);
 
                 var result = Sql.ExecuteSql(sql);
                 return result;
@@ -536,6 +563,39 @@ namespace Lfb.DataGrabBll
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
                     sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 获取100条未处理的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetNoRefreshAuthorList()
+        {
+            try
+            {
+                var sql = "select * from T_Author where (IsShow=0 or IsShow=1) order By Id asc limit 0,100";
+                var list = Sql.Select<DtoAuthor>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    sql = "update T_Author set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
 
                 }

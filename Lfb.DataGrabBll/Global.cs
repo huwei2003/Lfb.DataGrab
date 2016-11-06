@@ -63,7 +63,15 @@ namespace Lfb.DataGrabBll
         /// </summary>
         public static string IsEnableRefreshProxy = GetIsEnableRefreshProxy();
     
-    
+        /// <summary>
+        /// 代理池的大小
+        /// </summary>
+        public static int ProxyPoolSize = GetProxyPoolSize();
+
+        /// <summary>
+        /// 是否开启从作者id取相关新闻 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherRelationFromAuthor = GetIsEnableGatherRelationFromAuthor();
         private static string GetImgSavePrex()
         {
             try
@@ -202,7 +210,33 @@ namespace Lfb.DataGrabBll
                 return "";
             }
         }
+
+        private static string GetIsEnableGatherRelationFromAuthor()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherRelationFromAuthor"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
         
+
+        private static int GetProxyPoolSize()
+        {
+            try
+            {
+                return StrHelper.ToInt32( ConfigurationManager.AppSettings["ProxyPoolSize"].ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return 10;
+            }
+        }
         
         /// <summary>
         /// 处理内容中的图片地址，如果是相对地址的则要加上地址前缀，构成完整的url
