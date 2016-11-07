@@ -8,7 +8,7 @@ namespace Lfb.DataGrabBll.Dto
     public class DtoTouTiaoAuthorJsData
     {
         public long media_id;
-        public int has_more;
+        public bool has_more;
         public DtoToutiaoNext next;
         public int page_type;
         public string message;

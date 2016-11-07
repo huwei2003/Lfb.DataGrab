@@ -540,7 +540,7 @@ namespace Lfb.DataGrabBll
 
                 Random rnd = new Random();
                 //有更多数据，则继续抓取数据
-                if (isHaveMore > 0 && AuthorPageIndex < Global.PageDepth)
+                if (isHaveMore  && AuthorPageIndex < Global.PageDepth)
                 {
                     //sleep
                     Thread.Sleep(rnd.Next(1000, 2500));

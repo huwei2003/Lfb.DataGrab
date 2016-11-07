@@ -26,6 +26,7 @@ namespace Lfb.DataGrabBll
                 }
 
                 #region === 取代理ip list ===
+                Global.GetProxyIpUrl = Global.GetProxyIpUrl.Replace("amp;", "");
                 string strContent = HttpHelper.GetContent(Global.GetProxyIpUrl, Encoding.UTF8);
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
@@ -48,6 +49,7 @@ namespace Lfb.DataGrabBll
                                             if (ProxyList.Count >= Global.ProxyPoolSize)
                                             {
                                                 ProxyList.RemoveAt(0);
+                                                Thread.Sleep(5 * 60 * 1000);
                                             }
                                             ProxyList.Add(item);
                                             Log.Info("代理:" + item + "可用 目前可用个数="+ProxyList.Count);
@@ -69,9 +71,9 @@ namespace Lfb.DataGrabBll
                 #endregion
 
                 //数量太少则重复取
-                if (ProxyList.Count < 300)
+                if (ProxyList.Count < Global.ProxyPoolSize)
                 {
-                    Thread.Sleep(2*1000);
+                    Thread.Sleep(2*60*1000);
                     GetProxyList();
                 }
                 //Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);

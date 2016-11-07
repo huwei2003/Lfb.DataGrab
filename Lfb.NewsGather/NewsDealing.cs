@@ -60,7 +60,7 @@ namespace Lfb.NewsGather
                             Log.Info("定时刷新代理列表结束:" + DateTime.Now);
                         }
                     }
-                    Thread.Sleep(10 * 60 * 1000);
+                    Thread.Sleep(60 * 60 * 1000);
                 }
             }
             catch (Exception ex)
