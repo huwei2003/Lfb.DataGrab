@@ -86,7 +86,7 @@ namespace Lfb.NewsGather
                 //    return;
                 //}
 
-                while (true)
+                while (true && ProxyDeal.IsProxyReady)
                 {
                     Log.Info("频道新闻抓取开始:" + DateTime.Now);
                     var siteList = XmlDeal.GetSitesInfo();
@@ -134,7 +134,7 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
-                while (true)
+                while (true && ProxyDeal.IsProxyReady)
                 {
                     Log.Info("作者列表页新闻抓取开始:" + DateTime.Now);
 
@@ -168,7 +168,7 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
-                while (true)
+                while (true && ProxyDeal.IsProxyReady)
                 {
                     Log.Info("作者列表页刷新开始:" + DateTime.Now);
 
@@ -202,7 +202,7 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
-                while (true)
+                while (true && ProxyDeal.IsProxyReady)
                 {
                     Log.Info("从新闻页抓取作者开始:" + DateTime.Now);
 
@@ -237,7 +237,7 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
-                while (true)
+                while (true && ProxyDeal.IsProxyReady)
                 {
                     Log.Info("从作者抓相关新闻的作者开始:" + DateTime.Now);
 

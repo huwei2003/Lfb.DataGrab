@@ -11,7 +11,7 @@ namespace Lfb.DataGrabBll
     public class ProxyDeal
     {
         public static List<string> ProxyList;
-
+        public static bool IsProxyReady = false;
 
         public static void GetProxyList()
         {
@@ -50,6 +50,10 @@ namespace Lfb.DataGrabBll
                                             {
                                                 ProxyList.RemoveAt(0);
                                                 Thread.Sleep(5 * 60 * 1000);
+                                            }
+                                            if (ProxyList.Count >= 5)
+                                            {
+                                                IsProxyReady = true;
                                             }
                                             ProxyList.Add(item);
                                             Log.Info("代理:" + item + "可用 目前可用个数="+ProxyList.Count);
