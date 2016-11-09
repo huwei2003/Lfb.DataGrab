@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lib.Csharp.Tools;
+using System.Threading;
 
 namespace Lfb.DataGrabBll
 {
@@ -366,22 +367,44 @@ namespace Lfb.DataGrabBll
                 {
                     request.ContentType = "application/x-www-form-urlencoded";
                 }
-
+                var ipItem = "";
                 if (IsUseProxy)
                 {
                     //set proxy
-                    var ipList = ProxyDeal.ProxyList;
-                    if (ipList != null && ipList.Count > 0)
+                    //var ipList = ProxyDeal.ProxyList;
+                    //if (ipList != null && ipList.Count > 0)
+                    //{
+                    //    Random rnd = new Random();
+                    //    var i = rnd.Next(0, ipList.Count);
+                    //    var ipItem = ipList[i];
+                    //    var ip = ipItem.Split(':')[0];
+                    //    var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
+                    //    WebProxy proxy = new WebProxy(ip, port);
+                    //    request.Proxy = proxy;
+                    //}
+                    //set end
+                    try
                     {
-                        Random rnd = new Random();
-                        var i = rnd.Next(0, ipList.Count);
-                        var ipItem = ipList[i];
+                        if (ProxyDeal.CurrProxyListIndex >= 0 &&
+                            ProxyDeal.CurrProxyListIndex < ProxyDeal.ProxyList.Count)
+                        {
+
+                        }
+                        else
+                        {
+                            ProxyDeal.CurrProxyListIndex = 0;
+                        }
+                        ipItem = ProxyDeal.ProxyList[ProxyDeal.CurrProxyListIndex];
                         var ip = ipItem.Split(':')[0];
                         var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
                         WebProxy proxy = new WebProxy(ip, port);
                         request.Proxy = proxy;
+                        Interlocked.Increment(ref ProxyDeal.CurrProxyListIndex);
                     }
-                    //set end
+                    catch
+                    {
+
+                    }
                 }
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -392,6 +415,15 @@ namespace Lfb.DataGrabBll
                 var strcontent = reader.ReadToEnd();
                 // .\0为null，空字符，也是字符串结束标志
                 strcontent = strcontent.Replace("\0", "");
+                if (string.IsNullOrWhiteSpace(strcontent))
+                {
+                    lock ((ProxyDeal.lockObj))
+                    {
+                        ProxyDeal.ProxyList.Remove(ipItem);
+                        ProxyDeal.ProxyListRemove.Add(ipItem);
+                    }
+                }
+
                 reader.Close();
                 reader.Dispose();
                 response.Close();

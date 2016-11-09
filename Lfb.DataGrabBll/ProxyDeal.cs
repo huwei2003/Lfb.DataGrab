@@ -12,6 +12,9 @@ namespace Lfb.DataGrabBll
     {
         public static List<string> ProxyList;
         public static bool IsProxyReady = false;
+        public static int CurrProxyListIndex = 0;
+        public static object lockObj = new object();
+        public static List<string> ProxyListRemove = new List<string>();
 
         public static void GetProxyList()
         {
@@ -23,6 +26,12 @@ namespace Lfb.DataGrabBll
                 if (ProxyList == null)
                 {
                     ProxyList = new List<string>();
+                }
+
+                if (ProxyList.Count > Global.ProxyPoolSize-50)
+                {
+                    Log.Info("代理 目前可用个数=" + ProxyList.Count+" 暂停刷新代理");
+                    return;
                 }
 
                 #region === 取代理ip list ===
@@ -48,19 +57,25 @@ namespace Lfb.DataGrabBll
                                         {
                                             if (ProxyList.Count >= Global.ProxyPoolSize)
                                             {
-                                                ProxyList.RemoveAt(0);
+                                                lock ((ProxyDeal.lockObj))
+                                                {
+                                                    ProxyList.RemoveAt(0);
+                                                }
                                                 Thread.Sleep(5 * 60 * 1000);
                                             }
-                                            if (ProxyList.Count >= 5)
+                                            if (ProxyList.Count >= 20)
                                             {
                                                 IsProxyReady = true;
                                             }
-                                            ProxyList.Add(item);
-                                            Log.Info("代理:" + item + "可用 目前可用个数="+ProxyList.Count);
+                                            lock ((ProxyDeal.lockObj))
+                                            {
+                                                ProxyList.Add(item);
+                                            }
+                                            Log.Info("代理:" + item + "可用 目前可用个数=" + ProxyList.Count);
                                         }
                                         else
                                         {
-                                            Log.Info("代理:" + item + "不可用");
+                                            Log.Info("代理:" + item + "不可用 目前可用个数=" + ProxyList.Count);
                                         }
                                         Thread.Sleep(1000);
                                     }
@@ -77,8 +92,72 @@ namespace Lfb.DataGrabBll
                 //数量太少则重复取
                 if (ProxyList.Count < Global.ProxyPoolSize)
                 {
-                    Thread.Sleep(2*60*1000);
+                    Thread.Sleep(2 * 60 * 1000);
                     GetProxyList();
+                }
+                //Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);
+                //Log.Info("可用代理个数:" + ProxyList.Count);
+                //Lib.Csharp.Tools.AppCache.AddCache("ProxyIpListForHttp", ProxyList,1);
+            }
+            catch
+            {
+            }
+        }
+
+        public static void DealProxyListRemove()
+        {
+
+            try
+            {
+
+                if (ProxyListRemove.Count == 0)
+                {
+                    return;
+                }
+
+                #region === 被移除的IP列表重试一次，不行则删除 ===
+
+                var strContent = "";
+                if (ProxyListRemove.Count > 0)
+                {
+                    foreach (var item in ProxyListRemove)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item))
+                        {
+
+                            //访问百度，可以访问的才加入list
+                            strContent = HttpHelper.GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
+                                Encoding.UTF8, item);
+                            if (!string.IsNullOrWhiteSpace(strContent))
+                            {
+                                lock ((ProxyDeal.lockObj))
+                                {
+                                    ProxyList.Add(item);
+                                }
+                                Log.Info("代理:" + item + "可用 目前可用个数=" + ProxyList.Count);
+                            }
+                            else
+                            {
+                                lock ((ProxyDeal.lockObj))
+                                {
+                                    ProxyListRemove.Remove(item);
+                                }
+                                Log.Info("代理:" + item + "重试亦不可用 待删除列表个数=" + ProxyListRemove.Count);
+                            }
+                            Thread.Sleep(1000);
+
+                        }
+                    }
+                }
+
+                #endregion
+
+                //数量太少则重复取
+                if (ProxyListRemove.Count > 1000)
+                {
+                    ProxyListRemove.RemoveRange(1000, ProxyListRemove.Count - 1000);
+                    Thread.Sleep(2 * 60 * 1000);
+                    DealProxyListRemove();
                 }
                 //Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);
                 //Log.Info("可用代理个数:" + ProxyList.Count);

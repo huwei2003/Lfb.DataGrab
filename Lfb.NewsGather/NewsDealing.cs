@@ -18,6 +18,8 @@ namespace Lfb.NewsGather
             //初始化
             AddTask(RefreshProxyDeal, 1 * 60);
 
+            AddTask(DealProxyListRemove, 10 * 60);
+
             AddTask(AuthorUrlGathering, 10 * 60);
 
             AddTask(AuthorNewsGathering, 15 * 60);
@@ -60,7 +62,44 @@ namespace Lfb.NewsGather
                             Log.Info("定时刷新代理列表结束:" + DateTime.Now);
                         }
                     }
-                    Thread.Sleep(60 * 60 * 1000);
+                    Thread.Sleep(5 * 60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// 定时刷新代理列表
+        /// </summary>
+        public static void DealProxyListRemove()
+        {
+            try
+            {
+                if (Global.IsEnableRefreshProxy != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true)
+                {
+                    lock (lockObj)
+                    {
+                        
+                            Log.Info("定时处理被移聊代理列表开始:" + DateTime.Now);
+
+                            ProxyDeal.DealProxyListRemove();
+
+                            Log.Info("定时处理被移聊代理列表结束:" + DateTime.Now);
+                        
+                    }
+                    Thread.Sleep(60 * 1000);
                 }
             }
             catch (Exception ex)

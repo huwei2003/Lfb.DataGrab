@@ -12,7 +12,7 @@ namespace Lib.Csharp.Tools.Security
     /// <summary>
     /// 加解密帮组类
     /// </summary>
-    public class StringSecurityHelper
+    public static class StringSecurityHelper
     {
         #region 字符串 Des 加解密
 
@@ -22,7 +22,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="strText">要加密的字符串</param>
         /// <param name="strEncrKey">密钥</param>
         /// <returns>返回加密后的字符串</returns>
-        public static string DesEncrypt(string strText, string strEncrKey)
+        public static string DesEncrypt(this string strText, string strEncrKey)
         {
 
             byte[] iv = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
@@ -49,7 +49,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="strText">要解密的字符串</param>
         /// <param name="sDecrKey">密钥</param>
         /// <returns>返回解密后的字符串</returns>
-        public static string DesDecrypt(string strText, string sDecrKey)
+        public static string DesDecrypt(this string strText, string sDecrKey)
         {
             byte[] iv = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 
@@ -83,7 +83,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="key">密钥（长度24字符）</param>
         /// <param name="coding">Encoding 编码格式</param>
         /// <returns></returns>
-        public static string Des3Encrypt(string input, string key, Encoding coding = null)
+        public static string Des3Encrypt(this string input, string key, Encoding coding = null)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="key">密钥（长度24字符）</param>
         /// <param name="coding">Encoding 编码格式</param>
         /// <returns></returns>
-        public static string Des3Decrypt(string input, string key, Encoding coding = null)
+        public static string Des3Decrypt(this string input, string key, Encoding coding = null)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="key">密钥（长度24字符）</param>
         /// <param name="coding">Encoding 编码格式</param>
         /// <returns></returns>
-        public static byte[] Des3Encrypt(byte[] data, string key, Encoding coding = null)
+        public static byte[] Des3Encrypt(this byte[] data, string key, Encoding coding = null)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="key">密钥（长度24字符）</param>
         /// <param name="coding">Encoding 编码格式</param>
         /// <returns></returns>
-        public static byte[] Des3Decrypt(byte[] data, string key, Encoding coding = null)
+        public static byte[] Des3Decrypt(this byte[] data, string key, Encoding coding = null)
         {
             try
             {
@@ -208,13 +208,13 @@ namespace Lib.Csharp.Tools.Security
 
         public static readonly Random Rnd = new Random();
 
-        public static string Md5( string s, Encoding e, bool toUper)
+        public static string Md5(this string input, Encoding e, bool toUper)
         {
             if (e == null)
             {
                 e = Encoding.UTF8;
             }
-            var buffer = MD5.Create().ComputeHash(e.GetBytes(s));
+            var buffer = MD5.Create().ComputeHash(e.GetBytes(input));
             var builder = new StringBuilder();
             foreach (var b in buffer)
             {
@@ -223,19 +223,19 @@ namespace Lib.Csharp.Tools.Security
             return toUper ? builder.ToString().ToUpper() : builder.ToString();
         }
 
-        public static string Md5( string s, bool toUper = true)
+        public static string Md5(this string input, bool toUper = true)
         {
-            return Md5(s,null, toUper);
+            return Md5(input,null, toUper);
         }
 
-        public static string Md5( string s, Encoding e)
+        public static string Md5(this string input, Encoding e)
         {
-            return Md5(s,e, true);
+            return Md5(input,e, true);
         }
 
-        public static string Md5( string s, int len)
+        public static string Md5(this string input, int len)
         {
-            var md5 = Md5(s);
+            var md5 = Md5(input);
             switch (len)
             {
                 case 16:
@@ -250,7 +250,7 @@ namespace Lib.Csharp.Tools.Security
 
         #region === HmacSign ===
 
-        public static string HmacSign( string aValue, string aKey)
+        public static string HmacSign(this string aValue, string aKey)
         {
             var kIpad = new byte[64];
             var kOpad = new byte[64];
@@ -298,7 +298,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="input">加密字符串</param>
         /// <param name="keyBytes">密钥keyBytes</param>
         /// <returns>加密后的字节数组</returns>
-        public static byte[] DeaEncrypt(string input, byte[] keyBytes)
+        public static byte[] DeaEncrypt(this string input, byte[] keyBytes)
         {
             return DeaEncrypt(Encoding.UTF8.GetBytes(input),(keyBytes));
             //return Encoding.UTF8.GetBytes(input).DeaEncrypt(keyBytes);
@@ -310,7 +310,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="input">流</param>
         /// <param name="keyBytes">密钥keyBytes</param>
         /// <returns>加密后的字节数组</returns>
-        public static byte[] DeaEncrypt(Stream input, byte[] keyBytes)
+        public static byte[] DeaEncrypt(this Stream input, byte[] keyBytes)
         {
             return DeaEncrypt(StreamHelper.ToBytes(input),keyBytes);
             //return input.ToBytes().DeaEncrypt(keyBytes);
@@ -322,7 +322,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="input">流</param>
         /// <param name="keyBytes">密钥keyBytes</param>
         /// <returns>加密后的字节数组</returns>
-        public static string DeaDecrypt(Stream input, byte[] keyBytes)
+        public static string DeaDecrypt(this Stream input, byte[] keyBytes)
         {
             return DeaDecrypt(StreamHelper.ToBytes(input), keyBytes);
             //return input.ToBytes().DeaDecrypt(keyBytes);
@@ -334,7 +334,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="data">需要加密的字节数组</param>
         /// <param name="keyBytes">密钥keyBytes</param>
         /// <returns>加密后的字节数组</returns>
-        public static byte[] DeaEncrypt(byte[] data, byte[] keyBytes)
+        public static byte[] DeaEncrypt(this byte[] data, byte[] keyBytes)
         {
             if (data == null || data.Length == 0 || keyBytes == null || keyBytes.Length != 32)
             {
@@ -367,7 +367,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="data">加密后的字节数组</param>
         /// <param name="keyBytes">密钥keyBytes</param>
         /// <returns>解密后的字符串</returns>
-        public static string DeaDecrypt(byte[] data, byte[] keyBytes)
+        public static string DeaDecrypt(this byte[] data, byte[] keyBytes)
         {
             if (data == null || data.Length < 2 || keyBytes == null || keyBytes.Length != 32)
             {
@@ -466,7 +466,7 @@ namespace Lib.Csharp.Tools.Security
         /// <param name="index">起始字节索引</param>
         /// <param name="count">校验的字节数</param>
         /// <returns>该字节数组的校验结果字节</returns>
-        public static byte[] Crc16(byte[] data, int index = 0, int count = 0)
+        public static byte[] Crc16(this byte[] data, int index = 0, int count = 0)
         {
             if (count == 0)
             {
