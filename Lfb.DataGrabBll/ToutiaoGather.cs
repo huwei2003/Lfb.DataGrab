@@ -48,10 +48,10 @@ namespace Lfb.DataGrabBll
                     strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
-                        HttpHelper.IsUseProxy = false;
+                        //HttpHelper.IsUseProxy = false;
                         //重新请求一次，因为用了代理后，经常会失败
                         strContent = HttpHelper.GetContentByMobileAgent(newsListUrl, Encoding.UTF8);
-                        HttpHelper.IsUseProxy = true;
+                        //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
                             Log.Info(newsListUrl + " 未抓取到任何内容");
@@ -198,10 +198,10 @@ namespace Lfb.DataGrabBll
                             strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                             if (string.IsNullOrWhiteSpace(strContent))
                             {
-                                HttpHelper.IsUseProxy = false;
+                                //HttpHelper.IsUseProxy = false;
                                 //重新请求一次，因为用了代理后，经常会失败
                                 strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
-                                HttpHelper.IsUseProxy = true;
+                                //HttpHelper.IsUseProxy = true;
                                 if (string.IsNullOrWhiteSpace(strContent))
                                 {
                                     Log.Info(url + " 未抓取到任何内容");
@@ -300,10 +300,10 @@ namespace Lfb.DataGrabBll
                             strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                             if (string.IsNullOrWhiteSpace(strContent))
                             {
-                                HttpHelper.IsUseProxy = false;
+                                //HttpHelper.IsUseProxy = false;
                                 //重新请求一次，因为用了代理后，经常会失败
                                 strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
-                                HttpHelper.IsUseProxy = true;
+                                //HttpHelper.IsUseProxy = true;
                                 if (string.IsNullOrWhiteSpace(strContent))
                                 {
                                     Log.Info(url + " 未抓取到任何内容");
@@ -363,10 +363,10 @@ namespace Lfb.DataGrabBll
                     strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
-                        HttpHelper.IsUseProxy = false;
+                        //HttpHelper.IsUseProxy = false;
                         //重新请求一次，因为用了代理后，经常会失败
                         strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
-                        HttpHelper.IsUseProxy = true;
+                        //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
                             Log.Info(url + " 未抓取到任何内容");

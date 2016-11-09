@@ -33,7 +33,14 @@ namespace Lfb.DataGrabBll
                     Log.Info("代理 目前可用个数=" + ProxyList.Count+" 暂停刷新代理");
                     return;
                 }
-
+                if (ProxyList.Count >= 20)
+                {
+                    IsProxyReady = true;
+                }
+                else
+                {
+                    IsProxyReady = false;
+                }
                 #region === 取代理ip list ===
                 Global.GetProxyIpUrl = Global.GetProxyIpUrl.Replace("amp;", "");
                 string strContent = HttpHelper.GetContent(Global.GetProxyIpUrl, Encoding.UTF8);
@@ -66,6 +73,9 @@ namespace Lfb.DataGrabBll
                                             if (ProxyList.Count >= 20)
                                             {
                                                 IsProxyReady = true;
+                                            }
+                                            else {
+                                                IsProxyReady = false;
                                             }
                                             lock ((ProxyDeal.lockObj))
                                             {

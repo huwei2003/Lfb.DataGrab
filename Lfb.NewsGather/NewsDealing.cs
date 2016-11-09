@@ -150,6 +150,11 @@ namespace Lfb.NewsGather
                     Log.Info("频道新闻抓取结束:" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
             }
             catch (Exception ex)
             {
@@ -182,6 +187,11 @@ namespace Lfb.NewsGather
 
 
                     Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
             }
@@ -218,6 +228,11 @@ namespace Lfb.NewsGather
                     Log.Info("作者列表页刷新结束:" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
             }
             catch (Exception ex)
             {
@@ -250,6 +265,11 @@ namespace Lfb.NewsGather
 
 
                     Log.Info("从新闻页抓取作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
             }
@@ -285,6 +305,11 @@ namespace Lfb.NewsGather
 
 
                     Log.Info("从作者抓相关新闻的作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
             }
