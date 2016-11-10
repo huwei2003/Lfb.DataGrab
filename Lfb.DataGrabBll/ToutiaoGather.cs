@@ -26,6 +26,8 @@ namespace Lfb.DataGrabBll
         /// </summary>
         public static int AuthorPageIndex;
 
+        public static Dictionary<string, int> DictUrl = new Dictionary<string, int>();
+
         #region === task 定时调用的方法 ===
 
         /// <summary>
@@ -36,6 +38,11 @@ namespace Lfb.DataGrabBll
         /// <returns></returns>
         public List<DtoNewsUrlList> AuthorUrlGathering(string newsListUrl, int newsType)
         {
+            //重试过的移除
+            if (DictUrl.ContainsKey(newsListUrl))
+            {
+                DictUrl.Remove(newsListUrl);
+            }
             var strContent = "";
             try
             {
@@ -129,10 +136,18 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
+                Log.Error("出错的url=" + newsListUrl);
                 Log.Error(ex.Message + ex.StackTrace);
                 Log.Debug("======strContent begin =========");
                 Log.Debug(strContent);
                 Log.Debug("======strContent end =========");
+                //重试一次
+                if (!DictUrl.ContainsKey(newsListUrl))
+                {
+                    DictUrl.Add(newsListUrl, 1);
+                    AuthorUrlGathering(newsListUrl, newsType);
+                }
+                
             }
             return null;
         }

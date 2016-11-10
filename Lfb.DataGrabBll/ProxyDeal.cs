@@ -127,7 +127,6 @@ namespace Lfb.DataGrabBll
 
                 #region === 被移除的IP列表重试一次，不行则删除 ===
 
-                var strContent = "";
                 if (ProxyListRemove.Count > 0)
                 {
                     foreach (var item in ProxyListRemove)
@@ -136,7 +135,7 @@ namespace Lfb.DataGrabBll
                         {
 
                             //访问百度，可以访问的才加入list
-                            strContent = HttpHelper.GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
+                            var strContent = HttpHelper.GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
                                 Encoding.UTF8, item);
                             if (!string.IsNullOrWhiteSpace(strContent))
                             {

@@ -9,9 +9,9 @@ namespace Lfb.NewsGather
     public class NewsDealing : MultiThread<NewsDealing>
     {
 
-        private bool _isStop = false;
-        private static bool IsGetProxy = false;
-        private static object lockObj = new object();
+        //private bool _isStop = false;
+        private static bool _isGetProxy = false;
+        private static readonly object LockObj = new object();
 
         static NewsDealing()
         {
@@ -49,11 +49,11 @@ namespace Lfb.NewsGather
                 //}
                 while (true)
                 {
-                    lock (lockObj)
+                    lock (LockObj)
                     {
-                        if (!IsGetProxy)
+                        if (!_isGetProxy)
                         {
-                            IsGetProxy = true;
+                            _isGetProxy = true;
 
                             Log.Info("定时刷新代理列表开始:" + DateTime.Now);
 
@@ -89,7 +89,7 @@ namespace Lfb.NewsGather
                 //}
                 while (true)
                 {
-                    lock (lockObj)
+                    lock (LockObj)
                     {
                         
                             Log.Info("定时处理被移聊代理列表开始:" + DateTime.Now);

@@ -385,26 +385,25 @@ namespace Lfb.DataGrabBll
                     //set end
                     try
                     {
-                        if (ProxyDeal.CurrProxyListIndex >= 0 &&
-                            ProxyDeal.CurrProxyListIndex < ProxyDeal.ProxyList.Count)
-                        {
-
-                        }
-                        else
+                        if (ProxyDeal.CurrProxyListIndex < 0 || 
+                            ProxyDeal.CurrProxyListIndex > ProxyDeal.ProxyList.Count)
                         {
                             ProxyDeal.CurrProxyListIndex = 0;
                         }
                         ipItem = ProxyDeal.ProxyList[ProxyDeal.CurrProxyListIndex];
-                        var ip = ipItem.Split(':')[0];
-                        var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
-                        WebProxy proxy = new WebProxy(ip, port);
-                        request.Proxy = proxy;
+                        
                         Interlocked.Increment(ref ProxyDeal.CurrProxyListIndex);
                     }
                     catch
                     {
-
+                        Random rnd = new Random();
+                        var i = rnd.Next(0, ProxyDeal.ProxyList.Count);
+                        ipItem = ProxyDeal.ProxyList[i];
                     }
+                    var ip = ipItem.Split(':')[0];
+                    var port = StrHelper.ToInt32(ipItem.Split(':')[1]);
+                    WebProxy proxy = new WebProxy(ip, port);
+                    request.Proxy = proxy;
                 }
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
