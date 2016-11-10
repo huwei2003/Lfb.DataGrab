@@ -564,7 +564,12 @@ namespace Lfb.DataGrabBll
                     //取出后置位isdeal 正在处理状态　isdeal=2
                     sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
-
+                }
+                else
+                { 
+                    //当isdeal=0 =1的没有时，全部置位
+                    sql = "update T_Author set IsDeal=1";
+                    Sql.ExecuteSql(sql);
                 }
 
                 return list;
@@ -594,10 +599,14 @@ namespace Lfb.DataGrabBll
                     {
                         ids = "0";
                     }
-                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    //取出后置位isdeal 正在处理状态　IsShow=2
                     sql = "update T_Author set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
-
+                }
+                else {
+                    //全部处理完后置位IsShow=1
+                    sql = "update T_Author set IsShow=1";
+                    Sql.ExecuteSql(sql);
                 }
 
                 return list;
