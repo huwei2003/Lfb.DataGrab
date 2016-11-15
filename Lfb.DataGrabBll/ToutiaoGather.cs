@@ -119,7 +119,8 @@ namespace Lfb.DataGrabBll
                 if (isHaveMore && ChannelPageIndex < Global.PageDepth)
                 {
                     //sleep
-                    Thread.Sleep(rnd.Next(1000, 2500));
+                    //Thread.Sleep(rnd.Next(1000, 2500));
+                    Thread.Sleep(200);
                     ChannelPageIndex++;
                     var maxBehotTime = data.next.max_behot_time.ToString();
                     //替换url中的max_behot_time
@@ -130,7 +131,8 @@ namespace Lfb.DataGrabBll
                 {
                     Log.Info("本频道抓取结束总页数" + ChannelPageIndex.ToString());
                     ChannelPageIndex = 0;
-                    Thread.Sleep(rnd.Next(2000, 5000));
+                    //Thread.Sleep(rnd.Next(2000, 5000));
+                    Thread.Sleep(200);
                 }
 
             }
@@ -173,7 +175,8 @@ namespace Lfb.DataGrabBll
                             DealAuthorData(url, item.AuthorId);
                         }
                     }
-                    Thread.Sleep(5 * 1000);
+                    //Thread.Sleep(5 * 1000);
+                    Thread.Sleep(200);
                 }
                 else
                 {
@@ -275,7 +278,8 @@ namespace Lfb.DataGrabBll
                             DealAuthorData(url, item.AuthorId);
                         }
                     }
-                    Thread.Sleep(5 * 1000);
+                    //Thread.Sleep(5 * 1000);
+                    Thread.Sleep(200);
                 }
                 else
                 {
@@ -558,7 +562,8 @@ namespace Lfb.DataGrabBll
                 if (isHaveMore  && AuthorPageIndex < Global.PageDepth)
                 {
                     //sleep
-                    Thread.Sleep(rnd.Next(1000, 2500));
+                    //Thread.Sleep(rnd.Next(1000, 2500));
+                    Thread.Sleep(200);
                     AuthorPageIndex++;
                     var maxBehotTime = data.next.max_behot_time.ToString();
                     //替换url中的max_behot_time
@@ -571,7 +576,8 @@ namespace Lfb.DataGrabBll
                     //置位状态
                     DalNews.UpdateAuthorIsDeal(authorId, 1);
                     AuthorPageIndex = 0;
-                    Thread.Sleep(rnd.Next(2000, 5000));
+                    //Thread.Sleep(rnd.Next(2000, 5000));
+                    Thread.Sleep(200);
                 }
             }
             catch (Exception ex)

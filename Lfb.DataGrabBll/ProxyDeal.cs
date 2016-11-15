@@ -28,7 +28,7 @@ namespace Lfb.DataGrabBll
                     ProxyList = new List<string>();
                 }
 
-                if (ProxyList.Count > Global.ProxyPoolSize-50)
+                if (ProxyList.Count > Global.ProxyPoolSize+50)
                 {
                     Log.Info("代理 目前可用个数=" + ProxyList.Count+" 暂停刷新代理");
                     return;
@@ -68,7 +68,7 @@ namespace Lfb.DataGrabBll
                                                 {
                                                     ProxyList.RemoveAt(0);
                                                 }
-                                                Thread.Sleep(5 * 60 * 1000);
+                                                Thread.Sleep(30 * 1000);
                                             }
                                             if (ProxyList.Count >= 20)
                                             {
@@ -102,7 +102,7 @@ namespace Lfb.DataGrabBll
                 //数量太少则重复取
                 if (ProxyList.Count < Global.ProxyPoolSize)
                 {
-                    Thread.Sleep(2 * 60 * 1000);
+                    Thread.Sleep(60 * 1000);
                     GetProxyList();
                 }
                 //Comm.Tools.Utility.Cache.SetCache("ProxyIpListForHttp", ProxyList, 3600);
