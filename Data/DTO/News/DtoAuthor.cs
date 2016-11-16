@@ -48,5 +48,10 @@ namespace Comm.Global.DTO.News
         /// 是否刷新，用于标识是否抓取过作者相关新闻
         /// </summary>
         public int IsShow;
+
+        /// <summary>
+        /// 刷新次数
+        /// </summary>
+        public int RefreshTimes;
     }
 }

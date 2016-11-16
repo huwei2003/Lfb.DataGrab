@@ -118,5 +118,10 @@ namespace Comm.Global.DTO.News
         /// 作者Id
         /// </summary>
         public string AuthorId;
+
+        /// <summary>
+        /// 刷新次数
+        /// </summary>
+        public int RefreshTimes;
     }
 }

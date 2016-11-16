@@ -15,7 +15,7 @@ namespace Lfb.DataGrabBll.Model
         internal string _url;
         internal int _IntervalMinutes;
         internal int _IsShow;
-
+        internal int _RefreshTimes;
 
         static T_Author()
         {
@@ -29,8 +29,8 @@ namespace Lfb.DataGrabBll.Model
 			{"LastDealTime", @"最后处理时间"},
             {"Url", @"作者的url"},
             {"IntervalMinutes",@"刷新时间间隔"},
-            {"IsShow","_IsShow"}
-			
+            {"IsShow","_IsShow"},
+            {"RefreshTimes","RefreshTimes"},			
 		};
         }
 
@@ -174,6 +174,22 @@ namespace Lfb.DataGrabBll.Model
             {
                 SetColumn("IntervalMinutes", _IntervalMinutes, value);
                 _IntervalMinutes = value;
+            }
+        }
+
+        /// <summary>
+        /// 刷新次数
+        /// </summary>
+        public int RefreshTimes
+        {
+            get
+            {
+                return _RefreshTimes;
+            }
+            set
+            {
+                SetColumn("RefreshTimes", _RefreshTimes, value);
+                _RefreshTimes = value;
             }
         }
     }

@@ -6,7 +6,7 @@ namespace Lfb.DataGrabBll.Model
 {
     public class T_News : Table<T_News>
     {
-        
+
         internal string _contents;
         internal DateTime _createTime;
         internal string _fromSiteName;
@@ -30,6 +30,7 @@ namespace Lfb.DataGrabBll.Model
         internal int _LastReadTimes;
         internal string _Tags;
         internal string _AuthorId;
+        internal int _RefreshTimes;
 
         static T_News()
         {
@@ -57,6 +58,7 @@ namespace Lfb.DataGrabBll.Model
             {"LastDealTime","LastDealTime"},
             {"IntervalMinutes","IntervalMinutes"},
             {"TotalComments","TotalComments"},
+            {"RefreshTimes","RefreshTimes"}
 		};
         }
 
@@ -409,6 +411,22 @@ namespace Lfb.DataGrabBll.Model
             {
                 SetColumn("TotalComments", _TotalComments, value);
                 _TotalComments = value;
+            }
+        }
+
+        /// <summary>
+        /// 刷新次数
+        /// </summary>
+        public int RefreshTimes
+        {
+            get
+            {
+                return _RefreshTimes;
+            }
+            set
+            {
+                SetColumn("RefreshTimes", _RefreshTimes, value);
+                _RefreshTimes = value;
             }
         }
     }

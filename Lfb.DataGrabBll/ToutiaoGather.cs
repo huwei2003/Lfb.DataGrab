@@ -432,6 +432,7 @@ namespace Lfb.DataGrabBll
                                         Tags = "",
                                         Title = subItem.title,
                                         TotalComments = subItem.comments_count,
+                                        RefreshTimes=0,
 
                                     };
                                     DalNews.Insert(model);
@@ -521,6 +522,9 @@ namespace Lfb.DataGrabBll
                                         {
                                             isHot = 1;
                                         }
+                                        if (oldNews.NewsHotClass < newsClassId) {
+                                            newsClassId = oldNews.NewsHotClass;
+                                        }
                                         var model = new DtoNews()
                                         {
                                             Id = newsId,
@@ -532,6 +536,7 @@ namespace Lfb.DataGrabBll
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
+                                            RefreshTimes = oldNews.RefreshTimes+1,
                                         };
 
                                         DalNews.UpdateNews(model);
@@ -651,6 +656,7 @@ namespace Lfb.DataGrabBll
                         LastDealTime = DateTime.Now,
                         Url = authorUrl,
                         IntervalMinutes = 60,
+                        RefreshTimes =0,
                     };
                     var id = DalNews.Insert(model);
                     return id;
