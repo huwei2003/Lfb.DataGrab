@@ -51,6 +51,9 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void GatherNewsFromZtRecentTest()
         {
+            var url0 = "http://toutiao.com/group/6353545386958782977/";
+            var str = Global.GetToutiaoGroupId(url0);
+
             var url = "http://www.toutiao.com/api/article/recent/?source=2&count=20&category=%E7%BB%84%E5%9B%BE&max_behot_time=0&utm_source=toutiao&device_platform=web&offset=0&as=A1B508A27D30C8F&cp=582D607C78CFCE1&_=1479347343375";
             bll.GatherNewsFromZtRecent(url);
         }

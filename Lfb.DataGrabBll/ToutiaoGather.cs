@@ -90,7 +90,7 @@ namespace Lfb.DataGrabBll
                                     if (isAuthorUrl)
                                     {
                                         //检查是否已存在，不在则入库
-                                        DealAuthorUrl(item.media_url);
+                                        DealAuthorUrl(item.media_url, item.group_id);
                                     }
                                     else
                                     {
@@ -176,7 +176,7 @@ namespace Lfb.DataGrabBll
                         if (!string.IsNullOrWhiteSpace(item.AuthorId))
                         {
                             var url = GetAuthorDataUrl(item.AuthorId);
-                            DealAuthorData(url, item.AuthorId);
+                            DealAuthorData(url, item.AuthorId,item.GroupId);
                         }
                     }
                     //Thread.Sleep(5 * 1000);
@@ -214,6 +214,8 @@ namespace Lfb.DataGrabBll
                         var url = news.FromUrl;
                         Log.Info(url + " 抓取开始");
                         var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+
+                        #region === begin ===
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
                             //重新请求一次，因为用了代理后，经常会失败
@@ -241,8 +243,8 @@ namespace Lfb.DataGrabBll
                                     var isAuthorUrl = Global.IsToutiaoAuthorUrl(href);
                                     if (isAuthorUrl)
                                     {
-                                        //检查是否已存在，不在则入库
-                                        DealAuthorUrl(href);
+                                        //检查是否已存在，不在则入库,此处的没有groupid
+                                        DealAuthorUrl(href,"");
                                     }
                                     else
                                     {
@@ -251,6 +253,10 @@ namespace Lfb.DataGrabBll
                                 }
                             }
                         }
+                        #endregion
+
+                        //取到评论的用户，再从用户取得订阅作者
+                        GatherAuthorFromUserSub(news.FromUrl, news.GroupId);
                     }
                 }
             }
@@ -279,7 +285,7 @@ namespace Lfb.DataGrabBll
                         if (!string.IsNullOrWhiteSpace(item.AuthorId))
                         {
                             var url = GetAuthorDataUrl(item.AuthorId);
-                            DealAuthorData(url, item.AuthorId);
+                            DealAuthorData(url, item.AuthorId,item.GroupId);
                         }
                     }
                     //Thread.Sleep(5 * 1000);
@@ -345,10 +351,27 @@ namespace Lfb.DataGrabBll
                                     if (!string.IsNullOrWhiteSpace(item.open_url))
                                     {
                                         var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.open_url);
+                                        var groupid = "";
+                                        try
+                                        {
+                                            if (item.latest_article != null && item.latest_article.Count > 0)
+                                            {
+                                                if (item.latest_article[0].display_url != null)
+                                                {
+                                                    groupid =
+                                                        Global.GetToutiaoGroupId(item.latest_article[0].display_url);
+                                                }
+
+                                            }
+                                        }
+                                        catch
+                                        {
+                                        }
+                                        //item.latest_article[0].display_url
                                         if (isAuthorUrl)
                                         {
                                             //检查是否已存在，不在则入库
-                                            DealAuthorUrl(item.open_url);
+                                            DealAuthorUrl(item.open_url, groupid);
                                         }
                                         else
                                         {
@@ -419,7 +442,7 @@ namespace Lfb.DataGrabBll
                                         if (isAuthorUrl)
                                         {
                                             //检查是否已存在，不在则入库
-                                            DealAuthorUrl(item.media_url);
+                                            DealAuthorUrl(item.media_url,item.group_id);
                                         }
                                         else
                                         {
@@ -477,15 +500,129 @@ namespace Lfb.DataGrabBll
             }
             return 0;
         }
+
+        
         #endregion
 
 
         #region === 辅助方法 ===
+        /// <summary>
+        /// 从用户订阅抓取作者信息
+        /// </summary>
+        /// <returns></returns>
+        private int GatherAuthorFromUserSub(string itemUrl,string groupId)
+        {
+            try
+            {
+                #region === begin ===
 
+                var url = "";
 
-        public int DealAuthorData(string url, string authorId)
+                var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    //重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        //HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                        //HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + " 未抓取到任何内容");
+                        }
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(strContent))
+                {
+                    strContent = FormatJsonData(strContent);
+                    var data = JsonConvert.DeserializeObject<DtoTouTiaoZtJsData>(strContent);
+                    if (data != null)
+                    {
+                        #region === 处理data中的数据，有作者的地址则存储 ===
+
+                        if (data.data != null && data.data.Count > 0)
+                        {
+                            foreach (var item in data.data)
+                            {
+                                try
+                                {
+                                    //item.media_url;
+                                    //"media_url": "http://toutiao.com/m3470331046/
+                                    if (!string.IsNullOrEmpty(item.media_url))
+                                    {
+                                        var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.media_url);
+                                        if (isAuthorUrl)
+                                        {
+                                            //检查是否已存在，不在则入库
+                                            DealAuthorUrl(item.media_url, item.group_id);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+                            }
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        Log.Info(url + " 未取到数据");
+                        return 0;
+                    }
+
+                    var isHaveMore = data.has_more;
+
+                    Random rnd = new Random();
+                    //有更多数据，则继续抓取数据
+                    if (isHaveMore && ChannelPageIndex < Global.PageDepth)
+                    {
+                        //sleep
+                        //Thread.Sleep(rnd.Next(1000, 2500));
+                        Thread.Sleep(200);
+                        ZtPageIndex++;
+                        var maxBehotTime = data.next.max_behot_time.ToString();
+                        //替换url中的max_behot_time
+                        url = ModifyUrlMax_behot_time(url, maxBehotTime);
+                        //GatherAuthorFromUserSub();
+                    }
+                    else
+                    {
+                        Log.Info("本组图抓取结束总页数" + ChannelPageIndex.ToString());
+                        ZtPageIndex = 0;
+                        //Thread.Sleep(rnd.Next(2000, 5000));
+                        Thread.Sleep(10 * 1000);
+                    }
+                }
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
+        public int DealAuthorData(string url, string authorId,string groupId)
         {
             var strContent = "";
+            if (string.IsNullOrWhiteSpace(groupId))
+            {
+                groupId = "";
+            }
             try
             {
                 Log.Info(url + " 抓取开始");
@@ -547,7 +684,7 @@ namespace Lfb.DataGrabBll
                                         Title = subItem.title,
                                         TotalComments = subItem.comments_count,
                                         RefreshTimes = 0,
-
+                                        GroupId = groupId
                                     };
                                     DalNews.Insert(model);
                                     #endregion
@@ -556,6 +693,10 @@ namespace Lfb.DataGrabBll
                                 {
                                     #region === 存在的则更新数据 ===
                                     var oldNews = DalNews.GetNews(newsId);
+                                    if (string.IsNullOrWhiteSpace(oldNews.GroupId))
+                                    {
+                                        oldNews.GroupId = groupId;
+                                    }
                                     if (oldNews != null)
                                     {
                                         //b、变化数据，如果是当天发稿的文章，每15分钟刷新一次阅读量，如果5、6、7级，则改为小时更新；
@@ -653,7 +794,10 @@ namespace Lfb.DataGrabBll
                                             LastDealTime = DateTime.Now,
                                             RefreshTimes = oldNews.RefreshTimes + 1,
                                         };
-
+                                        if (!string.IsNullOrWhiteSpace(oldNews.GroupId))
+                                        {
+                                            model.GroupId = oldNews.GroupId;
+                                        }
                                         DalNews.UpdateNews(model);
 
                                         //暂不更新作者表的刷新时间，没用上
@@ -688,7 +832,7 @@ namespace Lfb.DataGrabBll
                     var maxBehotTime = data.next.max_behot_time.ToString();
                     //替换url中的max_behot_time
                     url = ModifyUrlMax_behot_time(url, maxBehotTime);
-                    DealAuthorData(url, authorId);
+                    DealAuthorData(url, authorId,groupId);
                 }
                 else
                 {
@@ -750,8 +894,9 @@ namespace Lfb.DataGrabBll
         /// 处理作者首页url,不存在则入库
         /// </summary>
         /// <param name="authorUrl"></param>
+        /// <param name="groupId"></param>
         /// <returns></returns>
-        public int DealAuthorUrl(string authorUrl)
+        public int DealAuthorUrl(string authorUrl,string groupId)
         {
             try
             {
@@ -772,6 +917,7 @@ namespace Lfb.DataGrabBll
                         Url = authorUrl,
                         IntervalMinutes = 60,
                         RefreshTimes = 0,
+                        GroupId = groupId
                     };
                     var id = DalNews.Insert(model);
                     return id;

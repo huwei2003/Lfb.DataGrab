@@ -16,6 +16,7 @@ namespace Lfb.DataGrabBll.Model
         internal int _IntervalMinutes;
         internal int _IsShow;
         internal int _RefreshTimes;
+        internal string _GroupId;
 
         static T_Author()
         {
@@ -30,7 +31,8 @@ namespace Lfb.DataGrabBll.Model
             {"Url", @"作者的url"},
             {"IntervalMinutes",@"刷新时间间隔"},
             {"IsShow","_IsShow"},
-            {"RefreshTimes","RefreshTimes"},			
+            {"RefreshTimes","RefreshTimes"},	
+		    {"GroupId","GroupId"},
 		};
         }
 
@@ -190,6 +192,22 @@ namespace Lfb.DataGrabBll.Model
             {
                 SetColumn("RefreshTimes", _RefreshTimes, value);
                 _RefreshTimes = value;
+            }
+        }
+
+        /// <summary>
+        /// groupid
+        /// </summary>
+        public string GroupId
+        {
+            get
+            {
+                return _GroupId;
+            }
+            set
+            {
+                SetColumn("GroupId", _GroupId, value);
+                _GroupId = value;
             }
         }
     }

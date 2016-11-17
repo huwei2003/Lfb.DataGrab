@@ -8,6 +8,7 @@ namespace Lfb.DataGrabBll.Dto
     public class DtoTouTiaoZtNews
     {
         public string media_url;
+        public string group_id;
     }
 
 }

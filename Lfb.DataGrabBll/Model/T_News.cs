@@ -31,6 +31,7 @@ namespace Lfb.DataGrabBll.Model
         internal string _Tags;
         internal string _AuthorId;
         internal int _RefreshTimes;
+        internal string _GroupId;
 
         static T_News()
         {
@@ -58,7 +59,8 @@ namespace Lfb.DataGrabBll.Model
             {"LastDealTime","LastDealTime"},
             {"IntervalMinutes","IntervalMinutes"},
             {"TotalComments","TotalComments"},
-            {"RefreshTimes","RefreshTimes"}
+            {"RefreshTimes","RefreshTimes"},
+            {"GroupId","GroupId"}
 		};
         }
 
@@ -427,6 +429,21 @@ namespace Lfb.DataGrabBll.Model
             {
                 SetColumn("RefreshTimes", _RefreshTimes, value);
                 _RefreshTimes = value;
+            }
+        }
+        /// <summary>
+        /// groupid
+        /// </summary>
+        public string GroupId
+        {
+            get
+            {
+                return _GroupId;
+            }
+            set
+            {
+                SetColumn("GroupId", _GroupId, value);
+                _GroupId = value;
             }
         }
     }

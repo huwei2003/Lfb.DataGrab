@@ -29,6 +29,10 @@ namespace Lfb.NewsGather
             AddTask(GatherAuthorFromNews, 15 * 60);
 
             AddTask(GatherRelationFromAuthor, 15 * 60);
+
+            AddTask(GatherNewsFromZtRecent, 15 * 60);
+
+            //AddTask(GatherAuthorFromUserSub, 15 * 60);
         }
 
         /// <summary>
@@ -359,6 +363,47 @@ namespace Lfb.NewsGather
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
+
+        /// <summary>
+        /// 从用户订阅抓取作者信息 暂不用，放在新闻列表处理里一起做
+        /// </summary>
+        public static void GatherAuthorFromUserSub()
+        {
+            try
+            {
+                if (Global.IsEnableGatherUserSub != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("从用户订阅抓相关新闻的作者开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+
+                    //bll.GatherAuthorFromUserSub();
+
+
+                    Log.Info("从用户订阅抓相关新闻的作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
         /// <summary>
         /// 图片转存处理
         /// </summary>

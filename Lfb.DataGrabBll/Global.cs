@@ -78,6 +78,10 @@ namespace Lfb.DataGrabBll
         /// </summary>
         public static string IsEnableGatherZt = GetIsEnableGatherZt();
 
+        /// <summary>
+        /// 是否开启从用户订阅抓取作者信息 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherUserSub = GetIsEnableGatherUserSub();
 
         private static string GetImgSavePrex()
         {
@@ -244,6 +248,20 @@ namespace Lfb.DataGrabBll
             }
         }
         
+        private static string GetIsEnableGatherUserSub()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherUserSub"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+
+    
 
         private static int GetProxyPoolSize()
         {
@@ -329,5 +347,14 @@ namespace Lfb.DataGrabBll
             return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","").Replace("/","");
             //"http://toutiao.com/m3470331046/"
         }
+
+        public static string GetToutiaoGroupId(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return "";
+            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/group/","").Replace("/","");
+            //"display_url": "http://toutiao.com/group/6353545386958782977/",
+        }
+                                
     }
 }

@@ -135,6 +135,7 @@ namespace Lfb.DataGrabBll
                     IntervalMinutes = model.IntervalMinutes,
                     CurReadTimes = model.CurReadTimes,
                     CreateTime = DateTime.Now,
+                    GroupId = model.GroupId,
                 };
 
 
@@ -164,6 +165,7 @@ namespace Lfb.DataGrabBll
                     TotalComments = model.TotalComments,
                     NewsHotClass = model.NewsHotClass,
                     IntervalMinutes = model.IntervalMinutes,
+                    GroupId = model.GroupId,
                 };
                 return Sql.Update(news, "Id={0}".Formats(model.Id));
             }
@@ -423,7 +425,8 @@ namespace Lfb.DataGrabBll
                     IsDeal = model.IsDeal,
                     LastDealTime = DateTime.Now,
                     Url = model.Url,
-                    IsShow =0
+                    IsShow =0,
+                    GroupId = model.GroupId
                 };
 
 

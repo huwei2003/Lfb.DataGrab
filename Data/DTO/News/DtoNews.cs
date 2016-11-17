@@ -123,5 +123,10 @@ namespace Comm.Global.DTO.News
         /// 刷新次数
         /// </summary>
         public int RefreshTimes;
+
+        /// <summary>
+        /// groupid
+        /// </summary>
+        public string GroupId;
     }
 }
