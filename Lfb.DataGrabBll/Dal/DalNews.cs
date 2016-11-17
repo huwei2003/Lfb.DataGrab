@@ -490,6 +490,31 @@ namespace Lfb.DataGrabBll
                 return false;
             }
         }
+
+        /// <summary>
+        /// 更新作者的groupid
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateAuthorGroupId(string authroId,string groupId)
+        {
+            try
+            {
+                
+
+                var sql = string.Format("update T_Author set GroupId='{0}' where AuthorId='{1}' and (GroupId='0' or GroupId='')", groupId, authroId);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 更新作者的处理状态
         /// </summary>

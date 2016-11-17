@@ -514,6 +514,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
+                return 0;
                 #region === begin ===
 
                 var url = "";
@@ -921,6 +922,10 @@ namespace Lfb.DataGrabBll
                     };
                     var id = DalNews.Insert(model);
                     return id;
+                }
+                else
+                {
+                    DalNews.UpdateAuthorGroupId(authorId, groupId);
                 }
             }
             catch (Exception ex)
