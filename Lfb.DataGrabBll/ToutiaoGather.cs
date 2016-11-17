@@ -20,6 +20,10 @@ namespace Lfb.DataGrabBll
         /// 频道的翻页计数
         /// </summary>
         public static int ChannelPageIndex;
+        /// <summary>
+        /// 组图的翻页计数
+        /// </summary>
+        public static int ZtPageIndex;
 
         /// <summary>
         /// 作者的翻页计数
@@ -149,7 +153,7 @@ namespace Lfb.DataGrabBll
                     DictUrl.Add(newsListUrl, 1);
                     AuthorUrlGathering(newsListUrl, newsType);
                 }
-                
+
             }
             return null;
         }
@@ -310,7 +314,7 @@ namespace Lfb.DataGrabBll
                 {
                     foreach (var author in list)
                     {
-                        var url = "http://www.toutiao.com/related_media/?media_id="+author.AuthorId;
+                        var url = "http://www.toutiao.com/related_media/?media_id=" + author.AuthorId;
                         Log.Info(url + " 抓取开始");
                         var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
                         if (string.IsNullOrWhiteSpace(strContent))
@@ -334,7 +338,7 @@ namespace Lfb.DataGrabBll
                         {
                             strContent = FormatJsonData(strContent);
                             var result = JsonConvert.DeserializeObject<DtoTouTiaoRelationNewsJsData>(strContent);
-                            if (result != null && result.data.related_media!=null)
+                            if (result != null && result.data.related_media != null)
                             {
                                 foreach (var item in result.data.related_media)
                                 {
@@ -356,6 +360,116 @@ namespace Lfb.DataGrabBll
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
+
+        /// <summary>
+        /// 从组图抓取作者信息
+        /// </summary>
+        /// <returns></returns>
+        public int GatherNewsFromZtRecent(string url)
+        {
+            try
+            {
+                #region === begin ===
+                
+                Log.Info(url + " 抓取开始");
+                var strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    //重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        //HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContentByMobileAgent(url, Encoding.UTF8);
+                        //HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + " 未抓取到任何内容");
+                        }
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(strContent))
+                {
+                    strContent = FormatJsonData(strContent);
+                    var data = JsonConvert.DeserializeObject<DtoTouTiaoZtJsData>(strContent);
+                    if (data != null)
+                    {
+                        #region === 处理data中的数据，有作者的地址则存储 ===
+
+                        if (data.data != null && data.data.Count > 0)
+                        {
+                            foreach (var item in data.data)
+                            {
+                                try
+                                {
+                                    //item.media_url;
+                                    //"media_url": "http://toutiao.com/m3470331046/
+                                    if (!string.IsNullOrEmpty(item.media_url))
+                                    {
+                                        var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.media_url);
+                                        if (isAuthorUrl)
+                                        {
+                                            //检查是否已存在，不在则入库
+                                            DealAuthorUrl(item.media_url);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+                            }
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        Log.Info(url + " 未取到数据");
+                        return 0;
+                    }
+                    
+                    var isHaveMore = data.has_more;
+
+                    Random rnd = new Random();
+                    //有更多数据，则继续抓取数据
+                    if (isHaveMore && ChannelPageIndex < Global.PageDepth)
+                    {
+                        //sleep
+                        //Thread.Sleep(rnd.Next(1000, 2500));
+                        Thread.Sleep(200);
+                        ZtPageIndex++;
+                        var maxBehotTime = data.next.max_behot_time.ToString();
+                        //替换url中的max_behot_time
+                        url = ModifyUrlMax_behot_time(url, maxBehotTime);
+                        GatherNewsFromZtRecent(url);
+                    }
+                    else
+                    {
+                        Log.Info("本组图抓取结束总页数" + ChannelPageIndex.ToString());
+                        ZtPageIndex = 0;
+                        //Thread.Sleep(rnd.Next(2000, 5000));
+                        Thread.Sleep(10*1000);
+                    }
+                }
+                #endregion
+
             }
             catch (Exception ex)
             {
@@ -432,7 +546,7 @@ namespace Lfb.DataGrabBll
                                         Tags = "",
                                         Title = subItem.title,
                                         TotalComments = subItem.comments_count,
-                                        RefreshTimes=0,
+                                        RefreshTimes = 0,
 
                                     };
                                     DalNews.Insert(model);
@@ -522,7 +636,8 @@ namespace Lfb.DataGrabBll
                                         {
                                             isHot = 1;
                                         }
-                                        if (oldNews.NewsHotClass < newsClassId) {
+                                        if (oldNews.NewsHotClass < newsClassId)
+                                        {
                                             newsClassId = oldNews.NewsHotClass;
                                         }
                                         var model = new DtoNews()
@@ -536,7 +651,7 @@ namespace Lfb.DataGrabBll
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
-                                            RefreshTimes = oldNews.RefreshTimes+1,
+                                            RefreshTimes = oldNews.RefreshTimes + 1,
                                         };
 
                                         DalNews.UpdateNews(model);
@@ -564,7 +679,7 @@ namespace Lfb.DataGrabBll
 
                 Random rnd = new Random();
                 //有更多数据，则继续抓取数据
-                if (isHaveMore  && AuthorPageIndex < Global.PageDepth)
+                if (isHaveMore && AuthorPageIndex < Global.PageDepth)
                 {
                     //sleep
                     //Thread.Sleep(rnd.Next(1000, 2500));
@@ -656,7 +771,7 @@ namespace Lfb.DataGrabBll
                         LastDealTime = DateTime.Now,
                         Url = authorUrl,
                         IntervalMinutes = 60,
-                        RefreshTimes =0,
+                        RefreshTimes = 0,
                     };
                     var id = DalNews.Insert(model);
                     return id;
@@ -805,7 +920,7 @@ namespace Lfb.DataGrabBll
                 str = str.Replace("\"show_play_effective_count\": true,", "\"show_play_effective_count\": 0,").Replace("\"show_play_effective_count\": false,", "\"show_play_effective_count\": 0,");
             }
             catch (Exception ex)
-            { 
+            {
 
             }
             return str;

@@ -281,7 +281,7 @@ namespace Lfb.NewsGather
 
 
         /// <summary>
-        /// 从新闻页抓取作者信息
+        /// 从作者抓取相关新闻作者信息
         /// </summary>
         public static void GatherRelationFromAuthor()
         {
@@ -319,6 +319,46 @@ namespace Lfb.NewsGather
             }
         }
 
+
+        /// <summary>
+        /// 从组图列表抓取作者信息
+        /// </summary>
+        public static void GatherNewsFromZtRecent()
+        {
+            try
+            {
+                if (Global.IsEnableGatherZt != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("从组图列表抓相关新闻的作者开始:" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    var url = "http://www.toutiao.com/api/article/recent/?source=2&count=20&category=%E7%BB%84%E5%9B%BE&max_behot_time=0&utm_source=toutiao&device_platform=web&offset=0&as=A1B508A27D30C8F&cp=582D607C78CFCE1&_=1479347343375";
+                    bll.GatherNewsFromZtRecent(url);
+
+
+                    Log.Info("从组图列表抓相关新闻的作者结束:" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
         /// <summary>
         /// 图片转存处理
         /// </summary>

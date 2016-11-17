@@ -72,6 +72,13 @@ namespace Lfb.DataGrabBll
         /// 是否开启从作者id取相关新闻 1=处理 0=no
         /// </summary>
         public static string IsEnableGatherRelationFromAuthor = GetIsEnableGatherRelationFromAuthor();
+
+        /// <summary>
+        /// 是否开启从组图抓取新闻作者信息 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherZt = GetIsEnableGatherZt();
+
+
         private static string GetImgSavePrex()
         {
             try
@@ -216,6 +223,19 @@ namespace Lfb.DataGrabBll
             try
             {
                 return ConfigurationManager.AppSettings["IsEnableGatherRelationFromAuthor"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+
+        private static string GetIsEnableGatherZt()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherZt"].ToString();
             }
             catch (Exception e)
             {

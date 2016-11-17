@@ -51,6 +51,8 @@
     <Compile Include="Dal\DalNews.cs" />
     <Compile Include="DtoIfengImg.cs" />
     <Compile Include="Dto\DtoLatest_article.cs" />
+    <Compile Include="Dto\DtoTouTiaoZtNews.cs" />
+    <Compile Include="Dto\DtoTouTiaoZtJsData.cs" />
     <Compile Include="Dto\Related_media.cs" />
     <Compile Include="Dto\DtoRelated_media.cs" />
     <Compile Include="Dto\DtoTouTiaoAuthorJsData.cs" />
