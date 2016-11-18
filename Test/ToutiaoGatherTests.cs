@@ -38,15 +38,24 @@ namespace Lfb.DataGrab.Tests
 
             //var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1";
             var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1B5E83210C6E63&cp=5820D6CE66539E1";
-            bll.AuthorUrlGathering(url, 100);
+            bll.GatheringAuthorUrlFromChannel(url, 100);
         }
 
         [Test()]
         public void AuthorNewsGatheringTest()
         {
-            bll.AuthorNewsGathering();
+            //var t = Comm.Tools.Utility.DateTimeFormat.ToJsTime(DateTime.Now);
+            bll.GatheringNewsFromAuthor();
         }
 
+        
+        [Test()]
+        public void GatherAuthorFromNewsTest()
+        {
+            
+            bll.GatherAuthorFromNews();
+        }
+        
 
         [Test()]
         public void GatherNewsFromZtRecentTest()

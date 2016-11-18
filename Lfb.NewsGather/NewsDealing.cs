@@ -20,9 +20,9 @@ namespace Lfb.NewsGather
 
             AddTask(DealProxyListRemove, 10 * 60);
 
-            AddTask(AuthorUrlGathering, 10 * 60);
+            AddTask(GatheringAuthorUrlFromChannel, 10 * 60);
 
-            AddTask(AuthorNewsGathering, 15 * 60);
+            AddTask(GatheringNewsFromAuthor, 15 * 60);
 
             AddTask(AuthorNewsByRefreshGathering, 15 * 60);
 
@@ -115,7 +115,7 @@ namespace Lfb.NewsGather
         /// <summary>
         /// 头条频道新闻抓取处理
         /// </summary>
-        public static void AuthorUrlGathering()
+        public static void GatheringAuthorUrlFromChannel()
         {
             try
             {
@@ -133,19 +133,54 @@ namespace Lfb.NewsGather
                 {
                     Log.Info("频道新闻抓取开始:" + DateTime.Now);
                     var siteList = XmlDeal.GetSitesInfo();
-
+                    
                     if (siteList != null && siteList.Count > 0)
                     {
-                        foreach (var site in siteList)
+                        
+                        //foreach (var site in siteList)
+                        //{
+                        //    if (site.SiteName.ToLower() == "toutiao")
+                        //    {
+                        //        var bll = new ToutiaoGather();
+                        //        bll.AuthorUrlGathering(site.Url, site.NewsType);
+                        //    }
+                        //    Thread.Sleep(60 * 1000);
+                        //}
+
+                        //改成随机，不固定顺序，避免多开时从同一个顺序启动抓取
+                        Random rnd = new Random();
+                        var iStart = rnd.Next(0, siteList.Count);
+                        //增加从下面索引开始的机率
+                        if (iStart%3 == 0)
                         {
-                            if (site.SiteName.ToLower() == "toutiao")
+                            iStart = 0;
+                        }
+                        if (iStart % 4 == 0)
+                        {
+                            iStart = 1;
+                        }
+                        if (iStart % 5 == 0)
+                        {
+                            iStart = 5;
+                        }
+                        if (iStart % 6 == 0)
+                        {
+                            iStart = 9;
+                        }
+                        for (var i = iStart; i < siteList.Count; i++)
+                        {
+                            if (i > siteList.Count || i < 0)
+                            {
+                                i = 0;
+                            }
+                            if (siteList[i].SiteName.ToLower() == "toutiao")
                             {
                                 var bll = new ToutiaoGather();
-                                bll.AuthorUrlGathering(site.Url, site.NewsType);
+                                bll.GatheringAuthorUrlFromChannel(siteList[i].Url, siteList[i].NewsType);
                             }
-
-                            Thread.Sleep(60 * 1000);
+                            Thread.Sleep(5 * 1000);
                         }
+
                     }
                     else
                     {
@@ -169,7 +204,7 @@ namespace Lfb.NewsGather
         /// <summary>
         /// 头条作者新闻处理
         /// </summary>
-        public static void AuthorNewsGathering()
+        public static void GatheringNewsFromAuthor()
         {
             try
             {
@@ -187,7 +222,7 @@ namespace Lfb.NewsGather
                     Log.Info("作者列表页新闻抓取开始:" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
-                    bll.AuthorNewsGathering();
+                    bll.GatheringNewsFromAuthor();
 
 
                     Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
@@ -246,6 +281,8 @@ namespace Lfb.NewsGather
 
         /// <summary>
         /// 从新闻页抓取作者信息
+        /// 同时会抓取这个新闻的评论列表，从评论列表抓取用户，再从用户这里抓取用户订阅的作者
+        /// 要多开
         /// </summary>
         public static void GatherAuthorFromNews()
         {
@@ -366,6 +403,7 @@ namespace Lfb.NewsGather
 
         /// <summary>
         /// 从用户订阅抓取作者信息 暂不用，放在新闻列表处理里一起做
+        /// 暂不用在这里启动，在新闻处理里一起做了
         /// </summary>
         public static void GatherAuthorFromUserSub()
         {

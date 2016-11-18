@@ -153,8 +153,8 @@ namespace Comm.Tools.Utility
         /// <returns></returns>
         public static long ToJsTime(this DateTime dt)
         {
-            var ts = DateTime.Now.Subtract(DateTime.Parse("1970-01-01"));
-            return ts.TotalMilliseconds.ToString(CultureInfo.InvariantCulture).Split('.')[0].ToLong();
+            var ts = DateTime.Now.AddHours(-8).Subtract(DateTime.Parse("1970-01-01"));
+            return ts.TotalMilliseconds.ToString().Split('.')[0].ToLong();
         }
     }
 }

@@ -344,7 +344,7 @@ namespace Lfb.DataGrabBll
         {
             if (string.IsNullOrWhiteSpace(url))
                 return "";
-            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","").Replace("/","");
+            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/m","").Replace("/","").Replace(".","");
             //"http://toutiao.com/m3470331046/"
         }
 
@@ -352,8 +352,16 @@ namespace Lfb.DataGrabBll
         {
             if (string.IsNullOrWhiteSpace(url))
                 return "";
-            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/group/","").Replace("/","");
+            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com","").Replace("www","").Replace("/group/","").Replace("/","").Replace(".","");
             //"display_url": "http://toutiao.com/group/6353545386958782977/",
+        }
+
+        public static string GetToutiaoItemId(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return "";
+            return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com", "").Replace("www", "").Replace("/item/", "").Replace("/", "").Replace(".", "");
+            //http://www.toutiao.com/item/6347600331160945153/
         }
                                 
     }

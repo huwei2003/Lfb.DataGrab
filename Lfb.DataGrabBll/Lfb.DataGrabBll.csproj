@@ -51,6 +51,11 @@
     <Compile Include="Dal\DalNews.cs" />
     <Compile Include="DtoIfengImg.cs" />
     <Compile Include="Dto\DtoLatest_article.cs" />
+    <Compile Include="Dto\DtoTouTiaoComment.cs" />
+    <Compile Include="Dto\DtoTouTiaoUserSubData.cs" />
+    <Compile Include="Dto\DtoTouTiaoUserSubJsData.cs" />
+    <Compile Include="Dto\DtoTouTiaoCommentJsData.cs" />
+    <Compile Include="Dto\DtoTouTiaoComments.cs" />
     <Compile Include="Dto\DtoTouTiaoZtNews.cs" />
     <Compile Include="Dto\DtoTouTiaoZtJsData.cs" />
     <Compile Include="Dto\Related_media.cs" />

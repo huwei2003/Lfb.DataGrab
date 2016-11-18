@@ -468,7 +468,7 @@ namespace Lfb.DataGrabBll
         /// 更新作者的处理状态
         /// </summary>
         /// <param name="id">作者表id</param>
-        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <param name="isDeal">处理标识 0=no,1=yes</param>
         /// <returns></returns>
         public static bool UpdateAuthorIsDeal(int id, int isDeal)
         {
@@ -494,15 +494,17 @@ namespace Lfb.DataGrabBll
         /// <summary>
         /// 更新作者的groupid
         /// </summary>
-        /// <param name="id">作者表id</param>
-        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <param name="authroId"></param>
+        /// <param name="groupId"></param>
         /// <returns></returns>
         public static bool UpdateAuthorGroupId(string authroId,string groupId)
         {
             try
             {
-                
-
+                if (string.IsNullOrWhiteSpace(groupId))
+                {
+                    return true;
+                }
                 var sql = string.Format("update T_Author set GroupId='{0}' where AuthorId='{1}' and (GroupId='0' or GroupId='')", groupId, authroId);
 
                 var result = Sql.ExecuteSql(sql);
@@ -655,9 +657,18 @@ namespace Lfb.DataGrabBll
         {
             try
             {
+                var curTime = DateTime.Now;
                 //取一个月内抓取且已到刷新时间的新闻的作者列表
-                var sql = "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}') order By Id DESC limit 0,100".Formats(DateTime.Now);
+                var sql = "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)) order By Id DESC limit 0,1000".Formats(curTime);
+                
+                
                 var list = Sql.Select<DtoAuthor>(sql);
+
+                //取过的新闻置位isdeal=1
+                var sql2 =
+                    "update T_News set IsDeal=2 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
+                        .Formats(curTime);
+                Sql.ExecuteSql(sql2);
 
                 if (list != null && list.Count > 0)
                 {
@@ -670,6 +681,16 @@ namespace Lfb.DataGrabBll
                     sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
 
+                }
+                else
+                {
+                    //全部执行完后统一回位 isdeal=1
+                    sql = "update T_Author set IsDeal=1";
+                    Sql.ExecuteSql(sql);
+
+                    //全部执行完后统一回位 isdeal=1
+                    sql = "update T_News set IsDeal=1";
+                    Sql.ExecuteSql(sql);
                 }
 
                 return list;
@@ -690,7 +711,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_News where IsShow=0 order By Id DESC limit 0,100";
+                var sql = "select * from T_News where (IsShow=0 or IsShow=1) order By Id DESC limit 0,100";
                 var list = Sql.Select<DtoNews>(sql);
 
                 if (list != null && list.Count > 0)
@@ -703,7 +724,12 @@ namespace Lfb.DataGrabBll
                     //取出后置位IsShow 正在处理状态　IsShow=2
                     sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
-
+                }
+                else
+                {
+                    //全部执行完后统一回位 isshow=1
+                    sql = "update T_News set IsShow=1";
+                    Sql.ExecuteSql(sql);
                 }
 
                 return list;

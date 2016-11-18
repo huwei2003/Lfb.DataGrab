@@ -86,7 +86,7 @@ namespace Lfb.DataGrab.Tasks
                             if (site.SiteName.ToLower() == "toutiao")
                             {
                                 var bll = new ToutiaoGather();
-                                bll.AuthorUrlGathering(site.Url, site.NewsType);
+                                bll.GatheringAuthorUrlFromChannel(site.Url, site.NewsType);
                             }
 
                             Thread.Sleep(60*1000);
@@ -127,7 +127,7 @@ namespace Lfb.DataGrab.Tasks
                     Log.Info("作者列表页新闻抓取开始:" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
-                    bll.AuthorNewsGathering();
+                    bll.GatheringNewsFromAuthor();
 
 
                     Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
