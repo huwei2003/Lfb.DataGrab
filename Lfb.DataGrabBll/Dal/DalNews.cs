@@ -501,11 +501,19 @@ namespace Lfb.DataGrabBll
         {
             try
             {
+                var sql = "";
                 if (string.IsNullOrWhiteSpace(groupId))
                 {
-                    return true;
+                    sql = string.Format("update T_Author set RefreshTimes=RefreshTimes+1 where AuthorId='{0}'", authroId);
+                    //return true;
                 }
-                var sql = string.Format("update T_Author set GroupId='{0}' where AuthorId='{1}' and (GroupId='0' or GroupId='')", groupId, authroId);
+                else
+                {
+                    sql =
+                        string.Format(
+                            "update T_Author set GroupId='{0}',RefreshTimes=RefreshTimes+1 where AuthorId='{1}' and (GroupId='0' or GroupId='')",
+                            groupId, authroId);
+                }
 
                 var result = Sql.ExecuteSql(sql);
                 return result;
@@ -592,7 +600,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else
@@ -630,7 +638,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位isdeal 正在处理状态　IsShow=2
-                    sql = "update T_Author set IsShow=2 where Id in({0})".Formats(ids);
+                    sql = "update T_Author set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else {
@@ -666,7 +674,7 @@ namespace Lfb.DataGrabBll
 
                 //取过的新闻置位isdeal=1
                 var sql2 =
-                    "update T_News set IsDeal=2 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
+                    "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
                         .Formats(curTime);
                 Sql.ExecuteSql(sql2);
 
@@ -678,7 +686,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author set IsDeal=2 where Id in({0})".Formats(ids);
+                    sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
 
                 }
@@ -722,7 +730,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位IsShow 正在处理状态　IsShow=2
-                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
+                    sql = "update T_News set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else

@@ -258,13 +258,13 @@ namespace Lfb.NewsGather
                 //}
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("作者列表页刷新开始:" + DateTime.Now);
+                    Log.Info("新闻刷新开始:" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
                     bll.AuthorNewsByRefreshGathering();
 
 
-                    Log.Info("作者列表页刷新结束:" + DateTime.Now);
+                    Log.Info("新闻刷新结束:" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)

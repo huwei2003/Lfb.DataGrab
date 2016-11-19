@@ -61,7 +61,7 @@ namespace Lfb.DataGrabBll
             try
             {
                 newsListUrl = FormatUrlPcAs(newsListUrl);
-                Log.Info(newsListUrl + " 抓取开始");
+                Log.Info(newsListUrl + " 频道抓取开始");
                 strContent = HttpHelper.GetContentByAgent(newsListUrl, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -75,7 +75,7 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(newsListUrl + " 未抓取到任何内容");
+                            Log.Info(newsListUrl + " 频道未抓取到任何内容");
                             return null;
                         }
                     }
@@ -113,10 +113,10 @@ namespace Lfb.DataGrabBll
                 }
                 else
                 {
-                    Log.Info(newsListUrl + " 未取到数据");
+                    Log.Info(newsListUrl + " 频道未取到数据");
                     return null;
                 }
-                Log.Info(newsListUrl + " 抓取结束");
+                Log.Info(newsListUrl + " 频道抓取结束");
                 var isHaveMore = data.has_more;
 
                 Random rnd = new Random();
@@ -143,7 +143,7 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Log.Error("出错的url=" + newsListUrl);
+                Log.Error("频道出错的 url=" + newsListUrl);
                 Log.Error(ex.Message + ex.StackTrace);
                 Log.Debug("======strContent begin =========");
                 Log.Debug(strContent);
@@ -215,7 +215,7 @@ namespace Lfb.DataGrabBll
                     foreach (var news in list)
                     {
                         var url = news.FromUrl;
-                        Log.Info(url + " 抓取开始");
+                        Log.Info(url + " 作者抓取开始");
                         var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
 
                         #region === begin ===
@@ -320,7 +320,7 @@ namespace Lfb.DataGrabBll
                     foreach (var author in list)
                     {
                         var url = "http://www.toutiao.com/related_media/?media_id=" + author.AuthorId;
-                        Log.Info(url + " 抓取开始");
+                        Log.Info(url + " 相关新闻作者抓取开始");
                         var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
@@ -401,7 +401,7 @@ namespace Lfb.DataGrabBll
             {
                 #region === begin ===
 
-                Log.Info(url + " 抓取开始");
+                Log.Info(url + " 组图抓取开始");
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -443,14 +443,6 @@ namespace Lfb.DataGrabBll
                                             //检查是否已存在，不在则入库
                                             DealAuthorUrl(item.media_url, item.group_id);
                                         }
-                                        else
-                                        {
-                                            continue;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        continue;
                                     }
                                 }
                                 catch (Exception ex)
@@ -463,7 +455,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info(url + " 未取到数据");
+                        Log.Info(url + " 组图未取到数据");
                         return 0;
                     }
 
@@ -484,7 +476,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info("本组图抓取结束总页数" + ChannelPageIndex.ToString());
+                        Log.Info("本组图抓取结束总页数" + ZtPageIndex.ToString());
                         ZtPageIndex = 0;
                         //Thread.Sleep(rnd.Next(2000, 5000));
                         Thread.Sleep(10 * 1000);
@@ -537,7 +529,7 @@ namespace Lfb.DataGrabBll
                 var url = "http://www.toutiao.com/api/comment/list/?group_id={0}&item_id={1}&offset={2}&count=5";
 
                 url = string.Format(url, groupId, itemId, offSet);
-
+                Log.Info(url + " 评论抓取开始");
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -590,7 +582,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info(url + " 未取到数据");
+                        Log.Info(url + " 评论未取到数据");
                         return 0;
                     }
 
@@ -644,7 +636,7 @@ namespace Lfb.DataGrabBll
                 var url = "http://www.toutiao.com/api/user/subscribe/?user_id={0}&app_name=news_article&offset={1}&count=16&_={2}";
 
                 url = string.Format(url, userId, offSet, timeStamp);
-
+                Log.Info(url + " 用户订阅抓取开始");
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -701,7 +693,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info(url + " 未取到数据");
+                        Log.Info(url + " 用户订阅未取到数据");
                         return 0;
                     }
 
@@ -748,7 +740,7 @@ namespace Lfb.DataGrabBll
             }
             try
             {
-                Log.Info(url + " 抓取开始");
+                Log.Info(url + " 作者抓取开始");
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -915,7 +907,6 @@ namespace Lfb.DataGrabBll
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
-                                            RefreshTimes = oldNews.RefreshTimes + 1,
                                         };
                                         if (!string.IsNullOrWhiteSpace(oldNews.GroupId) && oldNews.GroupId != "0")
                                         {
@@ -942,10 +933,10 @@ namespace Lfb.DataGrabBll
                 }
                 else
                 {
-                    Log.Info(url + " 未取到数据");
+                    Log.Info(url + " 作者未取到数据");
 
                 }
-                Log.Info(url + " 抓取结束");
+                Log.Info(url + " 作者抓取结束");
 
                 var isHaveMore = false;
                 if (data != null)
