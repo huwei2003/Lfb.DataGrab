@@ -187,7 +187,6 @@ namespace Lfb.DataGrabBll
                 {
                     Log.Info("暂时没有要处理的作者url");
                     Thread.Sleep(60 * 1000);
-                    GatheringNewsFromAuthor();
                 }
                 #endregion
             }
@@ -258,6 +257,7 @@ namespace Lfb.DataGrabBll
                         GatherAuthorFromUserSub(news.FromUrl, news.GroupId);
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -268,9 +268,11 @@ namespace Lfb.DataGrabBll
 
         /// <summary>
         /// 根据文章的刷新间隔取得该作者的主页来 抓取该作者文章阅读量等数据,
+        /// 更新新闻数据
+        /// 要多开 vip
         /// </summary>
         /// <returns></returns>
-        public int AuthorNewsByRefreshGathering()
+        public int GatheringAuthorNewsByRefresh()
         {
             try
             {
@@ -294,7 +296,6 @@ namespace Lfb.DataGrabBll
                 {
                     Log.Info("暂时没有要处理的作者url");
                     Thread.Sleep(60 * 1000);
-                    GatheringNewsFromAuthor();
                 }
                 #endregion
             }
@@ -319,6 +320,7 @@ namespace Lfb.DataGrabBll
                 {
                     foreach (var author in list)
                     {
+                        #region === begin ===
                         var url = "http://www.toutiao.com/related_media/?media_id=" + author.AuthorId;
                         Log.Info(url + " 相关新闻作者抓取开始");
                         var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
@@ -349,6 +351,7 @@ namespace Lfb.DataGrabBll
                                 {
                                     if (!string.IsNullOrWhiteSpace(item.open_url))
                                     {
+                                        #region === begin ---
                                         var isAuthorUrl = Global.IsToutiaoAuthorUrl(item.open_url);
                                         var groupid = "";
                                         try
@@ -372,14 +375,14 @@ namespace Lfb.DataGrabBll
                                             //检查是否已存在，不在则入库
                                             DealAuthorUrl(item.open_url, groupid);
                                         }
-                                        else
-                                        {
-                                            continue;
-                                        }
+                                        #endregion
                                     }
                                 }
                             }
                         }
+                        #endregion
+
+                        Thread.Sleep(200);
                     }
                 }
             }

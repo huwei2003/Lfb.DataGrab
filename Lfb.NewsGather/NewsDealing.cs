@@ -24,9 +24,15 @@ namespace Lfb.NewsGather
 
             AddTask(GatheringNewsFromAuthor, 15 * 60);
 
-            AddTask(AuthorNewsByRefreshGathering, 15 * 60);
+            //开三个
+            AddTask(GatheringAuthorNewsByRefresh, 15 * 60);
+            AddTask(GatheringAuthorNewsByRefresh, 16 * 60);
+            AddTask(GatheringAuthorNewsByRefresh, 17 * 60);
 
+            //开二个
             AddTask(GatherAuthorFromNews, 15 * 60);
+            AddTask(GatherAuthorFromNews, 16 * 60);
+
 
             AddTask(GatherRelationFromAuthor, 15 * 60);
 
@@ -51,6 +57,8 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+
+                var i = 0;
                 while (true)
                 {
                     lock (LockObj)
@@ -58,12 +66,12 @@ namespace Lfb.NewsGather
                         if (!_isGetProxy)
                         {
                             _isGetProxy = true;
-
-                            Log.Info("定时刷新代理列表开始:" + DateTime.Now);
+                            i++;
+                            Log.Info("定时刷新代理列表开始 i=" + i + " time=" + DateTime.Now);
 
                             ProxyDeal.GetProxyList();
 
-                            Log.Info("定时刷新代理列表结束:" + DateTime.Now);
+                            Log.Info("定时刷新代理列表结束 i=" + i + " time=" + DateTime.Now);
                         }
                     }
                     Thread.Sleep(5 * 60 * 1000);
@@ -91,17 +99,18 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                var i = 0;
                 while (true)
                 {
                     lock (LockObj)
                     {
-                        
-                            Log.Info("定时处理被移聊代理列表开始:" + DateTime.Now);
+                        i++;
+                        Log.Info("定时处理被移聊代理列表开始 i=" + i + " time=" + DateTime.Now);
 
-                            ProxyDeal.DealProxyListRemove();
+                        ProxyDeal.DealProxyListRemove();
 
-                            Log.Info("定时处理被移聊代理列表结束:" + DateTime.Now);
-                        
+                        Log.Info("定时处理被移聊代理列表结束 i="+i+" time=" + DateTime.Now);
+
                     }
                     Thread.Sleep(60 * 1000);
                 }
@@ -128,15 +137,16 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
-
+                int i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("频道新闻抓取开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("频道新闻抓取开始 i=" + i + " time=" + DateTime.Now);
                     var siteList = XmlDeal.GetSitesInfo();
-                    
+
                     if (siteList != null && siteList.Count > 0)
                     {
-                        
+
                         //foreach (var site in siteList)
                         //{
                         //    if (site.SiteName.ToLower() == "toutiao")
@@ -147,11 +157,12 @@ namespace Lfb.NewsGather
                         //    Thread.Sleep(60 * 1000);
                         //}
 
-                        //改成随机，不固定顺序，避免多开时从同一个顺序启动抓取
+                        #region === 改成随机，不固定顺序，避免多开时从同一个顺序启动抓取 ===
+
                         Random rnd = new Random();
                         var iStart = rnd.Next(0, siteList.Count);
                         //增加从下面索引开始的机率
-                        if (iStart%3 == 0)
+                        if (iStart % 3 == 0)
                         {
                             iStart = 0;
                         }
@@ -167,26 +178,27 @@ namespace Lfb.NewsGather
                         {
                             iStart = 9;
                         }
-                        for (var i = iStart; i < siteList.Count; i++)
+                        for (var start = iStart; start < siteList.Count; start++)
                         {
-                            if (i > siteList.Count || i < 0)
+                            if (start > siteList.Count || start < 0)
                             {
-                                i = 0;
+                                start = 0;
                             }
-                            if (siteList[i].SiteName.ToLower() == "toutiao")
+                            if (siteList[start].SiteName.ToLower() == "toutiao")
                             {
                                 var bll = new ToutiaoGather();
-                                bll.GatheringAuthorUrlFromChannel(siteList[i].Url, siteList[i].NewsType);
+                                bll.GatheringAuthorUrlFromChannel(siteList[start].Url, siteList[start].NewsType);
                             }
                             Thread.Sleep(5 * 1000);
                         }
+                        #endregion
 
                     }
                     else
                     {
                         Log.Error("抓取错误-检查site.xml" + DateTime.Now);
                     }
-                    Log.Info("频道新闻抓取结束:" + DateTime.Now);
+                    Log.Info("频道新闻抓取结束 i=" + i + " time=" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
@@ -217,16 +229,18 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                var i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("作者列表页新闻抓取开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("作者列表页新闻抓取开始 i=" + i + " time=" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
                     bll.GatheringNewsFromAuthor();
 
 
-                    Log.Info("作者列表页新闻抓取结束:" + DateTime.Now);
-                    Thread.Sleep(60 * 1000);
+                    Log.Info("作者列表页新闻抓取结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(5 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
                 {
@@ -242,8 +256,9 @@ namespace Lfb.NewsGather
 
         /// <summary>
         /// 根据文章的刷新间隔取得该作者的主页来 抓取该作者文章阅读量等数据
+        /// 要多开
         /// </summary>
-        public static void AuthorNewsByRefreshGathering()
+        public static void GatheringAuthorNewsByRefresh()
         {
             try
             {
@@ -256,16 +271,18 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                var i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("新闻刷新开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("新闻刷新开始 i="+i+" time=" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
-                    bll.AuthorNewsByRefreshGathering();
+                    bll.GatheringAuthorNewsByRefresh();
 
 
-                    Log.Info("新闻刷新结束:" + DateTime.Now);
-                    Thread.Sleep(60 * 1000);
+                    Log.Info("新闻刷新结束 i="+i+ " time=" + DateTime.Now);
+                    Thread.Sleep(5 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
                 {
@@ -297,16 +314,18 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                int i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("从新闻页抓取作者开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("从新闻页抓取作者开始 i=" + i + " time=" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
                     bll.GatherAuthorFromNews();
 
 
-                    Log.Info("从新闻页抓取作者结束:" + DateTime.Now);
-                    Thread.Sleep(60 * 1000);
+                    Log.Info("从新闻页抓取作者结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(5 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
                 {
@@ -323,6 +342,7 @@ namespace Lfb.NewsGather
 
         /// <summary>
         /// 从作者抓取相关新闻作者信息
+        /// 频率可以小点，因为作者相关新闻更新也慢
         /// </summary>
         public static void GatherRelationFromAuthor()
         {
@@ -337,15 +357,17 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                var i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("从作者抓相关新闻的作者开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("从作者抓相关新闻的作者开始 i="+i +" time="+ DateTime.Now);
 
                     var bll = new ToutiaoGather();
                     bll.GatherRelationNewsFromAuthor();
 
 
-                    Log.Info("从作者抓相关新闻的作者结束:" + DateTime.Now);
+                    Log.Info("从作者抓相关新闻的作者结束 i="+i + " time=" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
@@ -377,16 +399,18 @@ namespace Lfb.NewsGather
                 //{
                 //    return;
                 //}
+                var i = 0;
                 while (true && ProxyDeal.IsProxyReady)
                 {
-                    Log.Info("从组图列表抓相关新闻的作者开始:" + DateTime.Now);
+                    i++;
+                    Log.Info("从组图列表抓相关新闻的作者开始 i="+i+" time=" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
                     var url = "http://www.toutiao.com/api/article/recent/?source=2&count=20&category=%E7%BB%84%E5%9B%BE&max_behot_time=0&utm_source=toutiao&device_platform=web&offset=0&as=A1B508A27D30C8F&cp=582D607C78CFCE1&_=1479347343375";
                     bll.GatherNewsFromZtRecent(url);
 
 
-                    Log.Info("从组图列表抓相关新闻的作者结束:" + DateTime.Now);
+                    Log.Info("从组图列表抓相关新闻的作者结束 i="+i+" time=" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
@@ -471,6 +495,6 @@ namespace Lfb.NewsGather
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
-        
+
     }
 }

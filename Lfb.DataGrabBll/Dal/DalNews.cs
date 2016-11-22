@@ -15,6 +15,7 @@ namespace Lfb.DataGrabBll
     public class DalNews
     {
         private static RdsNew Sql; //注意在TestFixtureSetUp后初始化
+        private static object lockObj1 = new object();
 
         static DalNews()
         {
@@ -619,6 +620,7 @@ namespace Lfb.DataGrabBll
 
             return null;
         }
+
         /// <summary>
         /// 获取100条未处理的作者记录
         /// </summary>
@@ -665,43 +667,49 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var curTime = DateTime.Now;
-                //取一个月内抓取且已到刷新时间的新闻的作者列表
-                var sql = "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)) order By Id DESC limit 0,1000".Formats(curTime);
-                
-                
-                var list = Sql.Select<DtoAuthor>(sql);
-
-                //取过的新闻置位isdeal=1
-                var sql2 =
-                    "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
-                        .Formats(curTime);
-                Sql.ExecuteSql(sql2);
-
-                if (list != null && list.Count > 0)
+                //因为此处有多个线程同时执行
+                lock (lockObj1)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var curTime = DateTime.Now;
+                    //取一个月内抓取且已到刷新时间的新闻的作者列表
+                    var sql =
+                        "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)) order By Id DESC limit 0,1000"
+                            .Formats(curTime);
+
+
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    //取过的新闻置位isdeal=1
+                    var sql2 =
+                        "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
+                            .Formats(curTime);
+                    Sql.ExecuteSql(sql2);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
+
                     }
-                    //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
+                    else
+                    {
+                        //全部执行完后统一回位 isdeal=1
+                        sql = "update T_Author set IsDeal=1";
+                        Sql.ExecuteSql(sql);
 
+                        //全部执行完后统一回位 isdeal=1
+                        sql = "update T_News set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
+
+                    return list;
                 }
-                else
-                {
-                    //全部执行完后统一回位 isdeal=1
-                    sql = "update T_Author set IsDeal=1";
-                    Sql.ExecuteSql(sql);
-
-                    //全部执行完后统一回位 isdeal=1
-                    sql = "update T_News set IsDeal=1";
-                    Sql.ExecuteSql(sql);
-                }
-
-                return list;
             }
             catch (Exception ex)
             {
@@ -730,7 +738,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位IsShow 正在处理状态　IsShow=2
-                    sql = "update T_News set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else

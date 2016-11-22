@@ -161,7 +161,7 @@ namespace Lfb.DataGrab.Tasks
                     Log.Info("作者列表页刷新开始:" + DateTime.Now);
 
                     var bll = new ToutiaoGather();
-                    bll.AuthorNewsByRefreshGathering();
+                    bll.GatheringAuthorNewsByRefresh();
 
 
                     Log.Info("作者列表页刷新结束:" + DateTime.Now);
