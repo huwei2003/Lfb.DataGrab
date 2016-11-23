@@ -91,7 +91,6 @@ namespace Lfb.DataGrab.Tests
             ProxyDeal.GetProxyList();
             list = ProxyDeal.ProxyList;
 
-            HttpHelper.GetContentByMobileAgent("www.163.com", Encoding.UTF8);
         }
 
         [Test()]
@@ -101,6 +100,13 @@ namespace Lfb.DataGrab.Tests
                 "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=1477194899&max_behot_time_tmp=1477194899&as=A135F8A09C7897E&cp=580C08C9477EAE1";
             var result = bll.ModifyUrlMax_behot_time(url, "1481111222");
             Assert.IsTrue(result.Contains("1481111222"));
+        }
+
+        [Test()]
+        public void GetContentTest()
+        {
+            var str = HttpHelper.GetContentByMobileAgent("http://omgmta.qq.com/mstat/report/?index=1479869384", Encoding.UTF8);
+            Console.WriteLine(str);
         }
     }
 }

@@ -5,14 +5,14 @@ namespace Lfb.DataGrabBll.Dto
 {
     public class DtoTouTiaoAuthorNews
     {
-        public int play_effective_count;
+        //public int play_effective_count;
         public int gallery_pic_count;
         //阅读量
         public int go_detail_count;
         public string title;
         public List<DtoTouTiaoImageList> image_list;
         //public string abstract;
-        public int show_play_effective_count;
+        //public int show_play_effective_count;
         public bool middle_mode;
         public bool has_video;
         public string source_url;
