@@ -784,7 +784,7 @@ namespace Lfb.DataGrabBll
                                         AuthorId = authorId,
                                         Contents = "",
                                         CreateTime = DateTime.Now,
-                                        CurReadTimes = subItem.go_detail_count,
+                                        CurReadTimes = Global.ToInt(subItem.go_detail_count),
                                         FromSiteName = "toutiao",
                                         FromUrl = subItem.source_url,
                                         IntervalMinutes = 60,
@@ -792,7 +792,7 @@ namespace Lfb.DataGrabBll
                                         IsHot = 0,
                                         IsShow = 1,
                                         LastDealTime = DateTime.Now,
-                                        LastReadTimes = subItem.go_detail_count,
+                                        LastReadTimes = Global.ToInt(subItem.go_detail_count),
                                         LogoOriginalUrl = subItem.pc_image_url,
                                         LogoUrl = subItem.pc_image_url,
                                         NewsHotClass = 7,
@@ -800,7 +800,7 @@ namespace Lfb.DataGrabBll
                                         PubTime = subItem.datetime,
                                         Tags = "",
                                         Title = subItem.title,
-                                        TotalComments = subItem.comments_count,
+                                        TotalComments = Global.ToInt(subItem.comments_count),
                                         RefreshTimes = 0,
                                         GroupId = groupId
                                     };
@@ -824,7 +824,7 @@ namespace Lfb.DataGrabBll
                                         var isHot = 0;
                                         var minutes = (DateTime.Now - oldNews.LastDealTime).TotalMinutes;
                                         var newsClassId = 7;
-                                        var addReads = subItem.go_detail_count - oldNews.CurReadTimes;
+                                        var addReads = Global.ToInt(subItem.go_detail_count) - oldNews.CurReadTimes;
                                         var intervalMinutes = 24 * 60;
                                         if (addReads > 0)
                                         {
@@ -903,10 +903,10 @@ namespace Lfb.DataGrabBll
                                         {
                                             Id = newsId,
                                             LastReadTimes = oldNews.CurReadTimes,
-                                            CurReadTimes = subItem.go_detail_count,
+                                            CurReadTimes = Global.ToInt(subItem.go_detail_count),
                                             IsHot = isHot,
                                             IsDeal = 1,
-                                            TotalComments = subItem.comments_count,
+                                            TotalComments = Global.ToInt(subItem.comments_count),
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,

@@ -48,6 +48,16 @@ namespace Lfb.DataGrab.Tests
             bll.GatheringNewsFromAuthor();
         }
 
+        [Test()]
+        public void DealAuthorDataTest()
+        {
+            //var t = Comm.Tools.Utility.DateTimeFormat.ToJsTime(DateTime.Now);
+            //var url = "http://www.toutiao.com/m6781620630/";
+            var url = bll.GetAuthorDataUrl("6781620630");
+            var authorId = "6781620630";
+
+            bll.DealAuthorData(url, authorId, "");
+        }
         
         [Test()]
         public void GatherAuthorFromNewsTest()

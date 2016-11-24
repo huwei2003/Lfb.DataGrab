@@ -363,6 +363,28 @@ namespace Lfb.DataGrabBll
             return url.ToLower().Replace("https://", "").Replace("http://", "").Replace("toutiao.com", "").Replace("www", "").Replace("/item/", "").Replace("/", "").Replace(".", "");
             //http://www.toutiao.com/item/6347600331160945153/
         }
-                                
+
+        public static int ToInt(string str)
+        {
+            var iValue = 0;
+            try
+            {
+                var isHaveW = str.Contains("万");
+                str = StrHelper.GetStrByRegx(str, @"(-?\d+)(\.\d+)?");//"^(-?/d+)(/./d+)?$"　　//浮点数 
+                var i = StrHelper.ToDouble(str);
+                if (isHaveW)
+                {
+                    iValue = Convert.ToInt32(i*10000);
+                }
+                else
+                {
+                    iValue = StrHelper.ToInt32(i.ToString());
+                }
+            }
+            catch
+            {
+            }
+            return iValue;
+        }
     }
 }

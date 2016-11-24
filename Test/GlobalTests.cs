@@ -28,5 +28,21 @@ namespace Lfb.DataGrab.Tests
             var isTouA4 = Global.IsToutiaoAuthorUrl(url4);
 
         }
+
+        [Test()]
+        public void ToIntTest()
+        {
+            var i = Global.ToInt("1");
+
+            var i2 = Global.ToInt("1.02");
+
+            var i3 = Global.ToInt("1.4万");
+
+            var i4 = Global.ToInt("12.5只要在一起");
+
+            var i5 = Global.ToInt("0.1万");
+
+            var i6 = Global.ToInt("1666666");
+        }
     }
 }
