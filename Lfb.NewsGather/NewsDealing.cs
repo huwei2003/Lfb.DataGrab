@@ -187,7 +187,7 @@ namespace Lfb.NewsGather
                             if (siteList[start].SiteName.ToLower() == "toutiao")
                             {
                                 var bll = new ToutiaoGather();
-                                bll.GatheringAuthorUrlFromChannel(siteList[start].Url, siteList[start].NewsType);
+                                bll.GatheringAuthorUrlFromChannel(siteList[start].Url, siteList[start].NewsType,0);
                             }
                             Thread.Sleep(5 * 1000);
                         }
@@ -407,7 +407,7 @@ namespace Lfb.NewsGather
 
                     var bll = new ToutiaoGather();
                     var url = "http://www.toutiao.com/api/article/recent/?source=2&count=20&category=%E7%BB%84%E5%9B%BE&max_behot_time=0&utm_source=toutiao&device_platform=web&offset=0&as=A1B508A27D30C8F&cp=582D607C78CFCE1&_=1479347343375";
-                    bll.GatherNewsFromZtRecent(url);
+                    bll.GatherNewsFromZtRecent(url,0);
 
 
                     Log.Info("从组图列表抓相关新闻的作者结束 i="+i+" time=" + DateTime.Now);

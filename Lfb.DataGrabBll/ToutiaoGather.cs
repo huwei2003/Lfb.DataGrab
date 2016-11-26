@@ -19,26 +19,27 @@ namespace Lfb.DataGrabBll
         /// <summary>
         /// 频道的翻页计数
         /// </summary>
-        public static int ChannelPageIndex;
+        //public static int ChannelPageIndex;
+
         /// <summary>
         /// 组图的翻页计数
         /// </summary>
-        public static int ZtPageIndex;
+        //public static int ZtPageIndex;
 
         /// <summary>
         /// 评论的翻页计数
         /// </summary>
-        public static int CommentsPageIndex;
+        //public static int CommentsPageIndex;
 
         /// <summary>
         /// 用户订阅的翻页计数
         /// </summary>
-        public static int UserSubPageIndex;
+        //public static int UserSubPageIndex;
 
         /// <summary>
         /// 作者的翻页计数
         /// </summary>
-        public static int AuthorPageIndex;
+        //public static int AuthorPageIndex;
 
         public static Dictionary<string, int> DictUrl = new Dictionary<string, int>();
 
@@ -50,7 +51,7 @@ namespace Lfb.DataGrabBll
         /// <param name="newsListUrl"></param>
         /// <param name="newsType"></param>
         /// <returns></returns>
-        public List<DtoNewsUrlList> GatheringAuthorUrlFromChannel(string newsListUrl, int newsType)
+        public List<DtoNewsUrlList> GatheringAuthorUrlFromChannel(string newsListUrl, int newsType, int ChannelPageIndex)
         {
             //重试过的移除
             if (DictUrl.ContainsKey(newsListUrl))
@@ -61,7 +62,7 @@ namespace Lfb.DataGrabBll
             try
             {
                 newsListUrl = FormatUrlPcAs(newsListUrl);
-                Log.Info(newsListUrl + " 频道抓取开始");
+                Log.Info(newsListUrl + " 频道抓取开始 页码" + ChannelPageIndex);
                 strContent = HttpHelper.GetContentByAgent(newsListUrl, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -75,17 +76,24 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(newsListUrl + " 频道未抓取到任何内容");
+                            Log.Info(newsListUrl + " 频道未抓取到任何内容 页码" + ChannelPageIndex);
                             return null;
                         }
                     }
                 }
+                var isHaveMore = false;
                 strContent = FormatJsonData(strContent);
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoJsData>(strContent);
                 if (data != null)
                 {
+                    Log.Info(newsListUrl + " 频道页数" + ChannelPageIndex);
+                    if (data.has_more != null)
+                    {
+                        isHaveMore = data.has_more;
+                    }
+                    
                     #region === 处理data中的数据，有作者的地址则存储 ===
-
+                    
                     if (data.data != null && data.data.Count > 0)
                     {
                         foreach (var item in data.data)
@@ -110,51 +118,48 @@ namespace Lfb.DataGrabBll
                     }
 
                     #endregion
+
+                    //Random rnd = new Random();
+                    //有更多数据，则继续抓取数据
+                    if (isHaveMore && ChannelPageIndex < Global.PageDepth)
+                    {
+                        //sleep
+                        //Thread.Sleep(rnd.Next(1000, 2500));
+                        Thread.Sleep(200);
+                        ChannelPageIndex++;
+                        var maxBehotTime = data.next.max_behot_time.ToString();
+                        //替换url中的max_behot_time
+                        newsListUrl = ModifyUrlMax_behot_time(newsListUrl, maxBehotTime);
+                        GatheringAuthorUrlFromChannel(newsListUrl, newsType, ChannelPageIndex);
+                    }
+                    else
+                    {
+                        Log.Info("本频道抓取结束总页数" + ChannelPageIndex.ToString());
+                        ChannelPageIndex = 0;
+                        //Thread.Sleep(rnd.Next(2000, 5000));
+                        Thread.Sleep(200);
+                    }
                 }
                 else
                 {
-                    Log.Info(newsListUrl + " 频道未取到数据");
+                    Log.Info(newsListUrl + " 频道未取到数据 页码" + ChannelPageIndex);
                     return null;
                 }
-                Log.Info(newsListUrl + " 频道抓取结束");
-                var isHaveMore = data.has_more;
-
-                Random rnd = new Random();
-                //有更多数据，则继续抓取数据
-                if (isHaveMore && ChannelPageIndex < Global.PageDepth)
-                {
-                    //sleep
-                    //Thread.Sleep(rnd.Next(1000, 2500));
-                    Thread.Sleep(200);
-                    ChannelPageIndex++;
-                    var maxBehotTime = data.next.max_behot_time.ToString();
-                    //替换url中的max_behot_time
-                    newsListUrl = ModifyUrlMax_behot_time(newsListUrl, maxBehotTime);
-                    GatheringAuthorUrlFromChannel(newsListUrl, newsType);
-                }
-                else
-                {
-                    Log.Info("本频道抓取结束总页数" + ChannelPageIndex.ToString());
-                    ChannelPageIndex = 0;
-                    //Thread.Sleep(rnd.Next(2000, 5000));
-                    Thread.Sleep(200);
-                }
-
             }
             catch (Exception ex)
             {
-                Log.Error("频道出错的 url=" + newsListUrl);
                 Log.Error(ex.Message + ex.StackTrace);
-                Log.Debug("======strContent begin =========");
+
+                Log.Debug("======strContent begin 频道抓取=========");
+                Log.Debug(newsListUrl);
                 Log.Debug(strContent);
                 Log.Debug("======strContent end =========");
                 //重试一次
                 if (!DictUrl.ContainsKey(newsListUrl))
                 {
                     DictUrl.Add(newsListUrl, 1);
-                    GatheringAuthorUrlFromChannel(newsListUrl, newsType);
+                    GatheringAuthorUrlFromChannel(newsListUrl, newsType, ChannelPageIndex);
                 }
-
             }
             return null;
         }
@@ -177,7 +182,7 @@ namespace Lfb.DataGrabBll
                         if (!string.IsNullOrWhiteSpace(item.AuthorId))
                         {
                             var url = GetAuthorDataUrl(item.AuthorId);
-                            DealAuthorData(url, item.AuthorId, item.GroupId);
+                            DealAuthorData(url, item.AuthorId, item.GroupId,0);
                         }
                     }
                     //Thread.Sleep(5 * 1000);
@@ -254,7 +259,7 @@ namespace Lfb.DataGrabBll
                         #endregion
 
                         //取到评论的用户，再从用户取得订阅作者
-                        GatherAuthorFromUserSub(news.FromUrl, news.GroupId);
+                        GatherAuthorFromUserSub(news.FromUrl, news.GroupId,0);
                     }
                 }
 
@@ -278,6 +283,7 @@ namespace Lfb.DataGrabBll
             {
                 //取出待处理作者的数据，并置位isdeal=2 处理中
                 var list = DalNews.GetWaitRefreshAuthorList();
+
                 #region === 取出待刷新的作者url数据 ===
                 if (list != null && list.Count > 0)
                 {
@@ -286,7 +292,7 @@ namespace Lfb.DataGrabBll
                         if (!string.IsNullOrWhiteSpace(item.AuthorId))
                         {
                             var url = GetAuthorDataUrl(item.AuthorId);
-                            DealAuthorData(url, item.AuthorId, item.GroupId);
+                            DealAuthorData(url, item.AuthorId, item.GroupId,0);
                         }
                     }
                     //Thread.Sleep(5 * 1000);
@@ -398,13 +404,13 @@ namespace Lfb.DataGrabBll
         /// 从组图抓取作者信息
         /// </summary>
         /// <returns></returns>
-        public int GatherNewsFromZtRecent(string url)
+        public int GatherNewsFromZtRecent(string url,int ZtPageIndex)
         {
             try
             {
                 #region === begin ===
 
-                Log.Info(url + " 组图抓取开始");
+                Log.Info(url + " 组图抓取开始 页码" + ZtPageIndex);
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -418,10 +424,11 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(url + " 未抓取到任何内容");
+                            Log.Info(url + " 未抓取到任何内容 页码" + ZtPageIndex);
                         }
                     }
                 }
+                var isHaveMore = false;
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
                     strContent = FormatJsonData(strContent);
@@ -429,7 +436,7 @@ namespace Lfb.DataGrabBll
                     if (data != null)
                     {
                         #region === 处理data中的数据，有作者的地址则存储 ===
-
+                        Log.Info(url + " 页码" + ZtPageIndex);
                         if (data.data != null && data.data.Count > 0)
                         {
                             foreach (var item in data.data)
@@ -453,36 +460,37 @@ namespace Lfb.DataGrabBll
                                 }
                             }
                         }
+                        if (data.has_more != null)
+                        {
+                            isHaveMore = data.has_more;
+                        }
 
+                        //Random rnd = new Random();
+                        //有更多数据，则继续抓取数据
+                        if (isHaveMore && ZtPageIndex < Global.PageDepth)
+                        {
+                            //sleep
+                            //Thread.Sleep(rnd.Next(1000, 2500));
+                            Thread.Sleep(200);
+                            ZtPageIndex++;
+                            var maxBehotTime = data.next.max_behot_time.ToString();
+                            //替换url中的max_behot_time
+                            url = ModifyUrlMax_behot_time(url, maxBehotTime);
+                            GatherNewsFromZtRecent(url, ZtPageIndex);
+                        }
+                        else
+                        {
+                            Log.Info("本组图抓取结束总页数" + ZtPageIndex.ToString());
+                            ZtPageIndex = 0;
+                            //Thread.Sleep(rnd.Next(2000, 5000));
+                            Thread.Sleep(10 * 1000);
+                        }
                         #endregion
                     }
                     else
                     {
-                        Log.Info(url + " 组图未取到数据");
+                        Log.Info(url + " 组图未取到数据 页码" + ZtPageIndex);
                         return 0;
-                    }
-
-                    var isHaveMore = data.has_more;
-
-                    Random rnd = new Random();
-                    //有更多数据，则继续抓取数据
-                    if (isHaveMore && ChannelPageIndex < Global.PageDepth)
-                    {
-                        //sleep
-                        //Thread.Sleep(rnd.Next(1000, 2500));
-                        Thread.Sleep(200);
-                        ZtPageIndex++;
-                        var maxBehotTime = data.next.max_behot_time.ToString();
-                        //替换url中的max_behot_time
-                        url = ModifyUrlMax_behot_time(url, maxBehotTime);
-                        GatherNewsFromZtRecent(url);
-                    }
-                    else
-                    {
-                        Log.Info("本组图抓取结束总页数" + ZtPageIndex.ToString());
-                        ZtPageIndex = 0;
-                        //Thread.Sleep(rnd.Next(2000, 5000));
-                        Thread.Sleep(10 * 1000);
                     }
                 }
                 #endregion
@@ -504,7 +512,7 @@ namespace Lfb.DataGrabBll
         /// 从用户订阅抓取作者信息
         /// </summary>
         /// <returns></returns>
-        private int GatherAuthorFromUserSub(string itemUrl, string groupId)
+        private int GatherAuthorFromUserSub(string itemUrl, string groupId, int CommentsPageIndex)
         {
             try
             {
@@ -532,7 +540,7 @@ namespace Lfb.DataGrabBll
                 var url = "http://www.toutiao.com/api/comment/list/?group_id={0}&item_id={1}&offset={2}&count=5";
 
                 url = string.Format(url, groupId, itemId, offSet);
-                Log.Info(url + " 评论抓取开始");
+                Log.Info(url + " 评论抓取开始 页码" + CommentsPageIndex);
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -546,10 +554,11 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(url + " 未抓取到任何内容");
+                            Log.Info(url + " 未抓取到任何内容 页码" + CommentsPageIndex);
                         }
                     }
                 }
+                var isHaveMore = false;
 
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
@@ -557,6 +566,8 @@ namespace Lfb.DataGrabBll
                     var data = JsonConvert.DeserializeObject<DtoTouTiaoCommentJsData>(strContent);
                     if (data != null)
                     {
+                        Log.Info(url +" 页码"+CommentsPageIndex);
+
                         #region === 处理data中的数据，有作者的地址则存储 ===
 
                         if (data.data != null && data.data.comments != null && data.data.comments.Count > 0)
@@ -571,7 +582,7 @@ namespace Lfb.DataGrabBll
                                     {
                                         var timeStamp = Comm.Tools.Utility.DateTimeFormat.ToJsTime(DateTime.Now);
 
-                                        GatherAuthorFromUserSub2(item.user.user_id.ToString(), timeStamp);
+                                        GatherAuthorFromUserSub2(item.user.user_id.ToString(), timeStamp,0);
                                     }
 
                                 }
@@ -582,34 +593,33 @@ namespace Lfb.DataGrabBll
                         }
 
                         #endregion
+
+                        if (data.data != null && data.data.has_more!=null)
+                        {
+                            isHaveMore = data.data.has_more;
+                        }
+
+                        //Random rnd = new Random();
+                        //有更多数据，则继续抓取数据
+                        if (isHaveMore)
+                        {
+                            //Thread.Sleep(rnd.Next(1000, 2500));
+                            Thread.Sleep(200);
+                            CommentsPageIndex++;
+                            GatherAuthorFromUserSub(itemUrl, groupId, CommentsPageIndex);
+                        }
+                        else
+                        {
+                            Log.Info("本评论用户抓取结束总页数" + CommentsPageIndex.ToString());
+                            CommentsPageIndex = 0;
+                            //Thread.Sleep(rnd.Next(2000, 5000));
+                            Thread.Sleep(1 * 1000);
+                        }
                     }
                     else
                     {
-                        Log.Info(url + " 评论未取到数据");
+                        Log.Info(url + " 评论未取到数据 页码" + CommentsPageIndex);
                         return 0;
-                    }
-
-                    var isHaveMore = false;
-                    if (data.data != null)
-                    {
-                        isHaveMore = data.data.has_more;
-                    }
-
-                    Random rnd = new Random();
-                    //有更多数据，则继续抓取数据
-                    if (isHaveMore)
-                    {
-                        //Thread.Sleep(rnd.Next(1000, 2500));
-                        Thread.Sleep(200);
-                        CommentsPageIndex++;
-                        GatherAuthorFromUserSub(itemUrl, groupId);
-                    }
-                    else
-                    {
-                        Log.Info("本评论用户抓取结束总页数" + CommentsPageIndex.ToString());
-                        CommentsPageIndex = 0;
-                        //Thread.Sleep(rnd.Next(2000, 5000));
-                        Thread.Sleep(1 * 1000);
                     }
                 }
                 #endregion
@@ -623,7 +633,7 @@ namespace Lfb.DataGrabBll
         }
 
 
-        private int GatherAuthorFromUserSub2(string userId, long timeStamp)
+        private int GatherAuthorFromUserSub2(string userId, long timeStamp,int UserSubPageIndex)
         {
             try
             {
@@ -639,7 +649,7 @@ namespace Lfb.DataGrabBll
                 var url = "http://www.toutiao.com/api/user/subscribe/?user_id={0}&app_name=news_article&offset={1}&count=16&_={2}";
 
                 url = string.Format(url, userId, offSet, timeStamp);
-                Log.Info(url + " 用户订阅抓取开始");
+                Log.Info(url + " 用户订阅抓取开始 页码" + UserSubPageIndex);
                 var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -653,17 +663,19 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(url + " 未抓取到任何内容");
+                            Log.Info(url + " 未抓取到任何内容 页码" + UserSubPageIndex);
                         }
                     }
                 }
-
+                var isHaveMore = false;
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
                     strContent = FormatJsonData(strContent);
                     var data = JsonConvert.DeserializeObject<DtoTouTiaoUserSubJsData>(strContent);
                     if (data != null)
                     {
+                        Log.Info(url + " 页码" + UserSubPageIndex);
+
                         #region === 处理data中的数据，有作者的地址则存储 ===
 
                         if (data.data != null && data.data.Count > 0)
@@ -693,35 +705,38 @@ namespace Lfb.DataGrabBll
                         }
 
                         #endregion
+
+                        if (data.has_more != null)
+                        {
+                            isHaveMore = data.has_more;
+                        }
+
+                        //Random rnd = new Random();
+                        //有更多数据，则继续抓取数据
+                        if (isHaveMore)
+                        {
+                            //sleep
+                            //Thread.Sleep(rnd.Next(1000, 2500));
+                            Thread.Sleep(200);
+                            UserSubPageIndex++;
+                            timeStamp++;
+                            //var maxBehotTime = data.next.max_behot_time.ToString();
+                            //替换url中的max_behot_time
+                            //url = ModifyUrlMax_behot_time(url, maxBehotTime);
+                            GatherAuthorFromUserSub2(userId, timeStamp, UserSubPageIndex);
+                        }
+                        else
+                        {
+                            Log.Info("本用户订阅抓取结束总页数" + UserSubPageIndex.ToString());
+                            UserSubPageIndex = 0;
+                            //Thread.Sleep(rnd.Next(2000, 5000));
+                            Thread.Sleep(1 * 1000);
+                        }
                     }
                     else
                     {
-                        Log.Info(url + " 用户订阅未取到数据");
+                        Log.Info(url + " 用户订阅未取到数据 页码" + UserSubPageIndex);
                         return 0;
-                    }
-
-                    var isHaveMore = data.has_more;
-
-                    Random rnd = new Random();
-                    //有更多数据，则继续抓取数据
-                    if (isHaveMore)
-                    {
-                        //sleep
-                        //Thread.Sleep(rnd.Next(1000, 2500));
-                        Thread.Sleep(200);
-                        UserSubPageIndex++;
-                        timeStamp++;
-                        //var maxBehotTime = data.next.max_behot_time.ToString();
-                        //替换url中的max_behot_time
-                        //url = ModifyUrlMax_behot_time(url, maxBehotTime);
-                        GatherAuthorFromUserSub2(userId, timeStamp);
-                    }
-                    else
-                    {
-                        Log.Info("本用户订阅抓取结束总页数" + UserSubPageIndex.ToString());
-                        UserSubPageIndex = 0;
-                        //Thread.Sleep(rnd.Next(2000, 5000));
-                        Thread.Sleep(1 * 1000);
                     }
                 }
                 #endregion
@@ -734,7 +749,7 @@ namespace Lfb.DataGrabBll
             return 0;
         }
 
-        public int DealAuthorData(string url, string authorId, string groupId)
+        public int DealAuthorData(string url, string authorId, string groupId, int AuthorPageIndex)
         {
             var strContent = "";
             if (string.IsNullOrWhiteSpace(groupId))
@@ -743,7 +758,7 @@ namespace Lfb.DataGrabBll
             }
             try
             {
-                Log.Info(url + " 作者抓取开始");
+                Log.Info(url + " 作者抓取开始 页码" + AuthorPageIndex);
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -757,19 +772,26 @@ namespace Lfb.DataGrabBll
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
-                            Log.Info(url + " 未抓取到任何内容");
+                            Log.Info(url + " 未抓取到任何内容 页码" + AuthorPageIndex);
                             return 0;
                         }
                     }
                 }
+                var isHaveMore = false;
                 strContent = FormatJsonData(strContent);
                 var data = JsonConvert.DeserializeObject<DtoTouTiaoAuthorJsData>(strContent);
                 if (data != null)
                 {
+                    Log.Info(url + " 页码" + AuthorPageIndex);
+
                     #region === 处理data中的数据，存储新闻信息 ===
 
                     if (data.data != null && data.data.Count > 0)
                     {
+                        if (data.has_more != null)
+                        {
+                            isHaveMore = data.has_more;
+                        }
                         foreach (var subItem in data.data)
                         {
                             try
@@ -933,47 +955,40 @@ namespace Lfb.DataGrabBll
                         }
                     }
                     #endregion
+
+                    //Random rnd = new Random();
+                    //有更多数据，则继续抓取数据
+                    if (isHaveMore && AuthorPageIndex < Global.PageDepth)
+                    {
+                        //sleep
+                        //Thread.Sleep(rnd.Next(1000, 2500));
+                        Thread.Sleep(200);
+                        AuthorPageIndex++;
+                        var maxBehotTime = data.next.max_behot_time.ToString();
+                        //替换url中的max_behot_time
+                        url = ModifyUrlMax_behot_time(url, maxBehotTime);
+                        DealAuthorData(url, authorId, groupId, AuthorPageIndex);
+                    }
+                    else
+                    {
+                        Log.Info("本作者抓取结束总页数" + AuthorPageIndex);
+                        //置位状态
+                        //DalNews.UpdateAuthorIsDeal(authorId, 1);
+                        AuthorPageIndex = 0;
+                        //Thread.Sleep(rnd.Next(2000, 5000));
+                        Thread.Sleep(200);
+                    }
                 }
                 else
                 {
-                    Log.Info(url + " 作者未取到数据");
-
-                }
-                Log.Info(url + " 作者抓取结束");
-
-                var isHaveMore = false;
-                if (data != null)
-                {
-                    isHaveMore = data.has_more;
-                }
-
-                Random rnd = new Random();
-                //有更多数据，则继续抓取数据
-                if (isHaveMore && AuthorPageIndex < Global.PageDepth)
-                {
-                    //sleep
-                    //Thread.Sleep(rnd.Next(1000, 2500));
-                    Thread.Sleep(200);
-                    AuthorPageIndex++;
-                    var maxBehotTime = data.next.max_behot_time.ToString();
-                    //替换url中的max_behot_time
-                    url = ModifyUrlMax_behot_time(url, maxBehotTime);
-                    DealAuthorData(url, authorId, groupId);
-                }
-                else
-                {
-                    Log.Info("本作者抓取结束总页数" + AuthorPageIndex);
-                    //置位状态
-                    DalNews.UpdateAuthorIsDeal(authorId, 1);
-                    AuthorPageIndex = 0;
-                    //Thread.Sleep(rnd.Next(2000, 5000));
-                    Thread.Sleep(200);
+                    Log.Info(url + " 作者未取到数据 页码" + AuthorPageIndex);
                 }
             }
             catch (Exception ex)
             {
                 Log.Error(ex.Message + ex.StackTrace);
-                Log.Debug("======strContent begin =========");
+                Log.Debug("======strContent begin 作者抓取=========");
+                Log.Debug(url);
                 Log.Debug(strContent);
                 Log.Debug("======strContent end =========");
             }
