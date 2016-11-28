@@ -100,7 +100,8 @@ namespace Comm.Cloud.RDS
                 return null;
             }
             DbCommand cmd = new MySqlCommand(strSql);
-
+            //default 30s
+            cmd.CommandTimeout = 60;
             cmd.Connection = conn;
             return cmd;
         }

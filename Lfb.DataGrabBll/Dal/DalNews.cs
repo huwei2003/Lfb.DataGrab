@@ -590,7 +590,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author where (IsDeal=0 or IsDeal=1) order By Id DESC limit 0,100";
+                var sql = "select * from T_Author where (IsDeal<=1) order By Id DESC limit 0,100";
                 var list = Sql.Select<DtoAuthor>(sql);
 
                 if (list != null && list.Count > 0)
@@ -629,7 +629,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author where (IsShow=0 or IsShow=1) order By Id asc limit 0,100";
+                var sql = "select * from T_Author where (IsShow<=1) order By Id asc limit 0,100";
                 var list = Sql.Select<DtoAuthor>(sql);
 
                 if (list != null && list.Count > 0)
@@ -673,7 +673,7 @@ namespace Lfb.DataGrabBll
                     var curTime = DateTime.Now;
                     //取一个月内抓取且已到刷新时间的新闻的作者列表
                     var sql =
-                        "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)) order By Id DESC limit 0,1000"
+                        "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)) order By Id DESC limit 0,1000"
                             .Formats(curTime);
 
 
@@ -681,7 +681,7 @@ namespace Lfb.DataGrabBll
 
                     //取过的新闻置位isdeal=1
                     var sql2 =
-                        "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal=1 or IsDeal=0)"
+                        "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)"
                             .Formats(curTime);
                     Sql.ExecuteSql(sql2);
 
@@ -727,7 +727,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_News where (IsShow=0 or IsShow=1) order By Id DESC limit 0,100";
+                var sql = "select * from T_News where (IsShow<=1) order By Id DESC limit 0,100";
                 var list = Sql.Select<DtoNews>(sql);
 
                 if (list != null && list.Count > 0)
