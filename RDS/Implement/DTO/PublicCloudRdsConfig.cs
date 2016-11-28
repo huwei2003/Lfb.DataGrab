@@ -20,7 +20,7 @@
         }
         public string GetMySqlConnectString()
         {
-            return string.Format("Server={0};Port={4};Database={1};Uid={2};Pwd={3};charset=utf8;",
+            return string.Format("Server={0};Port={4};Database={1};Uid={2};Pwd={3};charset=utf8;Max Pool Size=512;default command timeout=30;",
                 Server, Database, Uid, Pwd,Port);
         }
         //Server=myServerAddress; Port=1234; Database=myDataBase; Uid=myUsername; Pwd=myPassword;

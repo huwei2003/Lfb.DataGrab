@@ -1205,16 +1205,17 @@ namespace Lfb.DataGrabBll
 
         public string FormatJsonData(string contents)
         {
-            var str = contents;
-            try
-            {
-                str = str.Replace("\"show_play_effective_count\": true,", "\"show_play_effective_count\": 0,").Replace("\"show_play_effective_count\": false,", "\"show_play_effective_count\": 0,");
-            }
-            catch (Exception ex)
-            {
+            //var str = contents;
+            return contents;
+            //try
+            //{
+            //    str = str.Replace("\"show_play_effective_count\": true,", "\"show_play_effective_count\": 0,").Replace("\"show_play_effective_count\": false,", "\"show_play_effective_count\": 0,");
+            //}
+            //catch (Exception ex)
+            //{
 
-            }
-            return str;
+            //}
+            //return str;
         }
         #endregion
 

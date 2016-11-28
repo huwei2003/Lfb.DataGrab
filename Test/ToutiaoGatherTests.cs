@@ -38,7 +38,7 @@ namespace Lfb.DataGrab.Tests
 
             //var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1D5B8000CC7350&cp=580C772325900E1";
             var url = "http://www.toutiao.com/api/article/feed/?category=__all__&utm_source=toutiao&widen=0&max_behot_time=0&max_behot_time_tmp=0&as=A1B5E83210C6E63&cp=5820D6CE66539E1";
-            bll.GatheringAuthorUrlFromChannel(url, 100);
+            bll.GatheringAuthorUrlFromChannel(url, 100,0);
         }
 
         [Test()]
@@ -56,7 +56,7 @@ namespace Lfb.DataGrab.Tests
             var url = bll.GetAuthorDataUrl("6781620630");
             var authorId = "6781620630";
 
-            bll.DealAuthorData(url, authorId, "");
+            bll.DealAuthorData(url, authorId, "",0);
         }
         
         [Test()]
@@ -74,7 +74,7 @@ namespace Lfb.DataGrab.Tests
             var str = Global.GetToutiaoGroupId(url0);
 
             var url = "http://www.toutiao.com/api/article/recent/?source=2&count=20&category=%E7%BB%84%E5%9B%BE&max_behot_time=0&utm_source=toutiao&device_platform=web&offset=0&as=A1B508A27D30C8F&cp=582D607C78CFCE1&_=1479347343375";
-            bll.GatherNewsFromZtRecent(url);
+            bll.GatherNewsFromZtRecent(url,0);
         }
 
         [Test()]
