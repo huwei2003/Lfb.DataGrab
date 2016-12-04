@@ -38,7 +38,7 @@ namespace Lfb.DataGrabBll
                     if (arrStr != null && arrStr.Length > 0)
                     {
                         foreach (var item in arrStr)
-                        { 
+                        {
                             //Server=localhost;Database=News;Uid=root;Pwd=;Port=3306
                             if (item.Contains("Server="))
                             {
@@ -58,7 +58,7 @@ namespace Lfb.DataGrabBll
                             }
                             if (item.Contains("Port="))
                             {
-                                port = StrHelper.ToInt32( item.Replace("Port=", ""));
+                                port = StrHelper.ToInt32(item.Replace("Port=", ""));
                             }
                         }
                     }
@@ -426,7 +426,7 @@ namespace Lfb.DataGrabBll
                     IsDeal = model.IsDeal,
                     LastDealTime = DateTime.Now,
                     Url = model.Url,
-                    IsShow =0,
+                    IsShow = 0,
                     GroupId = model.GroupId
                 };
 
@@ -498,7 +498,7 @@ namespace Lfb.DataGrabBll
         /// <param name="authroId"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public static bool UpdateAuthorGroupId(string authroId,string groupId)
+        public static bool UpdateAuthorGroupId(string authroId, string groupId)
         {
             try
             {
@@ -605,7 +605,7 @@ namespace Lfb.DataGrabBll
                     Sql.ExecuteSql(sql);
                 }
                 else
-                { 
+                {
                     //当isdeal=0 =1的没有时，全部置位
                     sql = "update T_Author set IsDeal=1";
                     Sql.ExecuteSql(sql);
@@ -643,7 +643,8 @@ namespace Lfb.DataGrabBll
                     sql = "update T_Author set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
-                else {
+                else
+                {
                     //全部处理完后置位IsShow=1
                     sql = "update T_Author set IsShow=1";
                     Sql.ExecuteSql(sql);
@@ -756,6 +757,27 @@ namespace Lfb.DataGrabBll
             }
 
             return null;
+        }
+
+
+        /// <summary>
+        /// 更新新闻的关键字字段
+        /// </summary>
+        /// <returns></returns>
+        public static bool UpdateNewsTags(int newsId, string tags)
+        {
+            try
+            {
+                var sql = "update T_News set Tags='{0}' where Id={1}".Formats(tags, newsId);
+                Sql.ExecuteSql(sql);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return true;
         }
         #endregion
     }

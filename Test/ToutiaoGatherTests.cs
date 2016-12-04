@@ -115,7 +115,8 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void GetContentTest()
         {
-            var str = HttpHelper.GetContentByMobileAgent("http://omgmta.qq.com/mstat/report/?index=1479869384", Encoding.UTF8);
+            var str = HttpHelper.GetContent("http://www.toutiao.com/item/6229498529518191106/", Encoding.UTF8);
+            //var str = HttpHelper.GetContentByMobileAgent("http://omgmta.qq.com/mstat/report/?index=1479869384", Encoding.UTF8);
             Console.WriteLine(str);
         }
     }

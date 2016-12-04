@@ -8,6 +8,7 @@ using Lfb.DataGrabBll.Dto;
 using Lib.Csharp.Tools;
 using Lib.Csharp.Tools.Security;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Lfb.DataGrabBll
 {
@@ -219,6 +220,7 @@ namespace Lfb.DataGrabBll
                     foreach (var news in list)
                     {
                         var url = news.FromUrl;
+                        //var url = "http://www.toutiao.com/i6359298863546761730/";
                         Log.Info(url + " 作者抓取开始");
                         var strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
 
@@ -253,6 +255,22 @@ namespace Lfb.DataGrabBll
                                         //检查是否已存在，不在则入库,此处的没有groupid
                                         DealAuthorUrl(href, "");
                                     }
+                                }
+                            }
+                            //取关键字
+                            var tags = XpathHelper.GetInnerHtmlListByXPath(strContent, "//div[@class='labelList']/ul[@class='label-list']/li/a");
+                            if (tags != null && tags.Count > 0)
+                            {
+                                var strTags = "";
+                                foreach (var str in tags)
+                                {
+                                    strTags += str + ",";
+                                }
+                                if (!string.IsNullOrWhiteSpace(strTags))
+                                {
+                                    strTags = strTags.Substring(0, strTags.Length-1);
+                                    DalNews.UpdateNewsTags(news.Id, strTags);
+
                                 }
                             }
                         }
