@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="DalNewsTests.cs" />
     <Compile Include="GlobalTests.cs" />
+    <Compile Include="BaijiahaoGatherTests.cs" />
     <Compile Include="ToutiaoGatherTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

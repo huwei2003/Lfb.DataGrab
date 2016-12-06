@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Lfb.DataGrab;
+using Lfb.DataGrabBll;
+using NUnit.Framework;
+namespace Lfb.DataGrab.Tests
+{
+    [TestFixture()]
+    public class BaijiahaoGatherTests
+    {
+        private BaijiahaoGather bll;
+        /// <summary>
+        /// 全局setup,不能使用async OneTimeSetUpAttribute  or TestFixtureSetUp
+        /// </summary>
+        [OneTimeSetUp]
+        public void TestFixtureSetUp()
+        {
+
+        }
+
+        /// <summary>
+        /// 每次测试setup,不能使用async
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            bll = new BaijiahaoGather();
+
+        }
+        [Test()]
+        public void NewsUrlGatheringTest()
+        {
+            bll.GatheringAuthorUrlFromSearch("百家号 军事 阅读数", 100, 0);
+        }
+
+    }
+}

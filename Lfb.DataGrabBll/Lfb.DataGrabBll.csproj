@@ -79,6 +79,7 @@
     <Compile Include="ProxyDeal.cs" />
     <Compile Include="QqGather.cs" />
     <Compile Include="SiteData.cs" />
+    <Compile Include="BaijiahaoGather.cs" />
     <Compile Include="ToutiaoGather.cs" />
     <Compile Include="XmlDeal.cs" />
   </ItemGroup>
