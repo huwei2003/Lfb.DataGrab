@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -27,6 +29,9 @@ namespace Lfb.DataGrabBll
             string strMsg = string.Empty;
             try
             {
+                // 这一句一定要写在创建连接的前面。使用回调的方法进行证书验证。
+                ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
+
                 CookieContainer cc = new CookieContainer();
                 //WebRequest request = WebRequest.Create(strUrl);
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
@@ -71,8 +76,9 @@ namespace Lfb.DataGrabBll
                 reader.Dispose();
                 response.Close();
             }
-            catch
+            catch(Exception ex)
             {
+                var str = ex.Message;
             }
             return strMsg;
         }
@@ -715,6 +721,15 @@ namespace Lfb.DataGrabBll
             cookie.Add(myResponse.Cookies);
             StreamReader reader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8);
             return reader.ReadToEnd();
+        }
+
+        //回调验证证书问题
+        public static bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)
+        {
+            
+            
+            // 总是接受    
+            return true;
         }
     }
 }
