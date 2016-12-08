@@ -50,6 +50,9 @@ namespace Lfb.DataGrabBll
                 //request.Referer = strUrl;
                 //request.Headers.Add("x-requested-with:XMLHttpRequest");
                 request.Headers.Add("x-requested-with:com.android.browser");
+                
+                
+                //request.Host = "baidu.com";
                 request.Headers.Add(HttpRequestHeader.AcceptLanguage, "zh-CN,zh;q=0.8,en;q=0.6,nl;q=0.4,zh-TW;q=0.2");
                 //request.ContentLength = postdataByte.Length;  text/html; charset=utf-8
                 request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";

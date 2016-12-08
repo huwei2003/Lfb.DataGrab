@@ -115,7 +115,11 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void GetContentTest()
         {
-            var str = HttpHelper.GetContent("https://s.juyingjie.net:9008/aboutus.html", Encoding.UTF8);
+            var str = HttpHelper.GetContent("http://www.sohu.com", Encoding.UTF8);
+            str = HttpHelper.GetContent("https://113.106.88.246:9008/?lt=t654321", Encoding.UTF8);
+            str = HttpHelper.GetContent("https://113.106.88.246/aboutus.html", Encoding.UTF8);
+            var str2 = HttpHelper.GetContent("https://s.juyingjie.net/aboutus.html", Encoding.UTF8);
+        
             //var str = HttpHelper.GetContent("http://www.toutiao.com/item/6229498529518191106/", Encoding.UTF8);
             //var str = HttpHelper.GetContentByMobileAgent("http://omgmta.qq.com/mstat/report/?index=1479869384", Encoding.UTF8);
             Console.WriteLine(str);
