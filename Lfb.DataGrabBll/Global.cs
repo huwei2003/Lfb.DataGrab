@@ -83,6 +83,22 @@ namespace Lfb.DataGrabBll
         /// </summary>
         public static string IsEnableGatherUserSub = GetIsEnableGatherUserSub();
 
+        /// <summary>
+        /// 百家号搜索关键字列表
+        /// </summary>
+        public static string BjhSearchKeywords = GetBjhSearchKeywords();
+
+        /// <summary>
+        /// 是否开启百家号搜索 1=处理 0=no
+        /// </summary>
+        public static string IsEnableBjhSearch = GetIsEnableBjhSearch();
+
+        /// <summary>
+        /// 是否开启百家号作者主页抓取 1=处理 0=no
+        /// </summary>
+        public static string IsEnableBjhAuthorGather = GetIsEnableBjhAuthorGather();
+
+
         private static string GetImgSavePrex()
         {
             try
@@ -261,7 +277,45 @@ namespace Lfb.DataGrabBll
             }
         }
 
-    
+        private static string GetBjhSearchKeywords()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["BjhSearchKeywords"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "";
+            }
+        }
+
+        private static string GetIsEnableBjhSearch()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableBjhSearch"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "0";
+            }
+        }
+
+        private static string GetIsEnableBjhAuthorGather()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableBjhAuthorGather"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "0";
+            }
+        }
+        
 
         private static int GetProxyPoolSize()
         {

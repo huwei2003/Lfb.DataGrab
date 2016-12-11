@@ -51,6 +51,8 @@
     <Compile Include="Dal\DalNews.cs" />
     <Compile Include="DtoIfengImg.cs" />
     <Compile Include="Dto\DtoLatest_article.cs" />
+    <Compile Include="Dto\DtoBaijiahaoAuthorJsData.cs" />
+    <Compile Include="Dto\DtoBaijiahaoAuthorNews.cs" />
     <Compile Include="Dto\DtoTouTiaoComment.cs" />
     <Compile Include="Dto\DtoTouTiaoUserSubData.cs" />
     <Compile Include="Dto\DtoTouTiaoUserSubJsData.cs" />
@@ -73,7 +75,9 @@
     <Compile Include="IFengGather.cs" />
     <Compile Include="Img.cs" />
     <Compile Include="ImgDeal.cs" />
+    <Compile Include="Model\T_Author_Bjh.cs" />
     <Compile Include="Model\T_Author.cs" />
+    <Compile Include="Model\T_News_Bjh.cs" />
     <Compile Include="Model\T_News.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyDeal.cs" />

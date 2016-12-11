@@ -33,8 +33,16 @@ namespace Lfb.DataGrab.Tests
         [Test()]
         public void NewsUrlGatheringTest()
         {
-            bll.GatheringAuthorUrlFromSearch("百家号 军事 阅读数", 100, 0);
+            //bll.GatheringAuthorUrlFromSearch("百家号 军事 阅读数", 100, 0);
+            bll.GatheringAuthorUrlSearch();
         }
 
+        [Test()]
+        public void GatheringNewsFromAuthorTest()
+        {
+            //bll.GatheringAuthorUrlFromSearch("百家号 军事 阅读数", 100, 0);
+            bll.GatheringNewsFromAuthor();
+        }
+        
     }
 }

@@ -399,6 +399,66 @@ namespace Lfb.DataGrabBll
             }
         }
 
+        /// <summary>
+        /// 获取100条未处理的新闻记录 未处理是指没有抓取该新闻详细页，从中取出作者url
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoNews> GetNoGatherAuthorUrlNewsList()
+        {
+            try
+            {
+                var sql = "select * from T_News where (IsShow<=1) order By Id DESC limit 0,100";
+                var list = Sql.Select<DtoNews>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位IsShow 正在处理状态　IsShow=2
+                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+                }
+                else
+                {
+                    //全部执行完后统一回位 isshow=1
+                    sql = "update T_News set IsShow=1";
+                    Sql.ExecuteSql(sql);
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+
+        /// <summary>
+        /// 更新新闻的关键字字段
+        /// </summary>
+        /// <returns></returns>
+        public static bool UpdateNewsTags(int newsId, string tags)
+        {
+            try
+            {
+                var sql = "update T_News set Tags='{0}' where Id={1}".Formats(tags, newsId);
+                Sql.ExecuteSql(sql);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region === author deal ===
@@ -674,7 +734,7 @@ namespace Lfb.DataGrabBll
                     var curTime = DateTime.Now;
                     //取一个月内抓取且已到刷新时间的新闻的作者列表
                     var sql =
-                        "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)) order By Id DESC limit 0,1000"
+                        "select * from t_author where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(PubTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)) order By Id DESC limit 0,1000"
                             .Formats(curTime);
 
 
@@ -682,7 +742,7 @@ namespace Lfb.DataGrabBll
 
                     //取过的新闻置位isdeal=1
                     var sql2 =
-                        "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)"
+                        "update T_News set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(PubTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)"
                             .Formats(curTime);
                     Sql.ExecuteSql(sql2);
 
@@ -720,15 +780,213 @@ namespace Lfb.DataGrabBll
             return null;
         }
 
+        
+        #endregion
+
+        #region === t_news_bjh deal ===
+        /// <summary>
+        /// 添加一条新闻
+        /// </summary>
+        /// <param name="model">新闻实体</param>
+        /// <returns></returns>
+        public static int Insert_News_Bjh(DtoNews model)
+        {
+            try
+            {
+                if (model.Author == null)
+                    model.Author = "";
+                if (model.Contents == null)
+                    model.Contents = "";
+                if (model.FromSiteName == null)
+                    model.FromSiteName = "";
+                if (model.PubTime == null)
+                    model.PubTime = DateTime.Now;
+                if (model.FromUrl == null)
+                    model.FromUrl = "";
+                if (model.LogoOriginalUrl == null)
+                    model.LogoOriginalUrl = "";
+                if (model.LogoUrl == null)
+                    model.LogoUrl = "";
+                if (model.Title == null)
+                    model.Title = "";
+
+                ////非图片的，且内容小于100的不入库
+                //if (model.NewsTypeId != NewsTypeEnum.图片  && model.Contents.Length < 100)
+                //{
+                //    return -1;
+                //}
+                //if(string.IsNullOrWhiteSpace(model.Title.Trim()))
+                //{
+                //    return -1;
+                //}
+
+                var item = new T_News_Bjh()
+                {
+                    Author = model.Author,
+                    Contents = model.Contents,
+                    //CreateTime = model.CreateTime,
+                    FromSiteName = model.FromSiteName,
+                    FromUrl = model.FromUrl,
+                    IsShow = 0,
+                    LogoOriginalUrl = model.LogoOriginalUrl,
+                    LogoUrl = model.LogoUrl,
+                    NewsTypeId = (int)model.NewsTypeId,
+                    PubTime = model.PubTime,
+                    Title = model.Title,
+                    AuthorId = model.AuthorId,
+                    TotalComments = model.TotalComments,
+                    Tags = model.Tags,
+                    NewsHotClass = model.NewsHotClass,
+                    LastReadTimes = model.LastReadTimes,
+                    LastDealTime = DateTime.Now,
+                    IsHot = model.IsHot,
+                    IsDeal = model.IsDeal,
+                    IntervalMinutes = model.IntervalMinutes,
+                    CurReadTimes = model.CurReadTimes,
+                    CreateTime = DateTime.Now,
+                    GroupId = model.GroupId,
+                };
+
+
+                var id = Sql.InsertId<T_News_Bjh>(item);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                //Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
+        public static int UpdateNews_Bjh(DtoNews model)
+        {
+            try
+            {
+                var news = new T_News_Bjh()
+                {
+                    Id = model.Id,
+                    CurReadTimes = model.CurReadTimes,
+                    LastDealTime = DateTime.Now,
+                    LastReadTimes = model.LastReadTimes,
+                    IsHot = model.IsHot,
+                    IsDeal = 1,
+                    TotalComments = model.TotalComments,
+                    NewsHotClass = model.NewsHotClass,
+                    IntervalMinutes = model.IntervalMinutes,
+                    GroupId = model.GroupId,
+                };
+                return Sql.Update(news, "Id={0}".Formats(model.Id));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 1;
+        }
+        /// <summary>
+        /// 判断某条新闻是否已存在
+        /// </summary>
+        /// <param name="title">新闻标题</param>
+        /// <returns></returns>
+        public static bool IsExistsNews_Bjh(string title)
+        {
+            try
+            {
+                var sql = "select Id from T_News_Bjh where Title=?";
+
+                var id = Sql.ExecuteScalar(0, sql, title);
+
+                return id > 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 判断某条新闻是否已存在
+        /// </summary>
+        /// <param name="authorId">新闻作者</param>
+        /// <param name="title">新闻标题</param>
+        /// <returns></returns>
+        public static int IsExistsNews_Bjh(string authorId, string title)
+        {
+            try
+            {
+                var sql = "select Id from T_News_Bjh where AuthorId=? and Title=?";
+
+                var id = Sql.ExecuteScalar(0, sql, authorId, title);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return 0;
+        }
+
+        public static bool DelNews_Bjh(int id)
+        {
+            try
+            {
+                var sql = string.Format("delete from T_News_Bjh where Id={0}", id);
+
+                var result = Sql.ExecuteSql(sql);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// 获取某一个新闻
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static T_News_Bjh GetNews_Bjh(int id)
+        {
+            try
+            {
+                var sql = @"SELECT  * FROM T_News_Bjh WHERE Id={0}".Formats(id);
+
+                var list = Sql.Select<T_News_Bjh>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    return list[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        
+
         /// <summary>
         /// 获取100条未处理的新闻记录 未处理是指没有抓取该新闻详细页，从中取出作者url
         /// </summary>
         /// <returns></returns>
-        public static List<DtoNews> GetNoGatherAuthorUrlNewsList()
+        public static List<DtoNews> GetNoGatherAuthorUrlNewsList_Bjh()
         {
             try
             {
-                var sql = "select * from T_News where (IsShow<=1) order By Id DESC limit 0,100";
+                var sql = "select * from T_News_Bjh where (IsShow<=1) order By Id DESC limit 0,100";
                 var list = Sql.Select<DtoNews>(sql);
 
                 if (list != null && list.Count > 0)
@@ -739,13 +997,13 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位IsShow 正在处理状态　IsShow=2
-                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
+                    sql = "update T_News_Bjh set IsShow=2 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else
                 {
                     //全部执行完后统一回位 isshow=1
-                    sql = "update T_News set IsShow=1";
+                    sql = "update T_News_Bjh set IsShow=1";
                     Sql.ExecuteSql(sql);
                 }
 
@@ -764,11 +1022,11 @@ namespace Lfb.DataGrabBll
         /// 更新新闻的关键字字段
         /// </summary>
         /// <returns></returns>
-        public static bool UpdateNewsTags(int newsId, string tags)
+        public static bool UpdateNewsTags_Bjh(int newsId, string tags)
         {
             try
             {
-                var sql = "update T_News set Tags='{0}' where Id={1}".Formats(tags, newsId);
+                var sql = "update T_News_Bjh set Tags='{0}' where Id={1}".Formats(tags, newsId);
                 Sql.ExecuteSql(sql);
 
             }
@@ -779,6 +1037,329 @@ namespace Lfb.DataGrabBll
 
             return true;
         }
+
+        #endregion
+
+        #region === author_bjh deal ===
+        /// <summary>
+        /// 添加一条新闻
+        /// </summary>
+        /// <param name="model">新闻实体</param>
+        /// <returns></returns>
+        public static int Insert_Author_Bjh(DtoAuthor model)
+        {
+            try
+            {
+                if (model.Author == null)
+                    model.Author = "";
+                if (model.AuthorId == null)
+                    return -1;
+                if (model.Url == null)
+                    return -1;
+
+                var item = new T_Author_Bjh()
+                {
+                    Author = model.Author,
+                    CreateTime = DateTime.Now,
+                    AuthorId = model.AuthorId,
+                    IsDeal = model.IsDeal,
+                    LastDealTime = DateTime.Now,
+                    Url = model.Url,
+                    IsShow = 0,
+                    GroupId = model.GroupId
+                };
+
+
+                var id = Sql.InsertId<T_Author_Bjh>(item);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// 判断某个作者是否已存在
+        /// </summary>
+        /// <param name="authorId">作者id</param>
+        /// <returns></returns>
+        public static bool IsExistsAuthor_Bjh(string authorId)
+        {
+            try
+            {
+                var sql = "select Id from T_Author_Bjh where AuthorId=?";
+
+                var id = Sql.ExecuteScalar(0, sql, authorId);
+
+                return id > 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 更新作者的处理状态
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isDeal">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateAuthorIsDeal_Bjh(int id, int isDeal)
+        {
+            try
+            {
+                if (isDeal > 1)
+                    isDeal = 1;
+                if (isDeal < 0)
+                    isDeal = 0;
+
+                var sql = string.Format("update T_Author_Bjh set IsDeal={0} where Id={1}", isDeal, id);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 更新作者的groupid
+        /// </summary>
+        /// <param name="authroId"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public static bool UpdateAuthorGroupId_Bjh(string authroId, string groupId)
+        {
+            try
+            {
+                var sql = "";
+                if (string.IsNullOrWhiteSpace(groupId))
+                {
+                    sql = string.Format("update T_Author_Bjh set RefreshTimes=RefreshTimes+1 where AuthorId='{0}'", authroId);
+                    //return true;
+                }
+                else
+                {
+                    sql =
+                        string.Format(
+                            "update T_Author_Bjh set GroupId='{0}',RefreshTimes=RefreshTimes+1 where AuthorId='{1}' and (GroupId='0' or GroupId='')",
+                            groupId, authroId);
+                }
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 更新作者的处理状态
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateAuthorIsShow_Bjh(int id, int isShow)
+        {
+            try
+            {
+                if (isShow > 1)
+                    isShow = 1;
+                if (isShow < 0)
+                    isShow = 0;
+
+                var sql = string.Format("update T_Author_Bjh set IsShow={0} where Id={1}", isShow, id);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        public static bool UpdateAuthorInterval_Bjh(string authorId, int intervalMinutes)
+        {
+            try
+            {
+                var sql = string.Format("update T_Author_Bjh set IntervalMinutes={0} where AuthorId='{1}'", intervalMinutes, authorId);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        public static bool UpdateAuthorIsDeal_Bjh(string authorId, int isDeal)
+        {
+            try
+            {
+                var sql = string.Format("update T_Author_Bjh set IsDeal={0} where AuthorId='{1}'", isDeal, authorId);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+        /// <summary>
+        /// 获取100条未处理的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetNoDealAuthorList_Bjh()
+        {
+            try
+            {
+                var sql = "select * from T_Author_Bjh where (IsDeal<=1) order By Id DESC limit 0,100";
+                var list = Sql.Select<DtoAuthor>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    sql = "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+                }
+                else
+                {
+                    //当isdeal=0 =1的没有时，全部置位
+                    sql = "update T_Author_Bjh set IsDeal=1";
+                    Sql.ExecuteSql(sql);
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取100条未处理的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetNoRefreshAuthorList_Bjh()
+        {
+            try
+            {
+                var sql = "select * from T_Author_Bjh where (IsShow<=1) order By Id asc limit 0,100";
+                var list = Sql.Select<DtoAuthor>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　IsShow=2
+                    sql = "update T_Author_Bjh set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+                }
+                else
+                {
+                    //全部处理完后置位IsShow=1
+                    sql = "update T_Author_Bjh set IsShow=1";
+                    Sql.ExecuteSql(sql);
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取需要刷新的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetWaitRefreshAuthorList_Bjh()
+        {
+            try
+            {
+                //因为此处有多个线程同时执行
+                lock (lockObj1)
+                {
+                    var curTime = DateTime.Now;
+                    //取一个月内抓取且已到刷新时间的新闻的作者列表
+                    var sql =
+                        "select * from T_Author_Bjh where (IsDeal=0 or IsDeal=1) and AuthorId in(SELECT DISTINCT AuthorId from t_news WHERE  DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)) order By Id DESC limit 0,1000"
+                            .Formats(curTime);
+
+
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    //取过的新闻置位isdeal=1
+                    var sql2 =
+                        "update T_News_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1 where DATE_ADD(CreateTime,INTERVAL 30 DAY)>'{0}' and DATE_ADD(LastDealTime,INTERVAL IntervalMinutes MINUTE)>'{0}' and (IsDeal<=1)"
+                            .Formats(curTime);
+                    Sql.ExecuteSql(sql2);
+
+                    if (list != null && list.Count > 0)
+                    {
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql = "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
+
+                    }
+                    else
+                    {
+                        //全部执行完后统一回位 isdeal=1
+                        sql = "update T_Author_Bjh set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+
+                        //全部执行完后统一回位 isdeal=1
+                        sql = "update T_News_Bjh set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
+
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+
         #endregion
     }
 }

@@ -814,6 +814,12 @@ namespace Lfb.DataGrabBll
                         {
                             try
                             {
+                                var pubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.datetime.ToString());
+                                //一个月前的新闻不抓取
+                                if (pubTime.AddMonths(1) < DateTime.Now)
+                                {
+                                    continue;
+                                }
                                 var newsId = DalNews.IsExistsNews(authorId, subItem.title);
                                 if (newsId < 1)
                                 {

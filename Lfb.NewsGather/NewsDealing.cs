@@ -16,6 +16,7 @@ namespace Lfb.NewsGather
         static NewsDealing()
         {
             //初始化
+            #region === toutiao ===
             AddTask(RefreshProxyDeal, 1 * 60);
 
             AddTask(DealProxyListRemove, 10 * 60);
@@ -37,8 +38,14 @@ namespace Lfb.NewsGather
             AddTask(GatherRelationFromAuthor, 15 * 60);
 
             AddTask(GatherNewsFromZtRecent, 15 * 60);
+            #endregion
 
-            //AddTask(GatherAuthorFromUserSub, 15 * 60);
+            #region  === 百度百家号 ===
+            
+            AddTask(GatheringAuthorUrlSearch, 10 * 60);
+            AddTask(GatheringNewsFromAuthor_Bjh, 10 * 60);
+            
+            #endregion
         }
 
         /// <summary>
@@ -465,6 +472,85 @@ namespace Lfb.NewsGather
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
+
+
+        public static void GatheringAuthorUrlSearch() 
+        {
+            try
+            {
+                if (Global.IsEnableBjhSearch != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                var i = 0;
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    i++;
+                    Log.Info("从百度搜索百家号作者开始 i=" + i + " time=" + DateTime.Now);
+
+                    var bll = new BaijiahaoGather();
+                    
+                    bll.GatheringAuthorUrlSearch();
+
+                    Log.Info("从百度搜索百家号作者结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        public static void GatheringNewsFromAuthor_Bjh() 
+        {
+            try
+            {
+                if (Global.IsEnableBjhAuthorGather != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                var i = 0;
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    i++;
+                    Log.Info("从百家号作者主页抓取开始 i=" + i + " time=" + DateTime.Now);
+
+                    var bll = new BaijiahaoGather();
+
+                    bll.GatheringNewsFromAuthor();
+
+                    Log.Info("从百家号作者主页抓取结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+        
+
 
         /// <summary>
         /// 图片转存处理
