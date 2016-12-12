@@ -131,6 +131,14 @@ namespace Lfb.DataGrabBll
                 }
                 #endregion
 
+                Log.Info("===========begin =============="+url + " " + searchPageIndex);
+
+                Log.Info(strContent);
+
+                Log.Info("===========end ==============" + url + " " + searchPageIndex);
+
+
+
                 #region === deal baijiahao ===
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
