@@ -115,12 +115,14 @@ namespace Lfb.DataGrabBll
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
+                    Thread.Sleep(1*1000);
                     //重新请求一次，因为用了代理后，经常会失败
-                    strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                    strContent = HttpHelper.GetContent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
                         //HttpHelper.IsUseProxy = false;
                         //重新请求一次，因为用了代理后，经常会失败
+                        Thread.Sleep(1 * 1000);
                         strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
