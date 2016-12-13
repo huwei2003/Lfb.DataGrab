@@ -217,7 +217,15 @@ namespace Lfb.DataGrabBll
         {
             //var url = "http://baijiahao.baidu.com/api/content/article/listall?sk=super&ak=super&app_id={0}&_skip={1}&_limit=12";
             var skip = AuthorPageIndex * 12;
-            url = string.Format(url, authorId, skip);
+            if (skip == 0)
+            {
+                url = string.Format(url, authorId, skip);
+            }
+            else
+            {
+                url = url.Replace((skip-12).ToString(), skip.ToString());
+            }
+
             var strContent = "";
 
             try
