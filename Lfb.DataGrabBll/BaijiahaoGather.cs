@@ -30,7 +30,7 @@ namespace Lfb.DataGrabBll
                 foreach (var keyword in keywords)
                 {
                     GatheringAuthorUrlFromSearch(keyword, 100, 0);
-                    Thread.Sleep(1 * 1000);
+                    Thread.Sleep(3 * 1000);
                 }
 
             }
@@ -133,11 +133,11 @@ namespace Lfb.DataGrabBll
                 }
                 #endregion
 
-                Log.Info("===========begin =============="+url + " " + searchPageIndex);
+                //Log.Info("===========begin =============="+url + " " + searchPageIndex);
 
-                Log.Info(strContent);
+                //Log.Info(strContent);
 
-                Log.Info("===========end ==============" + url + " " + searchPageIndex);
+                //Log.Info("===========end ==============" + url + " " + searchPageIndex);
 
 
 
@@ -172,7 +172,7 @@ namespace Lfb.DataGrabBll
                                 {
                                     continue;
                                 }
-                                //判断是否已存在
+                                #region === 判断是否已存在 ===
                                 var isHave = DalNews.IsExistsAuthor_Bjh(appId);
                                 if (!isHave)
                                 {
@@ -189,12 +189,26 @@ namespace Lfb.DataGrabBll
                                         Url = "http://baijiahao.baidu.com/u?app_id=" + appId,
 
                                     };
-                                    DalNews.Insert_Author_Bjh(model);
+                                    var id = DalNews.Insert_Author_Bjh(model);
+                                    Log.Info("keyword" + keywords + "authodid=" + id);
                                 }
+                                else
+                                {
+                                    Log.Info("appid" + appId + "已存在");
+                                }
+                                #endregion
+                            }
+                            else
+                            {
+                                Log.Info("非百家号地址");
                             }
                             #endregion
                         }
                     }
+                }
+                else
+                {
+                    Log.Error("url=" + url + " 无内容" + DateTime.Now);
                 }
                 #endregion
 

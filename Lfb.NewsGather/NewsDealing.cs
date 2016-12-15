@@ -19,25 +19,25 @@ namespace Lfb.NewsGather
             #region === toutiao ===
             AddTask(RefreshProxyDeal, 1 * 60);
 
-            AddTask(DealProxyListRemove, 10 * 60);
+            //AddTask(DealProxyListRemove, 10 * 60);
 
-            AddTask(GatheringAuthorUrlFromChannel, 10 * 60);
+            //AddTask(GatheringAuthorUrlFromChannel, 10 * 60);
 
-            AddTask(GatheringNewsFromAuthor, 15 * 60);
+            //AddTask(GatheringNewsFromAuthor, 15 * 60);
 
             //开三个
-            AddTask(GatheringAuthorNewsByRefresh, 15 * 60);
-            AddTask(GatheringAuthorNewsByRefresh, 16 * 60);
-            AddTask(GatheringAuthorNewsByRefresh, 17 * 60);
+            //AddTask(GatheringAuthorNewsByRefresh, 15 * 60);
+            //AddTask(GatheringAuthorNewsByRefresh, 16 * 60);
+            //AddTask(GatheringAuthorNewsByRefresh, 17 * 60);
 
             //开二个
-            AddTask(GatherAuthorFromNews, 15 * 60);
-            AddTask(GatherAuthorFromNews, 16 * 60);
+            //AddTask(GatherAuthorFromNews, 15 * 60);
+            //AddTask(GatherAuthorFromNews, 16 * 60);
 
 
-            AddTask(GatherRelationFromAuthor, 15 * 60);
+            //AddTask(GatherRelationFromAuthor, 15 * 60);
 
-            AddTask(GatherNewsFromZtRecent, 15 * 60);
+            //AddTask(GatherNewsFromZtRecent, 15 * 60);
             #endregion
 
             #region  === 百度百家号 ===
