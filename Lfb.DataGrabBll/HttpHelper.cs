@@ -30,15 +30,15 @@ namespace Lfb.DataGrabBll
             try
             {
                 // 这一句一定要写在创建连接的前面。使用回调的方法进行证书验证。
-                ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
+                //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
 
-                CookieContainer cc = new CookieContainer();
+                //CookieContainer cc = new CookieContainer();
                 //WebRequest request = WebRequest.Create(strUrl);
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
 
                 //set request args
                 request.Method = "Get";
-                request.CookieContainer = cc;
+                //request.CookieContainer = cc;
                 request.KeepAlive = true;
 
                 //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
@@ -458,15 +458,15 @@ namespace Lfb.DataGrabBll
             {
                 #region
                 // 这一句一定要写在创建连接的前面。使用回调的方法进行证书验证。
-                ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
-                CookieContainer cc = new CookieContainer();
+                //ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
+                //CookieContainer cc = new CookieContainer();
                 //WebRequest request = WebRequest.Create(strUrl);
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
 
 
                 //set request args
                 request.Method = "Get";
-                request.CookieContainer = cc;
+                //request.CookieContainer = cc;
                 request.KeepAlive = true;
 
                 //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";

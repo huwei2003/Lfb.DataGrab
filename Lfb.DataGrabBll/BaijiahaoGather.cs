@@ -92,7 +92,7 @@ namespace Lfb.DataGrabBll
         /// <param name="newsListUrl"></param>
         /// <param name="newsType"></param>
         /// <returns></returns>
-        private int GatheringAuthorUrlFromSearch(string keywords, int newsType, int searchPageIndex)
+        public int GatheringAuthorUrlFromSearch(string keywords, int newsType, int searchPageIndex)
         {
             if (string.IsNullOrWhiteSpace(keywords))
             {
@@ -101,6 +101,14 @@ namespace Lfb.DataGrabBll
             //百家号地址计数器，如果当前搜索页百家号地址小于2则不再读取下一页数据
             var iBjhCount = 0;
             var strContent = "";
+            //贡献文章 总阅读数 作者文章 按时间
+            keywords = keywords.Replace("贡献文章", "\"贡献文章\"");
+            keywords = keywords.Replace("总阅读数", "\"总阅读数\"");
+            keywords = keywords.Replace("作者文章", "\"作者文章\"");
+            keywords = keywords.Replace("按时间", "\"按时间\"");
+            keywords = keywords.Replace(" ","%20").Replace("\\","");
+            //keywords = System.Web.HttpUtility.UrlEncode(keywords);
+
             var url = "https://www.baidu.com/s?wd=" + keywords;
             
             try
@@ -112,12 +120,12 @@ namespace Lfb.DataGrabBll
                 Log.Info(url + " 搜索 页码" + searchPageIndex);
 
                 #region === 取内容 ===
-                strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                strContent = HttpHelper.GetContent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
-                    Thread.Sleep(1*1000);
+                    Thread.Sleep(2*1000);
                     //重新请求一次，因为用了代理后，经常会失败
-                    strContent = HttpHelper.GetContent(url, Encoding.UTF8);
+                    strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
                         //HttpHelper.IsUseProxy = false;
@@ -144,7 +152,7 @@ namespace Lfb.DataGrabBll
                 #region === deal baijiahao ===
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
-                    var lista = XpathHelper.GetOuterHtmlListByXPath(strContent, "//div[@class='f13']/a");
+                    var lista = XpathHelper.GetOuterHtmlListByXPath(strContent, "//div[@class='f13']/a[1]");
                     if (lista != null && lista.Count > 0)
                     {
                         foreach (var a in lista)
@@ -201,6 +209,7 @@ namespace Lfb.DataGrabBll
                             else
                             {
                                 Log.Info("非百家号地址");
+                                Log.Info("href=" + href + " hrefname=" + hrefName);
                             }
                             #endregion
                         }
