@@ -178,6 +178,7 @@ namespace Lfb.DataGrabBll
                                 }
                                 if (string.IsNullOrWhiteSpace(appId))
                                 {
+                                    Log.Info("取百家号主页内容没取到");
                                     continue;
                                 }
                                 #region === 判断是否已存在 ===
