@@ -42,8 +42,8 @@ namespace Lfb.NewsGather
 
             #region  === 百度百家号 ===
             
-            AddTask(GatheringAuthorUrlSearch, 10 * 60);
-            AddTask(GatheringNewsFromAuthor_Bjh, 10 * 60);
+            AddTask(GatheringAuthorUrlSearch, 1 * 60);
+            AddTask(GatheringNewsFromAuthor_Bjh, 1 * 60);
             
             #endregion
         }

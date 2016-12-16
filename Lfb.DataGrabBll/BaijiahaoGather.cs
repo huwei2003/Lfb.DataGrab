@@ -141,11 +141,11 @@ namespace Lfb.DataGrabBll
                 }
                 #endregion
 
-                //Log.Info("===========begin =============="+url + " " + searchPageIndex);
+                Log.Info("===========begin =============="+url + " " + searchPageIndex);
 
-                //Log.Info(strContent);
+                Log.Info(strContent);
 
-                //Log.Info("===========end ==============" + url + " " + searchPageIndex);
+                Log.Info("===========end ==============" + url + " " + searchPageIndex);
 
 
 

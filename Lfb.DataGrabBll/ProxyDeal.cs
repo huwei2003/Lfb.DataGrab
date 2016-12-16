@@ -33,7 +33,7 @@ namespace Lfb.DataGrabBll
                     Log.Info("代理 目前可用个数=" + ProxyList.Count+" 暂停刷新代理");
                     return;
                 }
-                if (ProxyList.Count >= 20)
+                if (ProxyList.Count >= 10)
                 {
                     IsProxyReady = true;
                 }
