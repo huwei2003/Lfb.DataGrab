@@ -19,6 +19,7 @@ namespace Lfb.DataGrabBll
         public static void GetProxyList()
         {
             //var ProxyList = (List<string>)Lib.Csharp.Tools.AppCache.Get("ProxyIpListForHttp");
+            var proxyOkNums = 10;
             try
             {
                 //ProxyList = Comm.Tools.Utility.Cache.GetCache<List<string>>("ProxyIpListForHttp");
@@ -33,7 +34,7 @@ namespace Lfb.DataGrabBll
                     Log.Info("代理 目前可用个数=" + ProxyList.Count+" 暂停刷新代理");
                     return;
                 }
-                if (ProxyList.Count >= 10)
+                if (ProxyList.Count >= proxyOkNums)
                 {
                     IsProxyReady = true;
                 }
@@ -70,7 +71,7 @@ namespace Lfb.DataGrabBll
                                                 }
                                                 Thread.Sleep(30 * 1000);
                                             }
-                                            if (ProxyList.Count >= 20)
+                                            if (ProxyList.Count >= proxyOkNums)
                                             {
                                                 IsProxyReady = true;
                                             }

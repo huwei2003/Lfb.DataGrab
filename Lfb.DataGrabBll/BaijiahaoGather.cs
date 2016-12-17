@@ -100,16 +100,35 @@ namespace Lfb.DataGrabBll
             }
             //百家号地址计数器，如果当前搜索页百家号地址小于2则不再读取下一页数据
             var iBjhCount = 0;
+            //有效的百家号计数器
+            var iHaveValidBjh = 0;
             var strContent = "";
             //贡献文章 总阅读数 作者文章 按时间
-            keywords = keywords.Replace("贡献文章", "\"贡献文章\"");
-            keywords = keywords.Replace("总阅读数", "\"总阅读数\"");
-            keywords = keywords.Replace("作者文章", "\"作者文章\"");
-            keywords = keywords.Replace("按时间", "\"按时间\"");
+            //keywords = keywords.Replace("贡献文章", "\"贡献文章\"");
+            //keywords = keywords.Replace("总阅读数", "\"总阅读数\"");
+            //keywords = keywords.Replace("作者文章", "\"作者文章\"");
+            //keywords = keywords.Replace("按时间", "\"按时间\"");
+            
+            keywords = keywords.Replace("贡献文章 ", "");
+            keywords = keywords.Replace("贡献文章", "");
+            keywords = keywords.Replace("总阅读数 ", "");
+            keywords = keywords.Replace("总阅读数", "");
+            keywords = keywords.Replace("作者文章 ", "");
+            keywords = keywords.Replace("作者文章", "");
+            keywords = keywords.Replace("按时间", "");
+
+            //用来记录搜索关键字
+            var groupid = keywords;
+            if (groupid.Length > 50)
+            {
+                groupid = groupid.Substring(0, 30);
+            }
             keywords = keywords.Replace(" ","%20").Replace("\\","");
             //keywords = System.Web.HttpUtility.UrlEncode(keywords);
 
-            var url = "https://www.baidu.com/s?wd=" + keywords;
+            //var site = "%20site%3Abaijiahao.baidu.com";
+            var inurl = "inurl%3Abaijiahao.baidu.com%3Fu%3Dapp_id";
+            var url = "https://www.baidu.com/s?wd=" + keywords + inurl;
             
             try
             {
@@ -141,11 +160,11 @@ namespace Lfb.DataGrabBll
                 }
                 #endregion
 
-                Log.Info("===========begin =============="+url + " " + searchPageIndex);
+                //Log.Info("===========begin =============="+url + " " + searchPageIndex);
 
-                Log.Info(strContent);
+                //Log.Info(strContent);
 
-                Log.Info("===========end ==============" + url + " " + searchPageIndex);
+                //Log.Info("===========end ==============" + url + " " + searchPageIndex);
 
 
 
@@ -155,6 +174,8 @@ namespace Lfb.DataGrabBll
                     var lista = XpathHelper.GetOuterHtmlListByXPath(strContent, "//div[@class='f13']/a[1]");
                     if (lista != null && lista.Count > 0)
                     {
+                        iBjhCount = 0;
+                        iHaveValidBjh = 0;
                         foreach (var a in lista)
                         {
                             var href = XpathHelper.GetAttrValueByXPath(a, "//a", "href");
@@ -165,9 +186,21 @@ namespace Lfb.DataGrabBll
                             {
                                 iBjhCount++;
                                 //var str  = HttpHelper.GetContentByAgent(href, Encoding.UTF8);
-                                Thread.Sleep(200);
+                                if (iBjhCount % 2 == 0)
+                                {
+                                    Thread.Sleep(2000);
+                                }
+                                else
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                                
 
-                                var str = HttpHelper.GetContentByAgent(href, Encoding.UTF8);
+                                var str = HttpHelper.GetContent(href, Encoding.UTF8);
+                                if (string.IsNullOrWhiteSpace(str))
+                                {
+                                    str = HttpHelper.GetContentByAgent(href, Encoding.UTF8);
+                                }
                                 //取百家号主页里的百家号名称，appid
                                 var author = "";
                                 var appId = "";
@@ -176,20 +209,27 @@ namespace Lfb.DataGrabBll
                                     author = XpathHelper.GetInnerHtmlByXPath(str, "//title", "").Replace("-百家号", "");
                                     appId = XpathHelper.GetAttrValueByXPath(str, "//input[@class='author-appid mth-config']", "data-appid");
                                 }
+                                else
+                                {
+                                    Log.Info("取百家号主页内容没取到 href=" + href);
+                                }
                                 if (string.IsNullOrWhiteSpace(appId))
                                 {
-                                    Log.Info("取百家号主页内容没取到");
+                                    Log.Info("appid没取到 内容如下=== begin === href=" + href);
+                                    //Log.Info(str);
+                                    Log.Info("appid没取到 内容如下=== end === href" + href);
                                     continue;
                                 }
                                 #region === 判断是否已存在 ===
                                 var isHave = DalNews.IsExistsAuthor_Bjh(appId);
                                 if (!isHave)
                                 {
+                                    iHaveValidBjh++;
                                     var model = new DtoAuthor()
                                     {
                                         Author = author,
                                         AuthorId = appId,
-                                        GroupId = "0",
+                                        GroupId = groupid,
                                         IntervalMinutes = 60,
                                         IsDeal = 0,
                                         IsShow = 0,
@@ -203,12 +243,14 @@ namespace Lfb.DataGrabBll
                                 }
                                 else
                                 {
+                                    //iHaveValidBjh = 0;
                                     Log.Info("appid" + appId + "已存在");
                                 }
                                 #endregion
                             }
                             else
                             {
+                                //iHaveValidBjh = 0;
                                 Log.Info("非百家号地址");
                                 Log.Info("href=" + href + " hrefname=" + hrefName);
                             }
@@ -225,6 +267,11 @@ namespace Lfb.DataGrabBll
                 //如果当前页有百家号>=3则翻页，否则结束
                 if (iBjhCount >= 3)
                 {
+                    //当翻页到后面且没有新的百家号时退出，不再翻页
+                    if (iHaveValidBjh < 1 && searchPageIndex > 50)
+                    {
+                        return 0;
+                    }
                     searchPageIndex++;
                     GatheringAuthorUrlFromSearch(keywords, newsType, searchPageIndex);
                 }
