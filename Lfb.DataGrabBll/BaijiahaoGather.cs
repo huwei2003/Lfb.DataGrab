@@ -146,7 +146,8 @@ namespace Lfb.DataGrabBll
             {
                 groupid = groupid.Substring(0, 30);
             }
-            keywords = keywords.Replace(" ","").Replace("\\","").Replace("%20","");
+            //keywords = keywords.Replace(" ","").Replace("\\","").Replace("%20","");
+            keywords = keywords.Replace(" ","%20");
             //keywords = System.Web.HttpUtility.UrlEncode(keywords);
 
             //var site = "%20site%3Abaijiahao.baidu.com";
