@@ -29,8 +29,29 @@ namespace Lfb.DataGrabBll
                 var keywords = Global.BjhSearchKeywords.Split(',');
                 foreach (var keyword in keywords)
                 {
-                    GatheringAuthorUrlFromSearch(keyword, 100, 0);
-                    Thread.Sleep(3 * 1000);
+                    if (keyword.Length < 10)
+                    {
+                        GatheringAuthorUrlFromSearch(keyword, 100, 0);
+                        Thread.Sleep(3 * 1000);
+                    }
+                    try
+                    {
+                        var singleKeyword = keyword.Split(' ')[0];
+                        if (!string.IsNullOrWhiteSpace(singleKeyword))
+                        {
+                            for (var i = 0; i < singleKeyword.Length; i++)
+                            {
+                                GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1)+" 百家号 ", 100, 0);
+                                GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1) + " ", 100, 0);
+                                Thread.Sleep(3 * 1000);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        Thread.Sleep(60 * 1000);
+                    }
                 }
 
             }
@@ -102,6 +123,8 @@ namespace Lfb.DataGrabBll
             var iBjhCount = 0;
             //有效的百家号计数器
             var iHaveValidBjh = 0;
+            //每次循环没有百家号计数
+            var iContinueNo = 0;
             var strContent = "";
             //贡献文章 总阅读数 作者文章 按时间
             //keywords = keywords.Replace("贡献文章", "\"贡献文章\"");
@@ -123,7 +146,7 @@ namespace Lfb.DataGrabBll
             {
                 groupid = groupid.Substring(0, 30);
             }
-            keywords = keywords.Replace(" ","%20").Replace("\\","");
+            keywords = keywords.Replace(" ","").Replace("\\","").Replace("%20","");
             //keywords = System.Web.HttpUtility.UrlEncode(keywords);
 
             //var site = "%20site%3Abaijiahao.baidu.com";
@@ -268,7 +291,7 @@ namespace Lfb.DataGrabBll
                 if (iBjhCount >= 3)
                 {
                     //当翻页到后面且没有新的百家号时退出，不再翻页
-                    if (iHaveValidBjh < 1 && searchPageIndex > 50)
+                    if (iHaveValidBjh < 1 && searchPageIndex > 30)
                     {
                         return 0;
                     }
