@@ -39,6 +39,14 @@ namespace Lfb.DataGrab.Tests
         }
 
         [Test()]
+        public void GatheringAuthorUrlSearch2Test()
+        {
+
+            //bll.GatheringAuthorUrlFromSearch("辩证 百家号 贡献文章 总阅读数 作者文章 按时间", 100, 1);
+            bll.GatheringAuthorUrlSearch2();
+        }
+
+        [Test()]
         public void GatheringNewsFromAuthorTest()
         {
             //bll.GatheringAuthorUrlFromSearch("百家号 军事 阅读数", 100, 0);

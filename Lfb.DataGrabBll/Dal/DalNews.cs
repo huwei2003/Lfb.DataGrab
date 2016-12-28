@@ -1229,7 +1229,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author_Bjh where (IsDeal<=1) order By Id DESC limit 0,100";
+                var sql = "select * from T_Author_Bjh where (IsDeal<=1) order By Id asc limit 0,10";
                 var list = Sql.Select<DtoAuthor>(sql);
 
                 if (list != null && list.Count > 0)
@@ -1240,7 +1240,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                    sql = "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1,LastDealTime='{0}' where Id in({1})".Formats(DateTime.Now, ids);
                     Sql.ExecuteSql(sql);
                 }
                 else

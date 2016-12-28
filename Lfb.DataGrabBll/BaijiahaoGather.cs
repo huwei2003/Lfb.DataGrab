@@ -36,14 +36,23 @@ namespace Lfb.DataGrabBll
                     }
                     try
                     {
-                        var singleKeyword = keyword.Split(' ')[0];
-                        if (!string.IsNullOrWhiteSpace(singleKeyword))
+                        var arrKeyword = keyword.Split(' ');
+                        if (arrKeyword != null && arrKeyword.Length > 0)
                         {
-                            for (var i = 0; i < singleKeyword.Length; i++)
+                            foreach (var singleKeyword in arrKeyword)
                             {
-                                GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1)+" 百家号 ", 100, 0);
-                                GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1) + " ", 100, 0);
-                                Thread.Sleep(3 * 1000);
+                                if (!string.IsNullOrWhiteSpace(singleKeyword))
+                                {
+                                    for (var i = 0; i < singleKeyword.Length; i++)
+                                    {
+                                        GatheringAuthorUrlFromSearch("intitle%3A\"" + singleKeyword.Substring(i, 1) + "\"%20", 100, 0);
+                                        //GatheringAuthorUrlFromSearch("%2B\"" + singleKeyword.Substring(i, 1) + "\"%20百家号%20贡献文章", 100, 0);
+                                        GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1) + " 百家号 ", 100, 0);
+
+                                        //https://www.baidu.com/s?wd=%2B"娱乐"%20百家号%20贡献文章%20inurl%3Abaijiahao.baidu.com%2Fu%3Fapp_id
+                                        Thread.Sleep(2 * 1000);
+                                    }
+                                }
                             }
                         }
                     }
@@ -56,8 +65,55 @@ namespace Lfb.DataGrabBll
 
             }
             else
-            { 
-                
+            {
+
+            }
+            return 0;
+        }
+
+        public int GatheringAuthorUrlSearch2()
+        {
+            if (!string.IsNullOrWhiteSpace(Global.BjhSearchKeywords))
+            {
+                var keywords = Global.BjhSearchKeywords.Split(',');
+                foreach (var keyword in keywords)
+                {
+                    if (keyword.Length < 10)
+                    {
+                        GatheringAuthorUrlFromSearch(keyword, 100, 0);
+                        Thread.Sleep(1 * 1000);
+                    }
+                    try
+                    {
+                        var arrKeyword = keyword.Split(' ');
+                        if (arrKeyword != null && arrKeyword.Length > 0)
+                        {
+                            foreach (var singleKeyword in arrKeyword)
+                            {
+                                if (!string.IsNullOrWhiteSpace(singleKeyword))
+                                {
+                                    for (var i = 0; i < singleKeyword.Length; i++)
+                                    {
+                                        GatheringAuthorUrlFromSearch2("intitle%3A\""+singleKeyword.Substring(i, 1) + "\"%20", 100, 0);
+                                        GatheringAuthorUrlFromSearch2(singleKeyword.Substring(i, 1) + " 百家号 ", 100, 0);
+                                        //GatheringAuthorUrlFromSearch2(singleKeyword.Substring(i, 1) + " ", 100, 0);
+                                        Thread.Sleep(3 * 1000);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                        Thread.Sleep(60 * 1000);
+                    }
+                }
+
+            }
+            else
+            {
+
             }
             return 0;
         }
@@ -131,7 +187,7 @@ namespace Lfb.DataGrabBll
             //keywords = keywords.Replace("总阅读数", "\"总阅读数\"");
             //keywords = keywords.Replace("作者文章", "\"作者文章\"");
             //keywords = keywords.Replace("按时间", "\"按时间\"");
-            
+
             keywords = keywords.Replace("贡献文章 ", "");
             keywords = keywords.Replace("贡献文章", "");
             keywords = keywords.Replace("总阅读数 ", "");
@@ -147,13 +203,13 @@ namespace Lfb.DataGrabBll
                 groupid = groupid.Substring(0, 30);
             }
             //keywords = keywords.Replace(" ","").Replace("\\","").Replace("%20","");
-            keywords = keywords.Replace(" ","%20");
+            keywords = keywords.Replace(" ", "%20");
             //keywords = System.Web.HttpUtility.UrlEncode(keywords);
 
             //var site = "%20site%3Abaijiahao.baidu.com";
             var inurl = "inurl%3Abaijiahao.baidu.com%3Fu%3Dapp_id";
             var url = "https://www.baidu.com/s?wd=" + keywords + inurl;
-            
+
             try
             {
                 if (searchPageIndex > 0)
@@ -166,7 +222,7 @@ namespace Lfb.DataGrabBll
                 strContent = HttpHelper.GetContent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
-                    Thread.Sleep(2*1000);
+                    Thread.Sleep(2 * 1000);
                     //重新请求一次，因为用了代理后，经常会失败
                     strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
@@ -218,7 +274,7 @@ namespace Lfb.DataGrabBll
                                 {
                                     Thread.Sleep(1000);
                                 }
-                                
+
 
                                 var str = HttpHelper.GetContent(href, Encoding.UTF8);
                                 if (string.IsNullOrWhiteSpace(str))
@@ -308,6 +364,249 @@ namespace Lfb.DataGrabBll
             return 0;
         }
 
+        /// <summary>
+        /// 根据搜索关键字搜索百家号的文章的url,再从文章取作者的url
+        /// </summary>
+        /// <param name="newsListUrl"></param>
+        /// <param name="newsType"></param>
+        /// <returns></returns>
+        public int GatheringAuthorUrlFromSearch2(string keywords, int newsType, int searchPageIndex)
+        {
+            if (string.IsNullOrWhiteSpace(keywords))
+            {
+                return 0;
+            }
+            //百家号地址计数器，如果当前搜索页百家号地址小于2则不再读取下一页数据
+            var iBjhCount = 0;
+            //有效的百家号计数器
+            var iHaveValidBjh = 0;
+            //每次循环没有百家号计数
+            var iContinueNo = 0;
+            var strContent = "";
+            //贡献文章 总阅读数 作者文章 按时间
+            //keywords = keywords.Replace("贡献文章", "\"贡献文章\"");
+            //keywords = keywords.Replace("总阅读数", "\"总阅读数\"");
+            //keywords = keywords.Replace("作者文章", "\"作者文章\"");
+            //keywords = keywords.Replace("按时间", "\"按时间\"");
+
+            keywords = keywords.Replace("贡献文章 ", "");
+            keywords = keywords.Replace("贡献文章", "");
+            keywords = keywords.Replace("总阅读数 ", "");
+            keywords = keywords.Replace("总阅读数", "");
+            keywords = keywords.Replace("作者文章 ", "");
+            keywords = keywords.Replace("作者文章", "");
+            keywords = keywords.Replace("按时间", "");
+
+            //用来记录搜索关键字
+            var groupid = keywords;
+            if (groupid.Length > 50)
+            {
+                groupid = groupid.Substring(0, 30);
+            }
+            //keywords = keywords.Replace(" ","").Replace("\\","").Replace("%20","");
+            keywords = keywords.Replace(" ", "%20");
+            //keywords = System.Web.HttpUtility.UrlEncode(keywords);
+
+            //var site = "%20site%3Abaijiahao.baidu.com";
+            var inurl = "inurl%3Abaijiahao.baidu.com%20\"本文系作者授权百家号发表\"";
+
+            var url = "https://www.baidu.com/s?wd=" + keywords + inurl;
+
+            try
+            {
+                if (searchPageIndex > 0)
+                {
+                    url += "&pn=" + searchPageIndex * 10;
+                }
+                Log.Info(url + " 搜索 页码" + searchPageIndex);
+
+                #region === 取内容 ===
+                strContent = HttpHelper.GetContent(url, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    Thread.Sleep(1 * 1000);
+                    //重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        //HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        Thread.Sleep(1 * 1000);
+                        strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                        //HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + " 未抓取到任何内容 页码" + searchPageIndex);
+                        }
+                    }
+                }
+                #endregion
+
+                //Log.Info("===========begin =============="+url + " " + searchPageIndex);
+
+                //Log.Info(strContent);
+
+                //Log.Info("===========end ==============" + url + " " + searchPageIndex);
+
+
+
+                #region === deal baijiahao ===
+                if (!string.IsNullOrWhiteSpace(strContent))
+                {
+                    var lista = XpathHelper.GetOuterHtmlListByXPath(strContent, "//div[@class='f13']/a[1]");
+                    if (lista != null && lista.Count > 0)
+                    {
+                        iBjhCount = 0;
+                        iHaveValidBjh = 0;
+                        foreach (var a in lista)
+                        {
+                            var href = XpathHelper.GetAttrValueByXPath(a, "//a", "href");
+
+                            #region === deal baijiahao news url ===
+                            Thread.Sleep(1 * 1000);
+
+                            var str = HttpHelper.GetContentByAgent(href, Encoding.UTF8);
+                            if (string.IsNullOrWhiteSpace(str))
+                            {
+                                str = HttpHelper.GetContent(href, Encoding.UTF8);
+                            }
+                            //取百家号主页里的百家号名称，appid
+                            var author = "";
+                            var appId = "";
+                            if (!string.IsNullOrWhiteSpace(str))
+                            {
+                                try
+                                {
+                                    author = XpathHelper.GetInnerHtmlByXPath(str, "//div[@class='author-detail']/a/p", "").Replace("-百家号", "");
+                                    appId = XpathHelper.GetAttrValueByXPath(str, "//div[@class='author-detail']/a", "href");
+                                    //u?app_id=1546166210605725&fr=bjhvideo&wfr=spider
+                                    if (!string.IsNullOrWhiteSpace(appId))
+                                    {
+                                        var str2 = appId.Split('=');
+                                        appId = str2[1].Replace("&fr", "");
+                                    }
+                                    else
+                                    {
+                                        var iIndex = str.IndexOf("\"app_id\":");
+                                        if (iIndex > 0)
+                                        {
+                                            appId = str.Substring(iIndex + 10, 19).Replace("\",\"type", "").Replace("\"", "").Replace(",", "").Replace("type", "");
+                                        }
+                                        else
+                                        {
+                                            #region === 重新取内容处理 ===
+                                            Thread.Sleep(1 * 1000);
+
+                                            str = HttpHelper.GetContent(href, Encoding.UTF8);
+                                            if (string.IsNullOrWhiteSpace(str))
+                                            {
+                                                str = HttpHelper.GetContentByAgent(href, Encoding.UTF8);
+                                            }
+
+                                            if (!string.IsNullOrWhiteSpace(str))
+                                            {
+                                                try
+                                                {
+                                                    author = XpathHelper.GetInnerHtmlByXPath(str, "//div[@class='author-detail']/a/p", "").Replace("-百家号", "");
+                                                    appId = XpathHelper.GetAttrValueByXPath(str, "//div[@class='author-detail']/a", "href");
+                                                    //u?app_id=1546166210605725&fr=bjhvideo&wfr=spider
+                                                    if (!string.IsNullOrWhiteSpace(appId))
+                                                    {
+                                                        var str2 = appId.Split('=');
+                                                        appId = str2[1].Replace("&fr", "");
+                                                    }
+                                                    else
+                                                    {
+                                                        iIndex = str.IndexOf("\"app_id\":");
+                                                        if (iIndex > 0)
+                                                        {
+                                                            appId = str.Substring(iIndex + 10, 19).Replace("\",\"type", "").Replace("\"", "").Replace(",", "").Replace("type", "");
+                                                        }
+                                                        else
+                                                        {
+                                                        }
+                                                    }
+                                                }
+                                                catch { }
+                                            }
+                                            #endregion
+                                        }
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                { }
+                            }
+                            else
+                            {
+                                Log.Info("取百家号主页内容没取到 href=" + href);
+                            }
+                            if (string.IsNullOrWhiteSpace(appId))
+                            {
+                                Log.Info("appid没取到 内容如下=== begin === href=" + href);
+                                //Log.Info(str);
+                                Log.Info("appid没取到 内容如下=== end === href" + href);
+                                continue;
+                            }
+                            #region === 判断是否已存在 ===
+                            var isHave = DalNews.IsExistsAuthor_Bjh(appId);
+                            if (!isHave)
+                            {
+                                iHaveValidBjh++;
+                                var model = new DtoAuthor()
+                                {
+                                    Author = author,
+                                    AuthorId = appId,
+                                    GroupId = groupid,
+                                    IntervalMinutes = 60,
+                                    IsDeal = 0,
+                                    IsShow = 0,
+                                    LastDealTime = DateTime.Now,
+                                    RefreshTimes = 0,
+                                    Url = "http://baijiahao.baidu.com/u?app_id=" + appId,
+
+                                };
+                                var id = DalNews.Insert_Author_Bjh(model);
+                                Log.Info("keyword" + keywords + "authodid=" + id);
+                            }
+                            else
+                            {
+                                //iHaveValidBjh = 0;
+                                Log.Info("appid" + appId + "已存在");
+                            }
+                            #endregion
+
+
+                            #endregion
+                        }
+                    }
+                }
+                else
+                {
+                    Log.Error("url=" + url + " 无内容" + DateTime.Now);
+                }
+                #endregion
+
+                //如果当前页有百家号>=3则翻页，否则结束
+                if (iBjhCount >= 3)
+                {
+                    //当翻页到后面且没有新的百家号时退出，不再翻页
+                    if (iHaveValidBjh < 1 && searchPageIndex > 30)
+                    {
+                        return 0;
+                    }
+                    searchPageIndex++;
+                    GatheringAuthorUrlFromSearch(keywords, newsType, searchPageIndex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("url=" + url + " " + DateTime.Now);
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
         public int DealAuthorData(string url, string authorId, string groupId, int AuthorPageIndex)
         {
             //var url = "http://baijiahao.baidu.com/api/content/article/listall?sk=super&ak=super&app_id={0}&_skip={1}&_limit=12";
@@ -318,7 +617,7 @@ namespace Lfb.DataGrabBll
             }
             else
             {
-                url = url.Replace((skip-12).ToString(), skip.ToString());
+                url = url.Replace((skip - 12).ToString(), skip.ToString());
             }
 
             var strContent = "";
@@ -355,7 +654,7 @@ namespace Lfb.DataGrabBll
 
                     if (data.items != null && data.items.Count > 0)
                     {
-                        if (data.total > (AuthorPageIndex+1)*12)
+                        if (data.total > (AuthorPageIndex + 1) * 12)
                         {
                             isHaveMore = true;
                         }
@@ -367,6 +666,7 @@ namespace Lfb.DataGrabBll
                                 //一个月前的新闻不抓取
                                 if (pubTime.AddMonths(1) < DateTime.Now)
                                 {
+                                    Log.Info("发布时间在1月前不入库 appid=" + subItem.app_id + " pubtime=" + subItem.publish_at + " title=" + subItem.title);
                                     continue;
                                 }
                                 var newsId = DalNews.IsExistsNews_Bjh(authorId, subItem.title);
@@ -504,7 +804,7 @@ namespace Lfb.DataGrabBll
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
                                         };
-                                        
+
                                         DalNews.UpdateNews_Bjh(model);
 
                                         //暂不更新作者表的刷新时间，没用上
@@ -528,7 +828,7 @@ namespace Lfb.DataGrabBll
                         //Thread.Sleep(rnd.Next(1000, 2500));
                         Thread.Sleep(200);
                         AuthorPageIndex++;
-                        
+
                         DealAuthorData(url, authorId, groupId, AuthorPageIndex);
                     }
                     else

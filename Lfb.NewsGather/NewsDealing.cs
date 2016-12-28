@@ -43,7 +43,10 @@ namespace Lfb.NewsGather
             #region  === 百度百家号 ===
             
             AddTask(GatheringAuthorUrlSearch, 1 * 60);
+            //AddTask(GatheringAuthorUrlSearch2, 1 * 60);
             AddTask(GatheringNewsFromAuthor_Bjh, 1 * 60);
+            AddTask(GatheringNewsFromAuthor_Bjh, 3 * 60);
+            AddTask(GatheringNewsFromAuthor_Bjh, 5 * 60);
             
             #endregion
         }
@@ -498,6 +501,44 @@ namespace Lfb.NewsGather
                     bll.GatheringAuthorUrlSearch();
 
                     Log.Info("从百度搜索百家号作者结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        public static void GatheringAuthorUrlSearch2()
+        {
+            try
+            {
+                if (Global.IsEnableBjhSearch != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                var i = 0;
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    i++;
+                    Log.Info("从百度搜索百家号作者2开始 i=" + i + " time=" + DateTime.Now);
+
+                    var bll = new BaijiahaoGather();
+
+                    bll.GatheringAuthorUrlSearch2();
+
+                    Log.Info("从百度搜索百家号作者2结束 i=" + i + " time=" + DateTime.Now);
                     Thread.Sleep(60 * 1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
