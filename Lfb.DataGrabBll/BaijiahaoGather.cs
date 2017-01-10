@@ -24,43 +24,45 @@ namespace Lfb.DataGrabBll
         #region === task 定时调用的方法 ===
         public int GatheringAuthorUrlSearch()
         {
-            if (!string.IsNullOrWhiteSpace(Global.BjhSearchKeywords))
+            if (true)
             {
-                var keywords = Global.BjhSearchKeywords.Split(',');
+                //var keywords = Global.BjhSearchKeywords.Split(',');
+                var keywords = DalNews.GetNoDealKeyword();
                 foreach (var keyword in keywords)
                 {
-                    if (keyword.Length < 10)
+                    if (keyword.Keyword!=null)
                     {
-                        GatheringAuthorUrlFromSearch(keyword, 100, 0);
-                        Thread.Sleep(3 * 1000);
+                        //GatheringAuthorUrlFromSearch(keyword, 100, 0);
+                        GatheringAuthorUrlFromSearch("intitle%3A\"" + keyword.Keyword + "\"%20", 100, 0);
+                        Thread.Sleep(2 * 1000);
                     }
-                    try
-                    {
-                        var arrKeyword = keyword.Split(' ');
-                        if (arrKeyword != null && arrKeyword.Length > 0)
-                        {
-                            foreach (var singleKeyword in arrKeyword)
-                            {
-                                if (!string.IsNullOrWhiteSpace(singleKeyword))
-                                {
-                                    for (var i = 0; i < singleKeyword.Length; i++)
-                                    {
-                                        GatheringAuthorUrlFromSearch("intitle%3A\"" + singleKeyword.Substring(i, 1) + "\"%20", 100, 0);
-                                        //GatheringAuthorUrlFromSearch("%2B\"" + singleKeyword.Substring(i, 1) + "\"%20百家号%20贡献文章", 100, 0);
-                                        GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1) + " 百家号 ", 100, 0);
+                    //try
+                    //{
+                    //    var arrKeyword = keyword.Split(' ');
+                    //    if (arrKeyword != null && arrKeyword.Length > 0)
+                    //    {
+                    //        foreach (var singleKeyword in arrKeyword)
+                    //        {
+                    //            if (!string.IsNullOrWhiteSpace(singleKeyword))
+                    //            {
+                    //                for (var i = 0; i < singleKeyword.Length; i++)
+                    //                {
+                    //                    GatheringAuthorUrlFromSearch("intitle%3A\"" + singleKeyword.Substring(i, 1) + "\"%20", 100, 0);
+                    //                    //GatheringAuthorUrlFromSearch("%2B\"" + singleKeyword.Substring(i, 1) + "\"%20百家号%20贡献文章", 100, 0);
+                    //                    GatheringAuthorUrlFromSearch(singleKeyword.Substring(i, 1) + " 百家号 ", 100, 0);
 
-                                        //https://www.baidu.com/s?wd=%2B"娱乐"%20百家号%20贡献文章%20inurl%3Abaijiahao.baidu.com%2Fu%3Fapp_id
-                                        Thread.Sleep(2 * 1000);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex);
-                        Thread.Sleep(60 * 1000);
-                    }
+                    //                    //https://www.baidu.com/s?wd=%2B"娱乐"%20百家号%20贡献文章%20inurl%3Abaijiahao.baidu.com%2Fu%3Fapp_id
+                    //                    Thread.Sleep(2 * 1000);
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    Log.Error(ex);
+                    //    Thread.Sleep(60 * 1000);
+                    //}
                 }
 
             }

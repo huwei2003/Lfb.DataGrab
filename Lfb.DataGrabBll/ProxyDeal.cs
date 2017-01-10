@@ -59,7 +59,7 @@ namespace Lfb.DataGrabBll
                                     if (!ProxyList.Contains(item))
                                     {
                                         //访问百度，可以访问的才加入list
-                                        strContent = HttpHelper.GetContentByMobileAgentForTestProxy("http://www.toutiao.com/",
+                                        strContent = HttpHelper.GetContentByAgentItem("http://www.sohu.com/",
                                             Encoding.UTF8, item);
                                         if (!string.IsNullOrWhiteSpace(strContent))
                                         {

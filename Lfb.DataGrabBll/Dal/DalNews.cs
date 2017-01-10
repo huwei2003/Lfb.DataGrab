@@ -8,6 +8,7 @@ using Comm.Global.Enum.Sys;
 using Comm.Tools.Utility;
 using Lfb.DataGrabBll.Model;
 using Lib.Csharp.Tools;
+using Lfb.DataGrabBll.Dto;
 using Log = Lib.Csharp.Tools.Log;
 
 namespace Lfb.DataGrabBll
@@ -1360,6 +1361,47 @@ namespace Lfb.DataGrabBll
         }
 
 
+        #endregion
+
+        #region === keywords ===
+        /// <summary>
+        /// 获取100条未处理的作者记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoKeyword> GetNoDealKeyword()
+        {
+            try
+            {
+                var sql = "select Id,Keyword from t_keywords where IsDeal=0 order By Id asc limit 0,10";
+                var list = Sql.Select<DtoKeyword>(sql);
+
+                if (list != null && list.Count > 0)
+                {
+                    var ids = list.Select(p => p.Id).Join(",");
+                    if (ids.Length == 0)
+                    {
+                        ids = "0";
+                    }
+                    //取出后置位isdeal 正在处理状态　isdeal=2
+                    sql = "update t_keywords set IsDeal=1 where Id in({1})".Formats(ids);
+                    Sql.ExecuteSql(sql);
+                }
+                else
+                {
+                    //当isdeal=0 =1的没有时，全部置位
+                    sql = "update t_keywords set IsDeal=0";
+                    Sql.ExecuteSql(sql);
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
         #endregion
     }
 }

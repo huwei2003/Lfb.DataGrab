@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Dal\DalNews.cs" />
     <Compile Include="DtoIfengImg.cs" />
+    <Compile Include="Dto\DtoKeyword.cs" />
     <Compile Include="Dto\DtoLatest_article.cs" />
     <Compile Include="Dto\DtoBaijiahaoAuthorJsData.cs" />
     <Compile Include="Dto\DtoBaijiahaoAuthorNews.cs" />
