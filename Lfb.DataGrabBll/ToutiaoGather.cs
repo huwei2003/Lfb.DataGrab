@@ -776,7 +776,7 @@ namespace Lfb.DataGrabBll
             }
             try
             {
-                Log.Info(url + " 作者抓取开始 页码" + AuthorPageIndex);
+                Log.Info(url + " 新闻抓取开始 页码" + AuthorPageIndex);
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -818,6 +818,7 @@ namespace Lfb.DataGrabBll
                                 //一个月前的新闻不抓取
                                 if (pubTime.AddMonths(1) < DateTime.Now)
                                 {
+                                    Log.Info(""+subItem.title+"发布时间一月前,不入库");
                                     continue;
                                 }
                                 var newsId = DalNews.IsExistsNews(authorId, subItem.title);
@@ -995,7 +996,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info("本作者抓取结束总页数" + AuthorPageIndex);
+                        Log.Info("本作者新闻抓取结束总页数" + AuthorPageIndex);
                         //置位状态
                         //DalNews.UpdateAuthorIsDeal(authorId, 1);
                         AuthorPageIndex = 0;
@@ -1005,7 +1006,7 @@ namespace Lfb.DataGrabBll
                 }
                 else
                 {
-                    Log.Info(url + " 作者未取到数据 页码" + AuthorPageIndex);
+                    Log.Info(url + " 作者新闻未取到数据 页码" + AuthorPageIndex);
                 }
             }
             catch (Exception ex)

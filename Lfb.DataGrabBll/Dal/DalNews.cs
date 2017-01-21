@@ -1383,7 +1383,7 @@ namespace Lfb.DataGrabBll
                         ids = "0";
                     }
                     //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update t_keywords set IsDeal=1 where Id in({1})".Formats(ids);
+                    sql = "update t_keywords set IsDeal=1 where Id in({0})".Formats(ids);
                     Sql.ExecuteSql(sql);
                 }
                 else
