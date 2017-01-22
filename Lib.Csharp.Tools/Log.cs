@@ -26,13 +26,28 @@ namespace Lib.Csharp.Tools
             {
                 if (ex1 != null)
                 {
-                    log.Debug(ex1.Message.ToString() + "\r\n" + ex1.Source.ToString() + "\r\n" + ex1.TargetSite.ToString() + "\r\n" + ex1.StackTrace.ToString());
+                    var message = "";
+                    if (!string.IsNullOrWhiteSpace(ex1.Message.ToString()))
+                    {
+                        if (ex1.Message.ToString().Length > 1000)
+                        {
+                            message = message.Substring(0, 1000);
+                        }
+                    }
+                    log.Debug(message + "\r\n" + ex1.Source.ToString() + "\r\n" + ex1.TargetSite.ToString() + "\r\n" + ex1.StackTrace.ToString());
                 }
             }
         }
 
         public static void Error(string message)
         {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                if (message.Length > 1000)
+                {
+                    message = message.Substring(0, 1000);
+                }
+            }
             if (log.IsErrorEnabled)
             {
                 log.Error(message);
@@ -45,7 +60,15 @@ namespace Lib.Csharp.Tools
             {
                 if (ex1 != null)
                 {
-                    log.Debug(ex1.Message.ToString() + "\r\n" + ex1.Source.ToString() + "\r\n" + ex1.TargetSite.ToString() + "\r\n" + ex1.StackTrace.ToString());
+                    var message = "";
+                    if (!string.IsNullOrWhiteSpace(ex1.Message.ToString()))
+                    {
+                        if (ex1.Message.ToString().Length > 1000)
+                        {
+                            message = message.Substring(0, 1000);
+                        }
+                    }
+                    log.Debug(message + "\r\n" + ex1.Source.ToString() + "\r\n" + ex1.TargetSite.ToString() + "\r\n" + ex1.StackTrace.ToString());
                 }
             }
         }
@@ -60,6 +83,13 @@ namespace Lib.Csharp.Tools
         }
         public static void Info(string message)
         {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                if (message.Length > 1000)
+                {
+                    message = message.Substring(0, 1000);
+                }
+            }
             if (log.IsInfoEnabled)
             {
                 log.Info(message);

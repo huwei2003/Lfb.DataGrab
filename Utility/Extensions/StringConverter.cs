@@ -88,7 +88,7 @@ namespace Comm.Tools.Utility
             DateTime result;
             if (!DateTime.TryParse(val, out result))
             {
-                result = DateTime.MinValue;
+                result = DateTime.Now;
             }
             return result;
         }

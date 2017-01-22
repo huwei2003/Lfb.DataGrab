@@ -17,6 +17,8 @@ namespace Lfb.DataGrabBll
     {
         private static RdsNew Sql; //注意在TestFixtureSetUp后初始化
         private static object lockObj1 = new object();
+        private static object lockObj1News = new object();
+        private static object lockObj1Author = new object();
 
         static DalNews()
         {
@@ -408,28 +410,31 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_News where (IsShow<=1) order By Id DESC limit 0,100";
-                var list = Sql.Select<DtoNews>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1News)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_News where (IsShow<=1) order By Id DESC limit 0,100";
+                    var list = Sql.Select<DtoNews>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位IsShow 正在处理状态　IsShow=2
+                        sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位IsShow 正在处理状态　IsShow=2
-                    sql = "update T_News set IsShow=2 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //全部执行完后统一回位 isshow=1
-                    sql = "update T_News set IsShow=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //全部执行完后统一回位 isshow=1
+                        sql = "update T_News set IsShow=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
@@ -563,22 +568,26 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "";
-                if (string.IsNullOrWhiteSpace(groupId))
+                lock (lockObj1Author)
                 {
-                    sql = string.Format("update T_Author set RefreshTimes=RefreshTimes+1 where AuthorId='{0}'", authroId);
-                    //return true;
-                }
-                else
-                {
-                    sql =
-                        string.Format(
-                            "update T_Author set GroupId='{0}',RefreshTimes=RefreshTimes+1 where AuthorId='{1}' and (GroupId='0' or GroupId='')",
-                            groupId, authroId);
-                }
+                    var sql = "";
+                    if (string.IsNullOrWhiteSpace(groupId))
+                    {
+                        sql = string.Format("update T_Author set RefreshTimes=RefreshTimes+1 where AuthorId='{0}'",
+                            authroId);
+                        //return true;
+                    }
+                    else
+                    {
+                        sql =
+                            string.Format(
+                                "update T_Author set GroupId='{0}',RefreshTimes=RefreshTimes+1 where AuthorId='{1}' and (GroupId='0' or GroupId='')",
+                                groupId, authroId);
+                    }
 
-                var result = Sql.ExecuteSql(sql);
-                return result;
+                    var result = Sql.ExecuteSql(sql);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -651,28 +660,31 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author where (IsDeal<=1) order By Id DESC limit 0,100";
-                var list = Sql.Select<DtoAuthor>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1Author)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_Author where (IsDeal<=1) order By Id DESC limit 0,100";
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author set IsDeal=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //当isdeal=0 =1的没有时，全部置位
-                    sql = "update T_Author set IsDeal=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //当isdeal=0 =1的没有时，全部置位
+                        sql = "update T_Author set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
@@ -690,28 +702,31 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author where (IsShow<=1) order By Id asc limit 0,100";
-                var list = Sql.Select<DtoAuthor>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1Author)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_Author where (IsShow<=1) order By Id asc limit 0,100";
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　IsShow=2
+                        sql = "update T_Author set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位isdeal 正在处理状态　IsShow=2
-                    sql = "update T_Author set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //全部处理完后置位IsShow=1
-                    sql = "update T_Author set IsShow=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //全部处理完后置位IsShow=1
+                        sql = "update T_Author set IsShow=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
@@ -987,28 +1002,31 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_News_Bjh where (IsShow<=1) order By Id DESC limit 0,100";
-                var list = Sql.Select<DtoNews>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1Author)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_News_Bjh where (IsShow<=1) order By Id DESC limit 0,100";
+                    var list = Sql.Select<DtoNews>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位IsShow 正在处理状态　IsShow=2
+                        sql = "update T_News_Bjh set IsShow=2 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位IsShow 正在处理状态　IsShow=2
-                    sql = "update T_News_Bjh set IsShow=2 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //全部执行完后统一回位 isshow=1
-                    sql = "update T_News_Bjh set IsShow=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //全部执行完后统一回位 isshow=1
+                        sql = "update T_News_Bjh set IsShow=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
@@ -1230,28 +1248,33 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author_Bjh where (IsDeal<=1) order By Id asc limit 0,10";
-                var list = Sql.Select<DtoAuthor>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1Author)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_Author_Bjh where (IsDeal<=1) order By Id asc limit 0,10";
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql =
+                            "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1,LastDealTime='{0}' where Id in({1})"
+                                .Formats(DateTime.Now, ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位isdeal 正在处理状态　isdeal=2
-                    sql = "update T_Author_Bjh set IsDeal=2,RefreshTimes=RefreshTimes+1,LastDealTime='{0}' where Id in({1})".Formats(DateTime.Now, ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //当isdeal=0 =1的没有时，全部置位
-                    sql = "update T_Author_Bjh set IsDeal=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //当isdeal=0 =1的没有时，全部置位
+                        sql = "update T_Author_Bjh set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
@@ -1269,28 +1292,32 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select * from T_Author_Bjh where (IsShow<=1) order By Id asc limit 0,100";
-                var list = Sql.Select<DtoAuthor>(sql);
-
-                if (list != null && list.Count > 0)
+                lock (lockObj1Author)
                 {
-                    var ids = list.Select(p => p.Id).Join(",");
-                    if (ids.Length == 0)
+                    var sql = "select * from T_Author_Bjh where (IsShow<=1) order By Id asc limit 0,100";
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    if (list != null && list.Count > 0)
                     {
-                        ids = "0";
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　IsShow=2
+                        sql =
+                            "update T_Author_Bjh set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
                     }
-                    //取出后置位isdeal 正在处理状态　IsShow=2
-                    sql = "update T_Author_Bjh set IsShow=2,RefreshTimes=RefreshTimes+1 where Id in({0})".Formats(ids);
-                    Sql.ExecuteSql(sql);
-                }
-                else
-                {
-                    //全部处理完后置位IsShow=1
-                    sql = "update T_Author_Bjh set IsShow=1";
-                    Sql.ExecuteSql(sql);
-                }
+                    else
+                    {
+                        //全部处理完后置位IsShow=1
+                        sql = "update T_Author_Bjh set IsShow=1";
+                        Sql.ExecuteSql(sql);
+                    }
 
-                return list;
+                    return list;
+                }
             }
             catch (Exception ex)
             {
