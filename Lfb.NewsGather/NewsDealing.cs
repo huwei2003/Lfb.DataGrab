@@ -27,12 +27,12 @@ namespace Lfb.NewsGather
 
             //开三个
             AddTask(GatheringAuthorNewsByRefresh, 15 * 60);
-            AddTask(GatheringAuthorNewsByRefresh, 16 * 60);
-            AddTask(GatheringAuthorNewsByRefresh, 17 * 60);
+            //AddTask(GatheringAuthorNewsByRefresh, 16 * 60);
+            //AddTask(GatheringAuthorNewsByRefresh, 17 * 60);
 
             //开二个
             AddTask(GatherAuthorFromNews, 15 * 60);
-            AddTask(GatherAuthorFromNews, 16 * 60);
+            //AddTask(GatherAuthorFromNews, 16 * 60);
 
 
             AddTask(GatherRelationFromAuthor, 15 * 60);

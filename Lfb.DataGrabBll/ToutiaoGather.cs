@@ -42,6 +42,8 @@ namespace Lfb.DataGrabBll
         /// </summary>
         //public static int AuthorPageIndex;
 
+        private static int sleepMsSeconds=4000;
+
         public static Dictionary<string, int> DictUrl = new Dictionary<string, int>();
 
         #region === task 定时调用的方法 ===
@@ -54,6 +56,7 @@ namespace Lfb.DataGrabBll
         /// <returns></returns>
         public List<DtoNewsUrlList> GatheringAuthorUrlFromChannel(string newsListUrl, int newsType, int ChannelPageIndex)
         {
+            RandOpenUrl();
             //重试过的移除
             if (DictUrl.ContainsKey(newsListUrl))
             {
@@ -67,13 +70,15 @@ namespace Lfb.DataGrabBll
                 strContent = HttpHelper.GetContentByAgent(newsListUrl, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
+                    Thread.Sleep(sleepMsSeconds);
                     //重新请求一次，因为用了代理后，经常会失败
                     strContent = HttpHelper.GetContentByAgent(newsListUrl, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
+                        Thread.Sleep(sleepMsSeconds);
                         //HttpHelper.IsUseProxy = false;
                         //重新请求一次，因为用了代理后，经常会失败
-                        strContent = HttpHelper.GetContentByAgent(newsListUrl, Encoding.UTF8);
+                        strContent = HttpHelper.GetContent(newsListUrl, Encoding.UTF8);
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
@@ -126,7 +131,7 @@ namespace Lfb.DataGrabBll
                     {
                         //sleep
                         //Thread.Sleep(rnd.Next(1000, 2500));
-                        Thread.Sleep(200);
+                        Thread.Sleep(sleepMsSeconds);
                         ChannelPageIndex++;
                         var maxBehotTime = data.next.max_behot_time.ToString();
                         //替换url中的max_behot_time
@@ -138,7 +143,7 @@ namespace Lfb.DataGrabBll
                         Log.Info("本频道抓取结束总页数" + ChannelPageIndex.ToString());
                         ChannelPageIndex = 0;
                         //Thread.Sleep(rnd.Next(2000, 5000));
-                        Thread.Sleep(200);
+                        Thread.Sleep(sleepMsSeconds);
                     }
                 }
                 else
@@ -149,12 +154,12 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message + ex.StackTrace);
+                //Log.Error(ex.Message + ex.StackTrace);
 
-                Log.Debug("======strContent begin 频道抓取=========");
-                Log.Debug(newsListUrl);
-                Log.Debug(strContent);
-                Log.Debug("======strContent end =========");
+                //Log.Debug("======strContent begin 频道抓取=========");
+                //Log.Debug(newsListUrl);
+                //Log.Debug(strContent);
+                //Log.Debug("======strContent end =========");
                 //重试一次
                 if (!DictUrl.ContainsKey(newsListUrl))
                 {
@@ -184,10 +189,11 @@ namespace Lfb.DataGrabBll
                         {
                             var url = GetAuthorDataUrl(item.AuthorId);
                             DealAuthorData(url, item.AuthorId, item.GroupId,0);
+                            RandOpenUrl();
                         }
                     }
                     //Thread.Sleep(5 * 1000);
-                    Thread.Sleep(200);
+                    Thread.Sleep(sleepMsSeconds);
                 }
                 else
                 {
@@ -227,13 +233,15 @@ namespace Lfb.DataGrabBll
                         #region === begin ===
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
+                            Thread.Sleep(sleepMsSeconds);
                             //重新请求一次，因为用了代理后，经常会失败
                             strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                             if (string.IsNullOrWhiteSpace(strContent))
                             {
+                                Thread.Sleep(sleepMsSeconds);
                                 //HttpHelper.IsUseProxy = false;
                                 //重新请求一次，因为用了代理后，经常会失败
-                                strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                                strContent = HttpHelper.GetContent(url, Encoding.UTF8);
                                 //HttpHelper.IsUseProxy = true;
                                 if (string.IsNullOrWhiteSpace(strContent))
                                 {
@@ -314,7 +322,7 @@ namespace Lfb.DataGrabBll
                         }
                     }
                     //Thread.Sleep(5 * 1000);
-                    Thread.Sleep(200);
+                    Thread.Sleep(sleepMsSeconds);
                 }
                 else
                 {
@@ -406,7 +414,7 @@ namespace Lfb.DataGrabBll
                         }
                         #endregion
 
-                        Thread.Sleep(200);
+                        Thread.Sleep(sleepMsSeconds);
                     }
                 }
             }
@@ -489,7 +497,7 @@ namespace Lfb.DataGrabBll
                         {
                             //sleep
                             //Thread.Sleep(rnd.Next(1000, 2500));
-                            Thread.Sleep(200);
+                            Thread.Sleep(sleepMsSeconds);
                             ZtPageIndex++;
                             var maxBehotTime = data.next.max_behot_time.ToString();
                             //替换url中的max_behot_time
@@ -622,7 +630,7 @@ namespace Lfb.DataGrabBll
                         if (isHaveMore)
                         {
                             //Thread.Sleep(rnd.Next(1000, 2500));
-                            Thread.Sleep(200);
+                            Thread.Sleep(sleepMsSeconds);
                             CommentsPageIndex++;
                             GatherAuthorFromUserSub(itemUrl, groupId, CommentsPageIndex);
                         }
@@ -631,7 +639,7 @@ namespace Lfb.DataGrabBll
                             Log.Info("本评论用户抓取结束总页数" + CommentsPageIndex.ToString());
                             CommentsPageIndex = 0;
                             //Thread.Sleep(rnd.Next(2000, 5000));
-                            Thread.Sleep(1 * 1000);
+                            Thread.Sleep(sleepMsSeconds);
                         }
                     }
                     else
@@ -735,7 +743,7 @@ namespace Lfb.DataGrabBll
                         {
                             //sleep
                             //Thread.Sleep(rnd.Next(1000, 2500));
-                            Thread.Sleep(200);
+                            Thread.Sleep(sleepMsSeconds);
                             UserSubPageIndex++;
                             timeStamp++;
                             //var maxBehotTime = data.next.max_behot_time.ToString();
@@ -748,7 +756,7 @@ namespace Lfb.DataGrabBll
                             Log.Info("本用户订阅抓取结束总页数" + UserSubPageIndex.ToString());
                             UserSubPageIndex = 0;
                             //Thread.Sleep(rnd.Next(2000, 5000));
-                            Thread.Sleep(1 * 1000);
+                            Thread.Sleep(sleepMsSeconds);
                         }
                     }
                     else
@@ -780,13 +788,15 @@ namespace Lfb.DataGrabBll
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
+                    Thread.Sleep(sleepMsSeconds);
                     //重新请求一次，因为用了代理后，经常会失败
                     strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                     if (string.IsNullOrWhiteSpace(strContent))
                     {
+                        Thread.Sleep(sleepMsSeconds);
                         //HttpHelper.IsUseProxy = false;
                         //重新请求一次，因为用了代理后，经常会失败
-                        strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                        strContent = HttpHelper.GetContent(url, Encoding.UTF8);
                         //HttpHelper.IsUseProxy = true;
                         if (string.IsNullOrWhiteSpace(strContent))
                         {
@@ -987,7 +997,7 @@ namespace Lfb.DataGrabBll
                     {
                         //sleep
                         //Thread.Sleep(rnd.Next(1000, 2500));
-                        Thread.Sleep(200);
+                        Thread.Sleep(sleepMsSeconds);
                         AuthorPageIndex++;
                         var maxBehotTime = data.next.max_behot_time.ToString();
                         //替换url中的max_behot_time
@@ -1001,7 +1011,7 @@ namespace Lfb.DataGrabBll
                         //DalNews.UpdateAuthorIsDeal(authorId, 1);
                         AuthorPageIndex = 0;
                         //Thread.Sleep(rnd.Next(2000, 5000));
-                        Thread.Sleep(200);
+                        Thread.Sleep(sleepMsSeconds);
                     }
                 }
                 else
@@ -1011,11 +1021,11 @@ namespace Lfb.DataGrabBll
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message + ex.StackTrace);
-                Log.Debug("======strContent begin 作者抓取=========");
-                Log.Debug(url);
-                Log.Debug(strContent);
-                Log.Debug("======strContent end =========");
+                //Log.Error(ex.Message + ex.StackTrace);
+                //Log.Debug("======strContent begin 作者新闻抓取=========");
+                //Log.Debug(url);
+                //Log.Debug(strContent);
+                //Log.Debug("======strContent end =========");
             }
             return 1;
         }
@@ -1242,6 +1252,46 @@ namespace Lfb.DataGrabBll
             //}
             //return str;
         }
+
+        /// <summary>
+        /// 随机访问一个网址并sleep一会
+        /// </summary>
+        private void RandOpenUrl() 
+        {
+            try
+            {
+                var url0 = "http://www.toutiao.com/";
+                var url1 = "http://www.toutiao.com/news_finance/";
+                var url2 = "http://www.toutiao.com/news_tech/";
+                var url3 = "http://www.toutiao.com/video/";
+                var url4 = "http://www.toutiao.com/news_sports/";
+                var url = url0;
+                if (DateTime.Now.Second % 5 == 1)
+                {
+                    url = url1;
+                }
+                if (DateTime.Now.Second % 5 == 2)
+                {
+                    url = url2;
+                }
+                if (DateTime.Now.Second % 5 == 3)
+                {
+                    url = url3;
+                }
+                if (DateTime.Now.Second % 5 == 4)
+                {
+                    url = url4;
+                }
+
+                HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                Thread.Sleep(sleepMsSeconds);
+            }
+            catch(Exception ex1)
+            {}
+        }
+        //
+        //
+        //
         #endregion
 
     }

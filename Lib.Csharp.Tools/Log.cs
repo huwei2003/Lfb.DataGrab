@@ -13,6 +13,13 @@ namespace Lib.Csharp.Tools
         {
             if (log.IsDebugEnabled)
             {
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    if (message.Length > 500)
+                    {
+                        message = message.Substring(0, 500);
+                    }
+                }
                 log.Debug(message);
             }
         }
@@ -29,9 +36,9 @@ namespace Lib.Csharp.Tools
                     var message = "";
                     if (!string.IsNullOrWhiteSpace(ex1.Message.ToString()))
                     {
-                        if (ex1.Message.ToString().Length > 1000)
+                        if (ex1.Message.ToString().Length > 500)
                         {
-                            message = message.Substring(0, 1000);
+                            message = message.Substring(0, 500);
                         }
                     }
                     log.Debug(message + "\r\n" + ex1.Source.ToString() + "\r\n" + ex1.TargetSite.ToString() + "\r\n" + ex1.StackTrace.ToString());
@@ -43,9 +50,9 @@ namespace Lib.Csharp.Tools
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                if (message.Length > 1000)
+                if (message.Length > 500)
                 {
-                    message = message.Substring(0, 1000);
+                    message = message.Substring(0, 500);
                 }
             }
             if (log.IsErrorEnabled)
