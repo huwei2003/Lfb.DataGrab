@@ -55,6 +55,9 @@
     <Compile Include="Dto\DtoLatest_article.cs" />
     <Compile Include="Dto\DtoBaijiahaoAuthorJsData.cs" />
     <Compile Include="Dto\DtoBaijiahaoAuthorNews.cs" />
+    <Compile Include="Dto\DtoToutiaoUserInfoData.cs" />
+    <Compile Include="Dto\DtoToutiaoUserInfoIntro.cs" />
+    <Compile Include="Dto\DtoTouTiaoUserJsData.cs" />
     <Compile Include="Dto\DtoTouTiaoComment.cs" />
     <Compile Include="Dto\DtoTouTiaoUserSubData.cs" />
     <Compile Include="Dto\DtoTouTiaoUserSubJsData.cs" />
@@ -77,6 +80,7 @@
     <Compile Include="IFengGather.cs" />
     <Compile Include="Img.cs" />
     <Compile Include="ImgDeal.cs" />
+    <Compile Include="Model\T_User.cs" />
     <Compile Include="Model\T_Author_Bjh.cs" />
     <Compile Include="Model\T_Author.cs" />
     <Compile Include="Model\T_News_Bjh.cs" />

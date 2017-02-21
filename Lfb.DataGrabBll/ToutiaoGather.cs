@@ -9,6 +9,8 @@ using Lib.Csharp.Tools;
 using Lib.Csharp.Tools.Security;
 using Newtonsoft.Json;
 using System.Linq;
+using Comm.Tools.Utility;
+using Log = Lib.Csharp.Tools.Log;
 
 namespace Lfb.DataGrabBll
 {
@@ -530,6 +532,85 @@ namespace Lfb.DataGrabBll
         }
 
 
+        /// <summary>
+        /// 根据作者的相关推荐取其它用户的userid
+        /// 要多开 vip
+        /// </summary>
+        /// <returns></returns>
+        public int GatheringUserFromRelationUser()
+        {
+            try
+            {
+                //取出待处理作者的数据，并置位isdeal=2 处理中
+                var list = DalNews.GetNoDealUserList();
+
+                #region === 取出待刷新的作者url数据 ===
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        if (item.UserId>0)
+                        {
+                            var url = GetUserRelationUrl(item.UserId.ToString());
+                            DealUserRelation(url, item.UserId.ToString());
+                        }
+                    }
+                    //Thread.Sleep(5 * 1000);
+                    Thread.Sleep(sleepMsSeconds);
+                }
+                else
+                {
+                    Log.Info("暂时没有要抓取作者相关推荐的url");
+                    Thread.Sleep(60 * 1000);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 根据作者的url取用户信息
+        /// 要多开 vip
+        /// </summary>
+        /// <returns></returns>
+        public int GatheringUserInfoFromUserUrl()
+        {
+            try
+            {
+                //取出未处理作者的数据，并置位isshow=2 处理中
+                var list = DalNews.GetNoShowUserList();
+
+                #region === 取出待刷新的作者url数据 ===
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        if (item.UserId > 0)
+                        {
+                            var url = GetUserUrl(item.UserId.ToString());
+                            GatherUserInfo(url, item.UserId.ToString());
+                        }
+                    }
+                    //Thread.Sleep(5 * 1000);
+                    Thread.Sleep(sleepMsSeconds);
+                }
+                else
+                {
+                    Log.Info("暂时没有要抓取作者info的url");
+                    Thread.Sleep(60 * 1000);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 0;
+        }
         #endregion
 
 
@@ -1030,6 +1111,208 @@ namespace Lfb.DataGrabBll
             return 1;
         }
 
+        public int DealUserRelation(string url, string userId)
+        {
+            var strContent = "";
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return 0;
+            }
+            try
+            {
+                Log.Info(url + " 用户相关推荐抓取开始");
+                strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    Thread.Sleep(sleepMsSeconds);
+                    //重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        Thread.Sleep(sleepMsSeconds);
+                        //HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContent(url, Encoding.UTF8);
+                        //HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + "用户相关推荐未抓取到任何内容");
+                            return 0;
+                        }
+                    }
+                }
+
+                strContent = FormatJsonData(strContent);
+                var data = JsonConvert.DeserializeObject<DtoTouTiaoUserJsData>(strContent);
+                if (data != null)
+                {
+
+                    #region === 处理data中的数据，存储信息 ===
+
+                    if (data.data != null && data.data.Count > 0)
+                    {
+                        foreach (var subItem in data.data)
+                        {
+                            try
+                            {
+                                var isExists = DalNews.IsExistsUser(subItem.user_id.ToString());
+                                if (isExists)
+                                {
+                                    #region === 不存在的插入===
+                                    var model = new DtoUser()
+                                    {
+                                       AvatarUrl=subItem.avatar_url,
+                                       Descriptions="",
+                                       FansCount=0,
+                                       FollowCount=0,
+                                       MediaId= subItem.media_id.ToString(),
+                                       Name=subItem.name,
+                                       OpenUrl=subItem.open_url,
+                                        CreateTime = DateTime.Now,
+                                        UserId = subItem.user_id,
+                                        IsDeal = 0,
+                                        IsShow = 1,
+                                        LastDealTime = DateTime.Now,
+                                    };
+                                    DalNews.Insert(model);
+                                    #endregion
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                            }
+                        }
+                    }
+                    #endregion
+
+                    Thread.Sleep(sleepMsSeconds);
+                }
+                else
+                {
+                    Log.Info(url + " 用户相关推荐未取到数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log.Error(ex.Message + ex.StackTrace);
+                //Log.Debug("======strContent begin 作者新闻抓取=========");
+                //Log.Debug(url);
+                //Log.Debug(strContent);
+                //Log.Debug("======strContent end =========");
+            }
+            return 1;
+        }
+
+        public int GatherUserInfo(string url, string userId)
+        {
+            var strContent = "";
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return 0;
+            }
+            try
+            {
+                Log.Info(url + " 用户信息抓取开始");
+                strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    Thread.Sleep(sleepMsSeconds);
+                    //重新请求一次，因为用了代理后，经常会失败
+                    strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
+                    if (string.IsNullOrWhiteSpace(strContent))
+                    {
+                        Thread.Sleep(sleepMsSeconds);
+                        //HttpHelper.IsUseProxy = false;
+                        //重新请求一次，因为用了代理后，经常会失败
+                        strContent = HttpHelper.GetContent(url, Encoding.UTF8);
+                        //HttpHelper.IsUseProxy = true;
+                        if (string.IsNullOrWhiteSpace(strContent))
+                        {
+                            Log.Info(url + "用户信息未抓取到任何内容");
+                            return 0;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    Log.Info(url + "用户信息未抓取到任何内容");
+                    return 0;
+                }
+                else
+                {
+                    strContent = strContent.Replace("abstract:","Descriptions:");
+                    strContent = strContent.Replace("riot.mount('statistics'","staticdata=");
+                }
+            
+                //header=(?<header>[^;]*)
+                //staticdata=(?<roit>[^;]*)
+                var pIntro = "header=(?<header>[^;]*)";
+                var pData = "staticdata=(?<roit>[^;]*)";
+                var strUserIntro = RegexHelper.GetStrByRegx(strContent, pIntro);
+                var strUserData = RegexHelper.GetStrByRegx(strContent, pData);
+
+                if (!string.IsNullOrWhiteSpace(strUserIntro) || !string.IsNullOrWhiteSpace(strUserData))
+                {
+                    var strDescription = "";
+                    var strFansCount = "0";
+                    if (!string.IsNullOrWhiteSpace(strUserIntro))
+                    {
+                        Log.Info("strUserIntro=" + strUserIntro);
+                        var model1 = JsonConvert.DeserializeObject<DtoToutiaoUserInfoIntro>(strUserIntro);
+                        if (model1 != null)
+                        {
+                            strDescription = model1.Descriptions;
+                        }
+                    }
+                    if (!string.IsNullOrWhiteSpace(strUserData))
+                    {
+                        Log.Info("strUserData=" + strUserData);
+                        var model2 = JsonConvert.DeserializeObject<DtoToutiaoUserInfoData>(strUserData);
+                        if (model2 != null)
+                        {
+                            strFansCount = model2.fensi;
+                        }
+                    }
+
+                    #region === 处理data中的数据，存储信息 ===
+
+                    try
+                    {
+                            #region === 不存在的插入===
+                            var model = new DtoUser()
+                            {
+                                UserId = userId.ToInt64(),
+                                Descriptions = strDescription,
+                                FansCount = strFansCount.ToInt32(),
+                            };
+                            DalNews.UpdateUserInfo(model);
+                            #endregion
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                    #endregion
+
+                    Thread.Sleep(sleepMsSeconds);
+                }
+                else
+                {
+                    Log.Info(url + " 用户相关推荐未取到数据");
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log.Error(ex.Message + ex.StackTrace);
+                //Log.Debug("======strContent begin 作者新闻抓取=========");
+                //Log.Debug(url);
+                //Log.Debug(strContent);
+                //Log.Debug("======strContent end =========");
+            }
+            return 1;
+        }
+
         /// <summary>
         /// 处理url,替换其中的时间参数，用以读取下一页数据
         /// </summary>
@@ -1119,7 +1402,26 @@ namespace Lfb.DataGrabBll
             url = FormatUrlPcAs(url);
             return url;
         }
-
+        /// <summary>
+        /// 获取用户相关推荐的url
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public string GetUserRelationUrl(string userId)
+        {
+            var url = string.Format("http://www.toutiao.com/c/user/related/?user_id={0}", userId);
+            return url;
+        }
+        /// <summary>
+        /// 获取用户的url
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public string GetUserUrl(string userId)
+        {
+            var url = string.Format("http://www.toutiao.com/c/user/{0}/", userId);
+            return url;
+        }
         /// <summary>
         /// 格式化抓取数据的url的cp,as参数
         /// </summary>

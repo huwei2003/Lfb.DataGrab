@@ -84,6 +84,11 @@ namespace Lfb.DataGrabBll
         public static string IsEnableGatherUserSub = GetIsEnableGatherUserSub();
 
         /// <summary>
+        /// 是否开启抓取头条用户信息 1=处理 0=no
+        /// </summary>
+        public static string IsEnableGatherUserInfo = GetIsEnableGatherUserInfo();
+
+        /// <summary>
         /// 百家号搜索关键字列表
         /// </summary>
         public static string BjhSearchKeywords = GetBjhSearchKeywords();
@@ -308,6 +313,19 @@ namespace Lfb.DataGrabBll
             try
             {
                 return ConfigurationManager.AppSettings["IsEnableBjhAuthorGather"].ToString();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "0";
+            }
+        }
+        
+        private static string GetIsEnableGatherUserInfo()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableGatherUserInfo"].ToString();
             }
             catch (Exception e)
             {

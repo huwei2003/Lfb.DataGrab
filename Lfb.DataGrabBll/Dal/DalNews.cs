@@ -1430,5 +1430,243 @@ namespace Lfb.DataGrabBll
             return null;
         }
         #endregion
+
+        #region === user deal ===
+        /// <summary>
+        /// 添加一条用户记录
+        /// </summary>
+        /// <param name="model">用户实体</param>
+        /// <returns></returns>
+        public static int Insert(DtoUser model)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.Descriptions))
+                    model.Descriptions = "";
+                if (model.MediaId == null)
+                    model.MediaId = "";
+                if (model.Name == null)
+                    model.Name = "";
+                if (model.OpenUrl == null)
+                    model.OpenUrl = "";
+                if (model.AvatarUrl == null)
+                    model.AvatarUrl = "";
+
+
+                var item = new T_User()
+                {
+                    UserId = model.UserId,
+                    AvatarUrl= model.AvatarUrl,
+                    Descriptions = model.Descriptions,
+                    FansCount = model.FansCount,
+                    FollowCount = model.FollowCount,
+                    MediaId = model.MediaId,
+                    Name = model.Name,
+                    OpenUrl= model.OpenUrl,
+                    CreateTime = DateTime.Now,
+                    IsDeal = model.IsDeal,
+                    LastDealTime = DateTime.Now,
+                    IsShow = 0,
+
+                };
+
+                var id = Sql.InsertId<T_User>(item);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// 判断某个用户是否已存在
+        /// </summary>
+        /// <param name="userId">用户id</param>
+        /// <returns></returns>
+        public static bool IsExistsUser(string userId)
+        {
+            try
+            {
+                var sql = "select Id from T_User where UserId=?";
+
+                var id = Sql.ExecuteScalar(0, sql, userId);
+
+                return id > 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 更新用户的处理状态
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isDeal">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateUserIsDeal(int id, int isDeal)
+        {
+            try
+            {
+                if (isDeal > 1)
+                    isDeal = 1;
+                if (isDeal < 0)
+                    isDeal = 0;
+
+                var sql = string.Format("update T_User set IsDeal={0} where Id={1}", isDeal, id);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// 更新用户的处理状态
+        /// </summary>
+        /// <param name="id">作者表id</param>
+        /// <param name="isShow">处理标识 0=no,1=yes</param>
+        /// <returns></returns>
+        public static bool UpdateUserIsShow(int id, int isShow)
+        {
+            try
+            {
+                if (isShow > 1)
+                    isShow = 1;
+                if (isShow < 0)
+                    isShow = 0;
+
+                var sql = string.Format("update T_User set IsShow={0} where Id={1}", isShow, id);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 更新用户的处理状态
+        /// </summary>
+        /// <param name="userinfo">用户信息实体</param>
+        /// <returns></returns>
+        public static bool UpdateUserInfo(DtoUser userinfo)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userinfo.Descriptions))
+                    userinfo.Descriptions = "";
+                if (string.IsNullOrWhiteSpace(userinfo.Name))
+                    userinfo.Name = "";
+                var sql = string.Format("update T_User set Descriptions='{0}',FansCount={1} where UserId={2}",userinfo.Descriptions,userinfo.FansCount,userinfo.UserId);
+
+                var result = Sql.ExecuteSql(sql);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取N条未抓取相关推荐的用户记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoUser> GetNoDealUserList()
+        {
+            try
+            {
+                lock (lockObj1Author)
+                {
+                    var sql = "select * from T_User where (IsDeal<=1) order By Id DESC limit 0,100";
+                    var list = Sql.Select<DtoUser>(sql);
+
+                    if (list != null && list.Count > 0)
+                    {
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql = "update T_User set IsDeal=2 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
+                    }
+                    else
+                    {
+                        //当isdeal=0 =1的没有时，全部置位
+                        sql = "update T_User set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
+
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取N条未抓取用户资料的用户记录
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoUser> GetNoShowUserList()
+        {
+            try
+            {
+                lock (lockObj1Author)
+                {
+                    var sql = "select * from T_User where (IsShow<=1) order By Id DESC limit 0,100";
+                    var list = Sql.Select<DtoUser>(sql);
+
+                    if (list != null && list.Count > 0)
+                    {
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位IsShow 正在处理状态　IsShow=2
+                        sql = "update T_User set IsShow=2 where Id in({0})".Formats(ids);
+                        Sql.ExecuteSql(sql);
+                    }
+                    else
+                    {
+                        //当isdeal=0 =1的没有时，全部置位
+                        sql = "update T_User set IsShow=1";
+                        Sql.ExecuteSql(sql);
+                    }
+
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+        #endregion
     }
 }

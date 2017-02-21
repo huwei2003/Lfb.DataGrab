@@ -38,6 +38,10 @@ namespace Lfb.NewsGather
             AddTask(GatherRelationFromAuthor, 15 * 60);
 
             AddTask(GatherNewsFromZtRecent, 15 * 60);
+
+            AddTask(GatheringUserFromRelationUser, 1 * 60);
+
+            AddTask(GatheringUserInfoFromUserUrl, 3 * 60);
             #endregion
 
             #region  === 百度百家号 ===
@@ -434,6 +438,91 @@ namespace Lfb.NewsGather
                 Log.Error(ex.Message + ex.StackTrace);
             }
         }
+
+        /// <summary>
+        /// 用户列表抓相关推荐作者
+        /// </summary>
+        public static void GatheringUserFromRelationUser()
+        {
+            try
+            {
+                if (Global.IsEnableGatherUserInfo != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                var i = 0;
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    i++;
+                    Log.Info("从用户列表抓相关推荐作者开始 i=" + i + " time=" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+                    
+                    bll.GatheringUserFromRelationUser();
+
+
+                    Log.Info("从用户列表抓相关推荐作者结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// 用户列表抓作者信息
+        /// </summary>
+        public static void GatheringUserInfoFromUserUrl()
+        {
+            try
+            {
+                if (Global.IsEnableGatherUserInfo != "1")
+                {
+                    return;
+                }
+                ////时段控制 0-8点不抓取
+                //if (DateTime.Now.Hour < 8)
+                //{
+                //    return;
+                //}
+                var i = 0;
+                while (true && ProxyDeal.IsProxyReady)
+                {
+                    i++;
+                    Log.Info("从用户列表抓作者信息开始 i=" + i + " time=" + DateTime.Now);
+
+                    var bll = new ToutiaoGather();
+
+                    bll.GatheringUserInfoFromUserUrl();
+
+
+                    Log.Info("从用户列表抓作者信息结束 i=" + i + " time=" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+                if (!ProxyDeal.IsProxyReady)
+                {
+                    Log.Info("代理未准备好" + DateTime.Now);
+                    Thread.Sleep(60 * 1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+        }
+
 
         /// <summary>
         /// 从用户订阅抓取作者信息 暂不用，放在新闻列表处理里一起做
