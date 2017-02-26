@@ -796,7 +796,7 @@ namespace Lfb.DataGrabBll
             return null;
         }
 
-        
+
         #endregion
 
         #region === t_news_bjh deal ===
@@ -825,6 +825,8 @@ namespace Lfb.DataGrabBll
                     model.LogoUrl = "";
                 if (model.Title == null)
                     model.Title = "";
+                if (model.FeedId == null)
+                    model.FeedId = "";
 
                 ////非图片的，且内容小于100的不入库
                 //if (model.NewsTypeId != NewsTypeEnum.图片  && model.Contents.Length < 100)
@@ -861,6 +863,7 @@ namespace Lfb.DataGrabBll
                     CurReadTimes = model.CurReadTimes,
                     CreateTime = DateTime.Now,
                     GroupId = model.GroupId,
+                    FeedId = model.FeedId,
                 };
 
 
@@ -992,7 +995,7 @@ namespace Lfb.DataGrabBll
             return null;
         }
 
-        
+
 
         /// <summary>
         /// 获取100条未处理的新闻记录 未处理是指没有抓取该新闻详细页，从中取出作者url
@@ -1456,13 +1459,13 @@ namespace Lfb.DataGrabBll
                 var item = new T_User()
                 {
                     UserId = model.UserId,
-                    AvatarUrl= model.AvatarUrl,
+                    AvatarUrl = model.AvatarUrl,
                     Descriptions = model.Descriptions,
                     FansCount = model.FansCount,
                     FollowCount = model.FollowCount,
                     MediaId = model.MediaId,
                     Name = model.Name,
-                    OpenUrl= model.OpenUrl,
+                    OpenUrl = model.OpenUrl,
                     CreateTime = DateTime.Now,
                     IsDeal = model.IsDeal,
                     LastDealTime = DateTime.Now,
@@ -1572,7 +1575,7 @@ namespace Lfb.DataGrabBll
                     userinfo.Descriptions = "";
                 if (string.IsNullOrWhiteSpace(userinfo.Name))
                     userinfo.Name = "";
-                var sql = string.Format("update T_User set Descriptions='{0}',FansCount={1} where UserId={2}",userinfo.Descriptions,userinfo.FansCount,userinfo.UserId);
+                var sql = string.Format("update T_User set Descriptions='{0}',FansCount={1} where UserId={2}", userinfo.Descriptions, userinfo.FansCount, userinfo.UserId);
 
                 var result = Sql.ExecuteSql(sql);
                 return result;
@@ -1666,6 +1669,194 @@ namespace Lfb.DataGrabBll
             }
 
             return null;
+        }
+        #endregion
+
+        #region ==== baijiahao deal  ====
+
+        /// <summary>
+        /// 根据账号密码获取客户端用户id
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static int GetClientUserId(string userName, string password)
+        {
+            try
+            {
+                userName = userName.SqlFilter();
+                password = password.SqlFilter();
+                var sql = "select Id from t_clientuser where UserName='{0}' and Password='{1}'".Formats(userName, password);
+                return Sql.ExecuteScalar(0, sql);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// 随机取N条关键字拼成字符串,以逗号分隔
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRndKeywords()
+        {
+            try
+            {
+                var sql = "select * from t_keywords ORDER BY RAND()  LIMIT 3";
+                return Sql.Select<DtoBaiduKeyword>(sql).Select(p => p.Keyword).Join(",");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return "";
+        }
+        /// <summary>
+        /// 随机取一个顶贴内容
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRndUpPostContent()
+        {
+            try
+            {
+                var sql = "select * from t_uppostcontent ORDER BY RAND()  LIMIT 1";
+                var list = Sql.Select<DtoUpPostContent>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    return list[0].Contents;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return "";
+        }
+        /// <summary>
+        /// 随机取一个顶贴内容
+        /// </summary>
+        /// <returns></returns>
+        public static DtoBaiduUser GetRndBaiduUser()
+        {
+            try
+            {
+                var sql = "select * from t_baiduuser ORDER BY RAND()  LIMIT 1";
+                var list = Sql.Select<DtoBaiduUser>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    return list[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 随机获取一个可用的百家号链接
+        /// </summary>
+        /// <returns></returns>
+        public static DtoNewsSimple GetRndBjhUrl()
+        {
+            try
+            {
+                var sql = "select Id,FeedId from t_news_bjh where OpTimes<50 and FeedId<>'' ORDER BY RAND()  LIMIT 1";
+                var list = Sql.Select<DtoNewsSimple>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    sql = "update t_news_bjh set OpTimes=OpTimes+1 where Id={0}".Formats(list[0].Id);
+                    Sql.ExecuteSql(sql);
+                    return list[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 添加一条任务
+        /// </summary>
+        /// <param name="model">新闻实体</param>
+        /// <returns></returns>
+        public static int Insert_Task(DtoTask model)
+        {
+            try
+            {
+                if (model.Keywords == null)
+                    model.Keywords = "";
+                if (model.Memo == null)
+                    model.Memo = "";
+                if (model.OpString == null)
+                    model.OpString = "";
+                if (model.UpPostContnet == null)
+                    model.UpPostContnet = "";
+                if (model.Url == null)
+                    model.Url = "";
+                if (model.Ip == null)
+                    model.Ip = "";
+                if (model.FeedId == null)
+                    model.FeedId = "";
+                var item = new T_Task()
+                {
+                    BaiduUserId = model.BaiduUserId,
+                    ClientUserId = model.ClientUserId,
+                    Ip = model.Ip,
+                    Keywords = model.Keywords,
+                    Memo = model.Memo,
+                    OpString = model.OpString,
+                    UpPostContnet = model.UpPostContnet,
+                    TaskId = model.TaskId,
+                    Status = 0,
+                    Url = model.Url,
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now,
+                    FeedId = model.FeedId,
+                };
+
+
+                var id = Sql.InsertId<T_Task>(item,"TaskId");
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                //Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// 更新任务状态
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public static bool UpdateTaskStatus(string taskId, int status)
+        {
+            try
+            {
+                taskId = taskId.SqlFilter();
+                var sql = "update t_task set Status={0},UpdateTime='{1}' where TaskId='{2}'".Formats(status,DateTime.Now, taskId);
+                Sql.ExecuteSql(sql);
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return false;
         }
         #endregion
     }

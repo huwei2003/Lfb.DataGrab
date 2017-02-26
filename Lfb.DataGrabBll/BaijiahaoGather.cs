@@ -700,7 +700,8 @@ namespace Lfb.DataGrabBll
                                         Title = subItem.title,
                                         TotalComments = subItem.comment_amount,
                                         RefreshTimes = 0,
-                                        GroupId = subItem.app_id
+                                        GroupId = subItem.app_id,
+                                        FeedId = subItem.feed_id,
                                     };
                                     DalNews.Insert_News_Bjh(model);
                                     #endregion

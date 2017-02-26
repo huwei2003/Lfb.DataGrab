@@ -80,6 +80,7 @@
     <Compile Include="IFengGather.cs" />
     <Compile Include="Img.cs" />
     <Compile Include="ImgDeal.cs" />
+    <Compile Include="Model\T_Task.cs" />
     <Compile Include="Model\T_User.cs" />
     <Compile Include="Model\T_Author_Bjh.cs" />
     <Compile Include="Model\T_Author.cs" />

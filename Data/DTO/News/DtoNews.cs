@@ -128,5 +128,25 @@ namespace Comm.Global.DTO.News
         /// groupid
         /// </summary>
         public string GroupId;
+
+        /// <summary>
+        /// FeedId
+        /// </summary>
+        public string FeedId;
+    }
+
+    /// <summary>
+    /// 新闻类
+    /// </summary>
+    public class DtoNewsSimple
+    {
+        /// <summary>
+        /// id
+        /// </summary>
+        public int Id;
+        /// <summary>
+        /// FeedId
+        /// </summary>
+        public string FeedId;
     }
 }

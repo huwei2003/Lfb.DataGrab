@@ -13,6 +13,6 @@ namespace Lfb.DataGrabBll.Dto
         public string tag;
         public int comment_amount;
         public int read_amount;
-        
+        public string feed_id;
     }
 }

@@ -32,6 +32,7 @@ namespace Lfb.DataGrabBll.Model
         internal string _AuthorId;
         internal int _RefreshTimes;
         internal string _GroupId;
+        internal string _FeedId;
 
         static T_News_Bjh()
         {
@@ -444,6 +445,22 @@ namespace Lfb.DataGrabBll.Model
             {
                 SetColumn("GroupId", _GroupId, value);
                 _GroupId = value;
+            }
+        }
+
+        /// <summary>
+        /// FeedId
+        /// </summary>
+        public string FeedId
+        {
+            get
+            {
+                return _FeedId;
+            }
+            set
+            {
+                SetColumn("FeedId", _FeedId, value);
+                _FeedId = value;
             }
         }
     }

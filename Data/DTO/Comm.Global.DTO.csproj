@@ -96,6 +96,7 @@
     <Compile Include="Media\Video\VideoCreate.cs" />
     <Compile Include="Media\Video\VideoForPut.cs" />
     <Compile Include="Media\Video\VideoUpdate.cs" />
+    <Compile Include="News\DtoTask.cs" />
     <Compile Include="News\DtoUser.cs" />
     <Compile Include="News\DtoAuthor.cs" />
     <Compile Include="News\DtoNews.cs" />
