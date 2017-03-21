@@ -347,7 +347,58 @@ namespace Lfb.DataGrabBll
                 return 10;
             }
         }
+
+        /// <summary>
+        /// 是否开启特殊百家号作者新闻抓取 1=处理 0=no
+        /// </summary>
+        public static string IsEnableBjhNewsGatherForClient = GetIsEnableBjhNewsGatherForClient();
+        private static string GetIsEnableBjhNewsGatherForClient()
+        {
+            try
+            {
+                return ConfigurationManager.AppSettings["IsEnableBjhNewsGatherForClient"];
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return "0";
+            }
+        }
         
+        /// <summary>
+        /// 文章每天任务分配数
+        /// </summary>
+        public static int NewsTaskNums = GetNewsTaskNums();
+        private static int GetNewsTaskNums()
+        {
+            try
+            {
+                return Convert.ToInt32( ConfigurationManager.AppSettings["NewsTaskNums"].ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return 50;
+            }
+        }
+
+        /// <summary>
+        /// 特殊百家号作者新闻刷新时间间隔
+        /// </summary>
+        public static int NewsRefreshInteval = GetNewsRefreshInteval();
+        private static int GetNewsRefreshInteval()
+        {
+            try
+            {
+                return Convert.ToInt32( ConfigurationManager.AppSettings["NewsRefreshInteval"].ToString());
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message + e.StackTrace);
+                return 15;
+            }
+        }
+
         /// <summary>
         /// 处理内容中的图片地址，如果是相对地址的则要加上地址前缀，构成完整的url
         /// </summary>

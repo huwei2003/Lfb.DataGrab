@@ -44,6 +44,12 @@ namespace WebApi.Controllers
                     {
                         throw new Exception("未获取到可用的百家号链接");
                     }
+                    else
+                    {
+                        if (string.IsNullOrWhiteSpace(bjh.FeedId)) {
+                            throw new Exception("未获取到可用的百家号链接");
+                        }
+                    }
                     modelClient.TaskId = taskId;
                     modelClient.BaiduPassword = baiduUser.Password;
                     modelClient.BaiduUserName = baiduUser.UserName;

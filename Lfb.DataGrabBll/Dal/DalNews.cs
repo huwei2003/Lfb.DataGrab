@@ -879,11 +879,116 @@ namespace Lfb.DataGrabBll
             }
         }
 
+        /// <summary>
+        /// 添加一条新闻 用于特殊作者处理
+        /// </summary>
+        /// <param name="model">新闻实体</param>
+        /// <returns></returns>
+        public static int Insert_News_Bjh_ForClient(DtoNews model)
+        {
+            try
+            {
+                if (model.Author == null)
+                    model.Author = "";
+                if (model.Contents == null)
+                    model.Contents = "";
+                if (model.FromSiteName == null)
+                    model.FromSiteName = "";
+                if (model.PubTime == null)
+                    model.PubTime = DateTime.Now;
+                if (model.FromUrl == null)
+                    model.FromUrl = "";
+                if (model.LogoOriginalUrl == null)
+                    model.LogoOriginalUrl = "";
+                if (model.LogoUrl == null)
+                    model.LogoUrl = "";
+                if (model.Title == null)
+                    model.Title = "";
+                if (model.FeedId == null)
+                    model.FeedId = "";
+
+                ////非图片的，且内容小于100的不入库
+                //if (model.NewsTypeId != NewsTypeEnum.图片  && model.Contents.Length < 100)
+                //{
+                //    return -1;
+                //}
+                //if(string.IsNullOrWhiteSpace(model.Title.Trim()))
+                //{
+                //    return -1;
+                //}
+
+                var item = new T_News_Bjh_Client()
+                {
+                    Author = model.Author,
+                    Contents = model.Contents,
+                    //CreateTime = model.CreateTime,
+                    FromSiteName = model.FromSiteName,
+                    FromUrl = model.FromUrl,
+                    IsShow = 0,
+                    LogoOriginalUrl = model.LogoOriginalUrl,
+                    LogoUrl = model.LogoUrl,
+                    NewsTypeId = (int)model.NewsTypeId,
+                    PubTime = model.PubTime,
+                    Title = model.Title,
+                    AuthorId = model.AuthorId,
+                    TotalComments = model.TotalComments,
+                    Tags = model.Tags,
+                    NewsHotClass = model.NewsHotClass,
+                    LastReadTimes = model.LastReadTimes,
+                    LastDealTime = DateTime.Now,
+                    IsHot = model.IsHot,
+                    IsDeal = model.IsDeal,
+                    IntervalMinutes = model.IntervalMinutes,
+                    CurReadTimes = model.CurReadTimes,
+                    CreateTime = DateTime.Now,
+                    GroupId = model.GroupId,
+                    FeedId = model.FeedId,
+                };
+
+
+                var id = Sql.InsertId<T_News_Bjh_Client>(item);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                //Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
         public static int UpdateNews_Bjh(DtoNews model)
         {
             try
             {
                 var news = new T_News_Bjh()
+                {
+                    Id = model.Id,
+                    CurReadTimes = model.CurReadTimes,
+                    LastDealTime = DateTime.Now,
+                    LastReadTimes = model.LastReadTimes,
+                    IsHot = model.IsHot,
+                    IsDeal = 1,
+                    TotalComments = model.TotalComments,
+                    NewsHotClass = model.NewsHotClass,
+                    IntervalMinutes = model.IntervalMinutes,
+                    GroupId = model.GroupId,
+                };
+                return Sql.Update(news, "Id={0}".Formats(model.Id));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return 1;
+        }
+
+        public static int UpdateNews_Bjh_ForClient(DtoNews model)
+        {
+            try
+            {
+                var news = new T_News_Bjh_Client()
                 {
                     Id = model.Id,
                     CurReadTimes = model.CurReadTimes,
@@ -926,6 +1031,7 @@ namespace Lfb.DataGrabBll
 
             return false;
         }
+ 
 
         /// <summary>
         /// 判断某条新闻是否已存在
@@ -938,6 +1044,29 @@ namespace Lfb.DataGrabBll
             try
             {
                 var sql = "select Id from T_News_Bjh where AuthorId=? and Title=?";
+
+                var id = Sql.ExecuteScalar(0, sql, authorId, title);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return 0;
+        }
+        /// <summary>
+        /// 判断某条新闻是否已存在
+        /// </summary>
+        /// <param name="authorId">新闻作者</param>
+        /// <param name="title">新闻标题</param>
+        /// <returns></returns>
+        public static int IsExistsNews_Bjh_ForClient(string authorId, string title)
+        {
+            try
+            {
+                var sql = "select Id from T_News_Bjh_client where AuthorId=? and Title=?";
 
                 var id = Sql.ExecuteScalar(0, sql, authorId, title);
 
@@ -996,7 +1125,30 @@ namespace Lfb.DataGrabBll
         }
 
 
+        /// <summary>
+        /// 获取某一个新闻
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static T_News_Bjh_Client GetNews_Bjh_ForClient(int id)
+        {
+            try
+            {
+                var sql = @"SELECT  * FROM T_News_Bjh_Client WHERE Id={0}".Formats(id);
 
+                var list = Sql.Select<T_News_Bjh_Client>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    return list[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
         /// <summary>
         /// 获取100条未处理的新闻记录 未处理是指没有抓取该新闻详细页，从中取出作者url
         /// </summary>
@@ -1273,6 +1425,50 @@ namespace Lfb.DataGrabBll
                     {
                         //当isdeal=0 =1的没有时，全部置位
                         sql = "update T_Author_Bjh set IsDeal=1";
+                        Sql.ExecuteSql(sql);
+                    }
+
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 获取1条未处理的作者记录(用于特殊作者处理)
+        /// </summary>
+        /// <returns></returns>
+        public static List<DtoAuthor> GetNoDealAuthorList_BjhForClient()
+        {
+            try
+            {
+                lock (lockObj1Author)
+                {
+                    var sql = "select * from T_Author_Bjh_client where (IsDeal<=1) order By Id asc limit 0,1";
+                    var list = Sql.Select<DtoAuthor>(sql);
+
+                    if (list != null && list.Count > 0)
+                    {
+                        var ids = list.Select(p => p.Id).Join(",");
+                        if (ids.Length == 0)
+                        {
+                            ids = "0";
+                        }
+                        //取出后置位isdeal 正在处理状态　isdeal=2
+                        sql =
+                            "update T_Author_Bjh_client set IsDeal=2,RefreshTimes=RefreshTimes+1,LastDealTime='{0}' where Id in({1})"
+                                .Formats(DateTime.Now, ids);
+                        Sql.ExecuteSql(sql);
+                    }
+                    else
+                    {
+                        //当isdeal=0 =1的没有时，全部置位
+                        sql = "update T_Author_Bjh_client set IsDeal=1";
                         Sql.ExecuteSql(sql);
                     }
 
@@ -1763,17 +1959,111 @@ namespace Lfb.DataGrabBll
         /// 随机获取一个可用的百家号链接
         /// </summary>
         /// <returns></returns>
-        public static DtoNewsSimple GetRndBjhUrl()
+        public static DtoNewsSimple GetRndBjhUrl() {
+            try {
+                #region === 取出当前操作的作者id isshow=1 表示当前正在操作===
+                var author = GetAuthorId(0);
+                if (author==null || string.IsNullOrWhiteSpace(author.AuthorId))
+                {
+                    return null;
+                }
+
+                var model = GetRndBjhUrlByAuthorId(author.AuthorId);
+                if (model == null)
+                {
+                    var iCount = 0;
+                    while (model == null)
+                    {
+                        author = GetAuthorId(author.Id);
+                        if (author == null || string.IsNullOrWhiteSpace(author.AuthorId))
+                        {
+                            return null;
+                        }
+                        model = GetRndBjhUrlByAuthorId(author.AuthorId);
+                        if (model != null)
+                        {
+                            break;
+                        }
+                        iCount++;
+                        if (iCount > 30)
+                            break;
+                    }
+                    if (model != null)
+                    {
+                        return model;
+                    }
+                    return null;
+                }
+                else
+                {
+                    return model;
+                }
+                #endregion 
+            }
+            catch { }
+            return null;
+        }
+
+        public static DtoAuthorClient GetAuthorId(int id)
         {
             try
             {
-                var sql = "select Id,FeedId from t_news_bjh where OpTimes<50 and FeedId<>'' ORDER BY RAND()  LIMIT 1";
-                var list = Sql.Select<DtoNewsSimple>(sql);
+                #region === 取出当前操作的作者id isshow=1 表示当前正在操作===
+                var model = new DtoAuthorClient();
+                var sql = "";
+                if (id==0)
+                {
+                    //sql = "select AuthorId,Id from t_author_bjh_client where IsShow=1 order by id desc limit 0,1;";
+                    sql = "select AuthorId,Id from t_author_bjh_client where Id<(select Id from t_author_bjh_client where IsShow=1 order by Id desc LIMIT 0,1) order by id desc limit 0,1;";
+                }
+                else
+                {
+                    sql = "update t_author_bjh_client set IsShow=0;";
+                    Sql.ExecuteSql(sql);
+                    sql = "select * from t_author_bjh_client where Id<{0} order by id desc limit 0,1;".Formats(id);
+                }
+                
+                var list = Sql.Select<DtoAuthor>(sql);
                 if (list != null && list.Count > 0)
                 {
-                    sql = "update t_news_bjh set OpTimes=OpTimes+1 where Id={0}".Formats(list[0].Id);
+                    model.AuthorId = list[0].AuthorId;
+                    model.Id = list[0].Id;
+                    sql = "update t_author_bjh_client set IsShow=0;update t_author_bjh_client set IsShow=1 where Id='" + model.Id + "'";
                     Sql.ExecuteSql(sql);
-                    return list[0];
+                }
+                else
+                {
+                    sql = "select * from t_author_bjh_client order by id desc limit 0,1;";
+                    list = Sql.Select<DtoAuthor>(sql);
+                    if (list != null && list.Count > 0)
+                    {
+                        model.AuthorId = list[0].AuthorId;
+                        model.Id = list[0].Id;
+                        sql = "update t_author_bjh_client set IsShow=0;update t_author_bjh_client set IsShow=1 where Id='" + model.Id + "'";
+                        Sql.ExecuteSql(sql);
+                    }
+                }
+                return model;
+                #endregion
+            }
+            catch { }
+            return null;
+        }
+        /// <summary>
+        /// 随机获取一个可用的百家号链接
+        /// </summary>
+        /// <returns></returns>
+        public static DtoNewsSimple GetRndBjhUrlByAuthorId(string authorId)
+        {
+            try
+            {
+                var sql = "select Id,FeedId from t_news_bjh_client where AuthorId='{0}' and OpTimes<{1} and FeedId<>'' and DATEDIFF(PubTime,'{2}')=0 and CurReadTimes>=1000 and Floor(CurReadTimes/1000)*10>OpTimes ORDER BY RAND()  LIMIT 1".Formats(authorId, Global.NewsTaskNums, DateTime.Now);
+                var list2 = Sql.Select<DtoNewsSimple>(sql);
+                if (list2 != null && list2.Count > 0)
+                {
+                    sql = "update t_news_bjh_client set OpTimes=OpTimes+1 where Id={0}".Formats(list2[0].Id);
+                    Sql.ExecuteSql(sql);
+                    return list2[0];
                 }
             }
             catch (Exception ex)
@@ -1839,8 +2129,8 @@ namespace Lfb.DataGrabBll
         /// <summary>
         /// 更新任务状态
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="status"></param>
+        /// <param name="taskId">任务id</param>
+        /// <param name="status">状态 1=成功 0=失败</param>
         /// <returns></returns>
         public static bool UpdateTaskStatus(string taskId, int status)
         {
@@ -1849,6 +2139,23 @@ namespace Lfb.DataGrabBll
                 taskId = taskId.SqlFilter();
                 var sql = "update t_task set Status={0},UpdateTime='{1}' where TaskId='{2}'".Formats(status,DateTime.Now, taskId);
                 Sql.ExecuteSql(sql);
+                if (status == 0)
+                {
+                    //失败了则把操作次数减1
+                    var feedId = "";
+                    sql = "select FeedId from t_task where TaskId='{0}' limit 0,1;".Formats(taskId);
+                    var list = Sql.Select<DtoTask>(sql);
+                    if(list!=null && list.Count>0)
+                    {
+                        feedId = list[0].FeedId;
+                    }
+                    if (!string.IsNullOrWhiteSpace(feedId))
+                    {
+                        sql = "update t_news_bjh_client set OpTimes=OpTimes-1 where FeedId='{0}'".Formats(feedId);
+                        Sql.ExecuteSql(sql);
+                    }
+                    
+                }
                 return true;
 
             }
