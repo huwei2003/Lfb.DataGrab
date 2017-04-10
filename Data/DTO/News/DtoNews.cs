@@ -148,5 +148,10 @@ namespace Comm.Global.DTO.News
         /// FeedId
         /// </summary>
         public string FeedId;
+
+        /// <summary>
+        /// author
+        /// </summary>
+        public string AuthorId;
     }
 }

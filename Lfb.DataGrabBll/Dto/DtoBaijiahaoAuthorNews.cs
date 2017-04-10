@@ -14,5 +14,6 @@ namespace Lfb.DataGrabBll.Dto
         public int comment_amount;
         public int read_amount;
         public string feed_id;
+        public string is_published;
     }
 }

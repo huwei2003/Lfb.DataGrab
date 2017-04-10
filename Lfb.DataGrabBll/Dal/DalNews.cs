@@ -2057,7 +2057,7 @@ namespace Lfb.DataGrabBll
         {
             try
             {
-                var sql = "select Id,FeedId from t_news_bjh_client where AuthorId='{0}' and OpTimes<{1} and FeedId<>'' and DATEDIFF(PubTime,'{2}')=0 and CurReadTimes>=1000 and Floor(CurReadTimes/1000)*10>OpTimes ORDER BY RAND()  LIMIT 1".Formats(authorId, Global.NewsTaskNums, DateTime.Now);
+                var sql = "select Id,FeedId,AuthorId from t_news_bjh_client where AuthorId='{0}' and OpTimes<{1} and FeedId<>'' and DATEDIFF(PubTime,'{2}')=0 and CurReadTimes>=1000 and Floor(CurReadTimes/1000)*5>OpTimes ORDER BY RAND()  LIMIT 1".Formats(authorId, Global.NewsTaskNums, DateTime.Now);
                 var list2 = Sql.Select<DtoNewsSimple>(sql);
                 if (list2 != null && list2.Count > 0)
                 {

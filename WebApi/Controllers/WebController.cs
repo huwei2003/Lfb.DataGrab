@@ -56,12 +56,15 @@ namespace WebApi.Controllers
                     modelClient.Keywords = keywords;
                     modelClient.OpString = opString;
                     modelClient.UpPostContnet = upPostContent;
-                    var url=string.Format("https://baijiahao.baidu.com/po/feed/share?context=%7B%22nid%22%3A%22{0}%22%2C%22sourceFrom%22%3A%22bjh%22%7D",bjh.FeedId);
-                    if(bjh.FeedId.Contains("sv"))
-                    {
-                        url=string.Format("https://baijiahao.baidu.com/po/feed/video?context=%7B%22nid%22%3A%22{0}%22%2C%22sourceFrom%22%3A%22bjh%22%7D&type=video&fr=bjhauthor",bjh.FeedId);
 
-                    }
+                    var url = string.Format("http://baijiahao.baidu.com/u?app_id={0}", bjh.AuthorId);
+                    
+                    //var url=string.Format("https://baijiahao.baidu.com/po/feed/share?context=%7B%22nid%22%3A%22{0}%22%2C%22sourceFrom%22%3A%22bjh%22%7D",bjh.FeedId);
+                    //if(bjh.FeedId.Contains("sv"))
+                    //{
+                    //    url=string.Format("https://baijiahao.baidu.com/po/feed/video?context=%7B%22nid%22%3A%22{0}%22%2C%22sourceFrom%22%3A%22bjh%22%7D&type=video&fr=bjhauthor",bjh.FeedId);
+                    //}
+
                     modelClient.Url = url;
                     model.FeedId = bjh.FeedId;
                     model.TaskId = taskId;

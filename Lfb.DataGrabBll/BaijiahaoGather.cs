@@ -701,6 +701,10 @@ namespace Lfb.DataGrabBll
                         {
                             try
                             {
+                                if (subItem.is_published == "0")
+                                {
+                                    continue;
+                                }
                                 var pubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at);
                                 //一个月前的新闻不抓取
                                 if (pubTime.AddMonths(1) < DateTime.Now)
@@ -843,6 +847,7 @@ namespace Lfb.DataGrabBll
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
+                                            PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
                                         };
 
                                         DalNews.UpdateNews_Bjh(model);
@@ -952,6 +957,10 @@ namespace Lfb.DataGrabBll
                         {
                             try
                             {
+                                if (subItem.is_published == "0")
+                                {
+                                    continue;
+                                }
                                 var pubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at);
                                 //一个月前的新闻不抓取
                                 if (pubTime.AddMonths(1) < DateTime.Now)
@@ -1094,6 +1103,7 @@ namespace Lfb.DataGrabBll
                                             IntervalMinutes = intervalMinutes,
                                             NewsHotClass = newsClassId,
                                             LastDealTime = DateTime.Now,
+                                            PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
                                         };
 
                                         DalNews.UpdateNews_Bjh_ForClient(model);
