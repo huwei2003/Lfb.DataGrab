@@ -1000,6 +1000,7 @@ namespace Lfb.DataGrabBll
                     NewsHotClass = model.NewsHotClass,
                     IntervalMinutes = model.IntervalMinutes,
                     GroupId = model.GroupId,
+                    PubTime = model.PubTime
                 };
                 return Sql.Update(news, "Id={0}".Formats(model.Id));
             }
