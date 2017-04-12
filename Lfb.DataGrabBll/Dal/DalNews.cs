@@ -1010,6 +1010,23 @@ namespace Lfb.DataGrabBll
             }
             return 1;
         }
+        public static bool Del_News_Bjh_ForClient(int id)
+        {
+            try
+            {
+                var sql = "delete from T_News_Bjh_Client where Id={0}".Formats(id);
+
+                var result = Sql.ExecuteSql(sql);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return false;
+        }
         /// <summary>
         /// 判断某条新闻是否已存在
         /// </summary>

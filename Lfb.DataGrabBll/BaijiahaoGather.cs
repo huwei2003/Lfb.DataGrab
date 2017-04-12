@@ -919,7 +919,7 @@ namespace Lfb.DataGrabBll
 
             try
             {
-                Log.Info(url + " 百家号抓取开始 页码" + AuthorPageIndex);
+                Log.Info(url + " 百家号client抓取开始 页码" + AuthorPageIndex);
                 strContent = HttpHelper.GetContentByAgent(url, Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(strContent))
                 {
@@ -957,9 +957,14 @@ namespace Lfb.DataGrabBll
                         {
                             try
                             {
+                                var isValid = true;
                                 if (subItem.is_published == "0")
                                 {
-                                    continue;
+                                    isValid = false;
+                                }
+                                if (subItem.status != "publish")
+                                {
+                                    isValid = false;
                                 }
                                 var pubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at);
                                 //一个月前的新闻不抓取
@@ -971,145 +976,158 @@ namespace Lfb.DataGrabBll
                                 var newsId = DalNews.IsExistsNews_Bjh_ForClient(authorId, subItem.title);
                                 if (newsId < 1)
                                 {
-                                    #region === 不存在的插入===
-                                    var model = new DtoNews()
+                                    if (isValid)
                                     {
-                                        Author = "",
-                                        AuthorId = authorId,
-                                        Contents = "",
-                                        CreateTime = DateTime.Now,
-                                        //CurReadTimes = Global.ToInt(subItem.read_amount),
-                                        CurReadTimes = subItem.read_amount,
-                                        FromSiteName = "baijiahao",
-                                        FromUrl = subItem.url,
-                                        IntervalMinutes = 60,
-                                        IsDeal = 0,
-                                        IsHot = 0,
-                                        IsShow = 1,
-                                        LastDealTime = DateTime.Now,
-                                        LastReadTimes = subItem.read_amount,
-                                        LogoOriginalUrl = subItem.url,
-                                        LogoUrl = "",
-                                        NewsHotClass = 7,
-                                        NewsTypeId = (int)NewsTypeEnum.新闻,
-                                        PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
-                                        Tags = subItem.tag,
-                                        Title = subItem.title,
-                                        TotalComments = subItem.comment_amount,
-                                        RefreshTimes = 0,
-                                        GroupId = subItem.app_id,
-                                        FeedId = subItem.feed_id,
-                                    };
-                                    DalNews.Insert_News_Bjh_ForClient(model);
-                                    #endregion
+                                        #region === 不存在的插入===
+                                        var model = new DtoNews()
+                                        {
+                                            Author = "",
+                                            AuthorId = authorId,
+                                            Contents = "",
+                                            CreateTime = DateTime.Now,
+                                            //CurReadTimes = Global.ToInt(subItem.read_amount),
+                                            CurReadTimes = subItem.read_amount,
+                                            FromSiteName = "baijiahao",
+                                            FromUrl = subItem.url,
+                                            IntervalMinutes = 60,
+                                            IsDeal = 0,
+                                            IsHot = 0,
+                                            IsShow = 1,
+                                            LastDealTime = DateTime.Now,
+                                            LastReadTimes = subItem.read_amount,
+                                            LogoOriginalUrl = subItem.url,
+                                            LogoUrl = "",
+                                            NewsHotClass = 7,
+                                            NewsTypeId = (int)NewsTypeEnum.新闻,
+                                            PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
+                                            Tags = subItem.tag,
+                                            Title = subItem.title,
+                                            TotalComments = subItem.comment_amount,
+                                            RefreshTimes = 0,
+                                            GroupId = subItem.app_id,
+                                            FeedId = subItem.feed_id,
+                                        };
+                                        DalNews.Insert_News_Bjh_ForClient(model);
+                                        #endregion
+                                    }
                                 }
                                 else
                                 {
                                     #region === 存在的则更新数据 ===
                                     var oldNews = DalNews.GetNews_Bjh_ForClient(newsId);
-
-                                    if (oldNews != null)
+                                    if (isValid)
                                     {
-                                        //b、变化数据，如果是当天发稿的文章，每15分钟刷新一次阅读量，如果5、6、7级，则改为小时更新；
-                                        //7天内发稿的文章，每一小时更新一次阅读数；
-                                        //7天以上，每天刷新；
-                                        //（这个可以按欢迎度级别优化，如15分钟阅读增加在10000以上为1级，5000以上为2级，2500以上为3级，1000以上为4级，500以上为5级，100以上为6级，100以下为7级）
-                                        var isHot = 0;
-                                        var minutes = (DateTime.Now - oldNews.LastDealTime).TotalMinutes;
-                                        var newsClassId = 7;
-                                        var addReads = subItem.read_amount - oldNews.CurReadTimes;
-                                        var intervalMinutes = 24 * 60;
-                                        if (addReads > 0)
+
+                                        if (oldNews != null)
                                         {
-                                            if (minutes > 60)
+                                            #region === update ===
+                                            //b、变化数据，如果是当天发稿的文章，每15分钟刷新一次阅读量，如果5、6、7级，则改为小时更新；
+                                            //7天内发稿的文章，每一小时更新一次阅读数；
+                                            //7天以上，每天刷新；
+                                            //（这个可以按欢迎度级别优化，如15分钟阅读增加在10000以上为1级，5000以上为2级，2500以上为3级，1000以上为4级，500以上为5级，100以上为6级，100以下为7级）
+                                            var isHot = 0;
+                                            var minutes = (DateTime.Now - oldNews.LastDealTime).TotalMinutes;
+                                            var newsClassId = 7;
+                                            var addReads = subItem.read_amount - oldNews.CurReadTimes;
+                                            var intervalMinutes = 24 * 60;
+                                            if (addReads > 0)
                                             {
-                                                var perHourReads = addReads / (minutes / 60.0);
-                                                if (perHourReads > 10000)
+                                                if (minutes > 60)
                                                 {
-                                                    isHot = 1;
+                                                    var perHourReads = addReads / (minutes / 60.0);
+                                                    if (perHourReads > 10000)
+                                                    {
+                                                        isHot = 1;
+                                                    }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                if (addReads > 10000)
+                                                else
                                                 {
-                                                    isHot = 1;
+                                                    if (addReads > 10000)
+                                                    {
+                                                        isHot = 1;
+                                                    }
                                                 }
+                                                #region === 15分钟阅读量分析　===
+                                                var per15MinutesReads = addReads / (minutes / 15.0);
+                                                if (per15MinutesReads > 10000)
+                                                {
+                                                    newsClassId = 1;
+                                                    isHot = 1;
+                                                    intervalMinutes = 15;
+                                                }
+                                                else if (per15MinutesReads > 5000)
+                                                {
+                                                    newsClassId = 2;
+                                                    isHot = 1;
+                                                    intervalMinutes = 15;
+                                                }
+                                                else if (per15MinutesReads > 2500)
+                                                {
+                                                    newsClassId = 3;
+                                                    intervalMinutes = 15;
+                                                }
+                                                else if (per15MinutesReads > 1000)
+                                                {
+                                                    newsClassId = 4;
+                                                    intervalMinutes = 15;
+                                                }
+                                                else if (per15MinutesReads > 500)
+                                                {
+                                                    newsClassId = 5;
+                                                    intervalMinutes = 60;
+                                                }
+                                                else if (per15MinutesReads > 100)
+                                                {
+                                                    newsClassId = 6;
+                                                    intervalMinutes = 60;
+                                                }
+                                                else
+                                                {
+                                                    newsClassId = 7;
+                                                    intervalMinutes = 60;
+                                                }
+                                                #endregion
                                             }
-                                            #region === 15分钟阅读量分析　===
-                                            var per15MinutesReads = addReads / (minutes / 15.0);
-                                            if (per15MinutesReads > 10000)
+                                            if (oldNews.PubTime.AddHours(24) < DateTime.Now)
                                             {
-                                                newsClassId = 1;
+                                                //不是今天发布的
+                                                intervalMinutes = 24 * 60;
+                                            }
+
+                                            //如果原来是爆文的不修改ishot
+                                            if (oldNews.IsHot == 1)
+                                            {
                                                 isHot = 1;
-                                                intervalMinutes = 15;
                                             }
-                                            else if (per15MinutesReads > 5000)
+                                            if (oldNews.NewsHotClass < newsClassId)
                                             {
-                                                newsClassId = 2;
-                                                isHot = 1;
-                                                intervalMinutes = 15;
+                                                newsClassId = oldNews.NewsHotClass;
                                             }
-                                            else if (per15MinutesReads > 2500)
+                                            var model = new DtoNews()
                                             {
-                                                newsClassId = 3;
-                                                intervalMinutes = 15;
-                                            }
-                                            else if (per15MinutesReads > 1000)
-                                            {
-                                                newsClassId = 4;
-                                                intervalMinutes = 15;
-                                            }
-                                            else if (per15MinutesReads > 500)
-                                            {
-                                                newsClassId = 5;
-                                                intervalMinutes = 60;
-                                            }
-                                            else if (per15MinutesReads > 100)
-                                            {
-                                                newsClassId = 6;
-                                                intervalMinutes = 60;
-                                            }
-                                            else
-                                            {
-                                                newsClassId = 7;
-                                                intervalMinutes = 60;
-                                            }
+                                                Id = newsId,
+                                                LastReadTimes = oldNews.CurReadTimes,
+                                                CurReadTimes = subItem.read_amount,
+                                                IsHot = isHot,
+                                                IsDeal = 1,
+                                                TotalComments = subItem.comment_amount,
+                                                IntervalMinutes = intervalMinutes,
+                                                NewsHotClass = newsClassId,
+                                                LastDealTime = DateTime.Now,
+                                                PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
+                                            };
+
+                                            DalNews.UpdateNews_Bjh_ForClient(model);
+
+                                            //暂不更新作者表的刷新时间，没用上
+                                            //DalNews.UpdateAuthorInterval(authorId, intervalMinutes);
                                             #endregion
                                         }
-                                        if (oldNews.PubTime.AddHours(24) < DateTime.Now)
-                                        {
-                                            //不是今天发布的
-                                            intervalMinutes = 24 * 60;
-                                        }
-
-                                        //如果原来是爆文的不修改ishot
-                                        if (oldNews.IsHot == 1)
-                                        {
-                                            isHot = 1;
-                                        }
-                                        if (oldNews.NewsHotClass < newsClassId)
-                                        {
-                                            newsClassId = oldNews.NewsHotClass;
-                                        }
-                                        var model = new DtoNews()
-                                        {
-                                            Id = newsId,
-                                            LastReadTimes = oldNews.CurReadTimes,
-                                            CurReadTimes = subItem.read_amount,
-                                            IsHot = isHot,
-                                            IsDeal = 1,
-                                            TotalComments = subItem.comment_amount,
-                                            IntervalMinutes = intervalMinutes,
-                                            NewsHotClass = newsClassId,
-                                            LastDealTime = DateTime.Now,
-                                            PubTime = Comm.Tools.Utility.StringConverter.ToDateTime(subItem.publish_at),
-                                        };
-
-                                        DalNews.UpdateNews_Bjh_ForClient(model);
-
-                                        //暂不更新作者表的刷新时间，没用上
-                                        //DalNews.UpdateAuthorInterval(authorId, intervalMinutes);
+                                    }
+                                    else
+                                    { 
+                                        //del
+                                        DalNews.Del_News_Bjh_ForClient(oldNews.Id);
                                     }
                                     #endregion
                                 }
@@ -1134,7 +1152,7 @@ namespace Lfb.DataGrabBll
                     }
                     else
                     {
-                        Log.Info("本百家号抓取结束总页数" + AuthorPageIndex);
+                        Log.Info("本百家号client抓取结束总页数" + AuthorPageIndex);
                         //置位状态
                         //DalNews.UpdateAuthorIsDeal(authorId, 1);
                         AuthorPageIndex = 0;
@@ -1144,7 +1162,7 @@ namespace Lfb.DataGrabBll
                 }
                 else
                 {
-                    Log.Info(url + " 百家号未取到数据 页码" + AuthorPageIndex);
+                    Log.Info(url + " 百家号client未取到数据 页码" + AuthorPageIndex);
                 }
             }
             catch (Exception ex)

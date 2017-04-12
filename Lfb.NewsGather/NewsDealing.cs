@@ -52,7 +52,7 @@ namespace Lfb.NewsGather
             AddTask(GatheringNewsFromAuthor_Bjh, 3 * 60);
             AddTask(GatheringNewsFromAuthor_Bjh, 5 * 60);
 
-            AddTask(GatheringNewsFromAuthor_BjhForClient, Global.NewsRefreshInteval * 60);
+            AddTask(GatheringNewsFromAuthor_BjhForClient, 0);
             #endregion
         }
 
@@ -743,9 +743,9 @@ namespace Lfb.NewsGather
                     if (isFinish)
                     {
                         Log.Info("本轮从特殊百家号作者主页抓取结束 i=" + i + " time=" + DateTime.Now);
-                        break;
+                        //break;
                     }
-                    Thread.Sleep(60 * 1000);
+                    Thread.Sleep(Global.NewsRefreshInteval * 60*1000);
                 }
                 if (!ProxyDeal.IsProxyReady)
                 {
