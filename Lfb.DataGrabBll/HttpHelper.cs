@@ -86,6 +86,77 @@ namespace Lfb.DataGrabBll
             return strMsg;
         }
 
+        /// <summary>
+        /// 获取指定网页的内容
+        /// </summary>
+        /// <param name="strUrl">网页地址</param>
+        /// <param name="encoder">网页编码格式</param>
+        /// <returns>string</returns>
+        public static string GetContent(string strUrl, Encoding encoder,string headerToken)
+        {
+            string strMsg = string.Empty;
+            try
+            {
+                // 这一句一定要写在创建连接的前面。使用回调的方法进行证书验证。
+                ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
+
+                CookieContainer cc = new CookieContainer();
+                //WebRequest request = WebRequest.Create(strUrl);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strUrl);
+
+                //set request args
+                request.Method = "Get";
+                //request.CookieContainer = cc;
+                request.KeepAlive = true;
+
+                //request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+                request.ContentType = "text/html";
+
+                //模拟goole浏览器访问
+                request.UserAgent =
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
+                //request.Referer = strUrl;
+                //request.Headers.Add("x-requested-with:XMLHttpRequest");
+                request.Headers.Add("x-requested-with:com.android.browser");
+                if (!string.IsNullOrWhiteSpace(headerToken))
+                {
+                    request.Headers.Add("Token", headerToken);
+                }
+
+                //request.Host = "baidu.com";
+                request.Headers.Add(HttpRequestHeader.AcceptLanguage, "zh-CN,zh;q=0.8,en;q=0.6,nl;q=0.4,zh-TW;q=0.2");
+                //request.ContentLength = postdataByte.Length;  text/html; charset=utf-8
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip |
+                                                 DecompressionMethods.None;
+                //支持跳转页面，查询结果将是跳转后的页面
+                ////request.AllowAutoRedirect = true;
+
+                request.Headers.Add("Accept-Encoding", "gzip, deflate");
+                if (request.Method == "POST")
+                {
+                    request.ContentType = "application/x-www-form-urlencoded";
+                }
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                //StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("gb2312"));
+                StreamReader reader = new StreamReader(response.GetResponseStream(), encoder);
+
+                strMsg = reader.ReadToEnd();
+                // .\0为null，空字符，也是字符串结束标志
+                strMsg = strMsg.Replace("\0", "");
+                reader.Close();
+                reader.Dispose();
+                response.Close();
+            }
+            catch (Exception ex)
+            {
+                var str = ex.Message;
+            }
+            return strMsg;
+        }
+
         public static Stream GetStream(string strUrl, Encoding encoder)
         {
 

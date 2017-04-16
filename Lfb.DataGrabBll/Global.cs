@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using System.Text;
 using Lib.Csharp.Tools;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 namespace Lfb.DataGrabBll
 {
@@ -508,6 +512,41 @@ namespace Lfb.DataGrabBll
             {
             }
             return iValue;
+        }
+
+        public static Comm.Global.DTO.News.DtoIpArea GetIpArea(string ip) 
+        {
+            try
+            {
+                var url = "http://ipapi.ipip.net/find?addr="+ip;
+                var token ="850968f88a47dbc35825992a5f16ff657f20f468";
+                var strContent = HttpHelper.GetContent(url, Encoding.UTF8,token);
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    strContent = HttpHelper.GetContent(url, Encoding.UTF8, token);
+                }
+                if (string.IsNullOrWhiteSpace(strContent))
+                {
+                    strContent = HttpHelper.GetContent(url, Encoding.UTF8, token);
+                }
+                if (!string.IsNullOrWhiteSpace(strContent))
+                {
+                    var data = JsonConvert.DeserializeObject<Comm.Global.DTO.News.DtoIpData>(strContent);
+                    if (data != null)
+                    {
+                        var ipData = new Comm.Global.DTO.News.DtoIpArea() {
+                            City = data.data[1].ToString(),
+                            Province = data.data[2].ToString(),
+                            Ip = ip
+                        };
+                        return ipData;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                Log.Debug(ex);
+            }
+            return null;
         }
     }
 }

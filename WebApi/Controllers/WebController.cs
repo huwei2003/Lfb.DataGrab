@@ -25,7 +25,9 @@ namespace WebApi.Controllers
             var modelClient = new DtoTaskForClient();
             var model = new DtoTask();
             try
-            { 
+            {
+                var clientIp = Comm.Tools.Utility.Web.Http.GetIp();
+                var ipArea = Lfb.DataGrabBll.Global.GetIpArea(clientIp); ; 
                 //验证用户登录信息
                 var clientUserId = Lfb.DataGrabBll.DalNews.GetClientUserId(name, pwd);
                 if (clientUserId > 0)
@@ -74,7 +76,7 @@ namespace WebApi.Controllers
                     model.OpString = opString;
                     model.UpPostContnet = upPostContent;
                     model.Url = url;
-                    model.Ip = Comm.Tools.Utility.Web.Http.GetIp();
+                    model.Ip = clientIp;
                     model.Memo = "";
                     Lfb.DataGrabBll.DalNews.Insert_Task(model);
                 }

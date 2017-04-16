@@ -44,5 +44,15 @@ namespace Lfb.DataGrab.Tests
 
             var i6 = Global.ToInt("1666666");
         }
+
+        
+        [Test()]
+        public void GetIpAreaTest()
+        {
+            var data = Global.GetIpArea("117.27.56.108");
+            data = Global.GetIpArea("223.73.2.138");
+
+        }
+
     }
 }
