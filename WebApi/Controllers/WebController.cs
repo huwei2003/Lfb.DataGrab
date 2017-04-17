@@ -27,13 +27,14 @@ namespace WebApi.Controllers
             try
             {
                 var clientIp = Comm.Tools.Utility.Web.Http.GetIp();
-                var ipArea = Lfb.DataGrabBll.Global.GetIpArea(clientIp); ; 
+                var ipArea = Lfb.DataGrabBll.Global.GetIpArea(clientIp);
                 //验证用户登录信息
                 var clientUserId = Lfb.DataGrabBll.DalNews.GetClientUserId(name, pwd);
                 if (clientUserId > 0)
                 {
                     var taskId = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var keywords = Lfb.DataGrabBll.DalNews.GetRndKeywords();
+                    var keywords = Lfb.DataGrabBll.DalNews.GetRndKeywordsByArea(ipArea);
+                    //var keywords = Lfb.DataGrabBll.DalNews.GetRndKeywords();
                     var upPostContent = Lfb.DataGrabBll.DalNews.GetRndUpPostContent();
                     var opString = "";
                     var baiduUser = Lfb.DataGrabBll.DalNews.GetRndBaiduUser();

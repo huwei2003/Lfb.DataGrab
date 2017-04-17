@@ -1931,6 +1931,46 @@ namespace Lfb.DataGrabBll
             return "";
         }
         /// <summary>
+        /// 随机取N条关键字拼成字符串,以逗号分隔
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRndKeywordsByArea(Comm.Global.DTO.News.DtoIpArea area)
+        {
+            try
+            {
+                //1、北京的只取北京；
+                //2、上海的只取上海；
+                //3、广州的只取广州；
+                //4、深圳的只取深圳；
+                //5、其他的，设置三类的并集，分别是本省本市的 + 本省且城市为00的 + 省份和城市都为00的
+                var sql = "select Keyword,Keyword2,Keyword3 from t_keywords_new ORDER BY RAND() limit 1";
+                Log.Info(area.Province + area.City);
+                if (area.City == "北京" || area.City == "上海" || area.City == "广州" || area.City == "深圳")
+                {
+                    sql = "select Keyword,Keyword2,Keyword3 from t_keywords_new WHERE Province='{0}' and City='{1}' ORDER BY RAND() limit 1;".Formats(area.Province, area.City);
+                }
+                else
+                {
+                    sql = "select  Keyword,Keyword2,Keyword3 from (select Keyword,Keyword2,Keyword3 from t_keywords_new WHERE Province='{0}' and City='{1}' union select Keyword,Keyword2,Keyword3 from t_keywords_new WHERE Province='{0}' and City='00' union select Keyword,Keyword2,Keyword3 from t_keywords_new WHERE Province='00' and City='00')a ORDER BY RAND() LIMIT 1;";
+                }
+                
+                //var sql = "select * from t_keywords ORDER BY RAND()  LIMIT 3";
+                var list= Sql.Select<DtoBaiduKeywordThree>(sql);
+                if (list != null && list.Count > 0)
+                {
+                    return list[0].Keyword + "," + list[0].Keyword2 + "," + list[0].Keyword3;
+                }
+                else
+                    return "";
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+
+            return "";
+        }
+        /// <summary>
         /// 随机取一个顶贴内容
         /// </summary>
         /// <returns></returns>

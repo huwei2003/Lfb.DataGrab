@@ -51,7 +51,7 @@ namespace Lfb.DataGrab.Tests
         {
             var data = Global.GetIpArea("117.27.56.108");
             data = Global.GetIpArea("223.73.2.138");
-
+            Console.WriteLine(data.Province);
         }
 
     }

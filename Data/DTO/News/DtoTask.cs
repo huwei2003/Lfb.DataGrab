@@ -62,6 +62,13 @@ namespace Comm.Global.DTO.News
         public int Id;
         public string Keyword; 
     }
+    public class DtoBaiduKeywordThree
+    {
+        public int Id;
+        public string Keyword;
+        public string Keyword2;
+        public string Keyword3;
+    }
     public class DtoOpString
     { 
         public int Id;
