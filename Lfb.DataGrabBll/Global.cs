@@ -532,11 +532,11 @@ namespace Lfb.DataGrabBll
                 if (!string.IsNullOrWhiteSpace(strContent))
                 {
                     var data = JsonConvert.DeserializeObject<Comm.Global.DTO.News.DtoIpData>(strContent);
-                    if (data != null)
+                    if (data != null && data.data != null)
                     {
                         var ipData = new Comm.Global.DTO.News.DtoIpArea() {
-                            City = data.data[1].ToString(),
-                            Province = data.data[2].ToString(),
+                            City = data.data[2].ToString(),
+                            Province = data.data[1].ToString(),
                             Ip = ip
                         };
                         return ipData;
@@ -546,7 +546,12 @@ namespace Lfb.DataGrabBll
             catch (Exception ex) {
                 Log.Debug(ex);
             }
-            return null;
+            return new Comm.Global.DTO.News.DtoIpArea()
+            {
+                City = "00",
+                Province = "00",
+                Ip = ip
+            };
         }
     }
 }

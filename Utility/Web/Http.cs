@@ -678,8 +678,7 @@ namespace Comm.Tools.Utility.Web
             {
                 ip = "";
             }
-
-            if (ip.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(ip))
             {
                 try
                 {
@@ -691,8 +690,52 @@ namespace Comm.Tools.Utility.Web
                     ip = "";
                 }
             }
+            else
+            {
+                if (ip.Contains("::"))
+                {
+                    try
+                    {
+                        ip = HttpContext.Current.Request.UserHostAddress;
+                    }
+                    catch
+                    {
+
+                        ip = "";
+                    }
+                }
+            }
 
             return ip;
+        }
+        /**/
+        /// <summary>
+        /// 取得客户端真实IP。如果有代理则取第一个非内网地址
+        /// </summary>
+        public static string IPAddress
+        {
+            get
+            {
+                string result = String.Empty;
+                result = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                if (result != null && result != String.Empty)
+                {
+                    //可能有代理
+                    if (result.IndexOf(".") == -1)    //没有“.”肯定是非IPv4格式
+                        result = null;
+
+                }
+
+                string IpAddress = (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null && HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != String.Empty) ? HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] : HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+
+                if (null == result || result == String.Empty)
+                    result = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+
+                if (result == null || result == String.Empty)
+                    result = HttpContext.Current.Request.UserHostAddress;
+
+                return result;
+            }
         }
         /// <summary>
         /// 查询IP地域

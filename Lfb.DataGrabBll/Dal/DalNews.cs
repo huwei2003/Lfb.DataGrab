@@ -2185,6 +2185,59 @@ namespace Lfb.DataGrabBll
         }
 
         /// <summary>
+        /// 添加一条任务
+        /// </summary>
+        /// <param name="model">新闻实体</param>
+        /// <returns></returns>
+        public static int Insert_Task2(DtoTask model)
+        {
+            try
+            {
+                if (model.Keywords == null)
+                    model.Keywords = "";
+                if (model.Memo == null)
+                    model.Memo = "";
+                if (model.OpString == null)
+                    model.OpString = "";
+                if (model.UpPostContnet == null)
+                    model.UpPostContnet = "";
+                if (model.Url == null)
+                    model.Url = "";
+                if (model.Ip == null)
+                    model.Ip = "";
+                if (model.FeedId == null)
+                    model.FeedId = "";
+                var item = new T_Task_New()
+                {
+                    BaiduUserId = model.BaiduUserId,
+                    ClientUserId = model.ClientUserId,
+                    Ip = model.Ip,
+                    Keywords = model.Keywords,
+                    Memo = model.Memo,
+                    OpString = model.OpString,
+                    UpPostContnet = model.UpPostContnet,
+                    TaskId = model.TaskId,
+                    Status = 0,
+                    Url = model.Url,
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now,
+                    FeedId = model.FeedId,
+                };
+
+
+                var id = Sql.InsertId<T_Task_New>(item, "TaskId");
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                //Log.Error(ex.Message + ex.StackTrace);
+                return -1;
+            }
+        }
+
+        /// <summary>
         /// 更新任务状态
         /// </summary>
         /// <param name="taskId">任务id</param>
@@ -2213,6 +2266,46 @@ namespace Lfb.DataGrabBll
                         Sql.ExecuteSql(sql);
                     }
                     
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message + ex.StackTrace);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 更新任务状态2
+        /// </summary>
+        /// <param name="taskId">任务id</param>
+        /// <param name="status">状态 1=成功 0=失败</param>
+        /// <returns></returns>
+        public static bool UpdateTaskStatus2(string taskId, int status)
+        {
+            try
+            {
+                taskId = taskId.SqlFilter();
+                var sql = "update t_task_new set Status={0},UpdateTime='{1}' where TaskId='{2}'".Formats(status, DateTime.Now, taskId);
+                Sql.ExecuteSql(sql);
+                if (status == 0)
+                {
+                    //失败了则把操作次数减1
+                    var feedId = "";
+                    sql = "select FeedId from t_task_new where TaskId='{0}' limit 0,1;".Formats(taskId);
+                    var list = Sql.Select<DtoTask>(sql);
+                    if (list != null && list.Count > 0)
+                    {
+                        feedId = list[0].FeedId;
+                    }
+                    if (!string.IsNullOrWhiteSpace(feedId))
+                    {
+                        sql = "update t_news_bjh_client set OpTimes=OpTimes-1 where FeedId='{0}'".Formats(feedId);
+                        Sql.ExecuteSql(sql);
+                    }
+
                 }
                 return true;
 
